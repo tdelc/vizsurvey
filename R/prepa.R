@@ -368,11 +368,11 @@ folder_to_df <- function(folder,
     )
 
   if (!is.na(configs$vt)){
-    df <- df <- mutate(across(any_of(configs$vt), as.character))
+    df <- df %>% mutate(across(any_of(configs$vt), as.character))
   }
 
   if (!is.na(configs$vg)){
-    df <- df <- mutate(across(any_of(configs$vg), as.character))
+    df <- df %>% mutate(across(any_of(configs$vg), as.character))
   }
 
   return(list(df = df, configs = configs))

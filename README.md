@@ -27,20 +27,30 @@ fast and systematic overview of data quality over time.
 
 You can install the development version of vizsurvey like so:
 
-``` r
-install.github('tdelc/vizsurvey')
-```
+`install.github('tdelc/vizsurvey')`
 
 ## Example
 
-This is a basic example how to lauch the dashboard:
+This is tree option to lauch the dashboard:
+
+### From a R object
 
 ``` r
 library(vizsurvey)
+library(laeken)
+data(eusilc)
+runVizsurvey_from_r(eusilc,var_itw = "db040")
+```
 
-# vizsurvey_dashboard() # To be created
+### From a csv file
 
-# OR
+``` r
+runVizsurvey_from_file(path="inst/shiny-examples/complete/data/ESS/ESS9/ESS9.csv",var_itw = "INTNUM1",var_domain="CNTRY",var_group = "PREINTF")
+```
 
-# vizsurvey_dashboard("link") # Link to your data, # To be created
+### From a directory of prepared data
+
+``` r
+# We assume that config.txt, and prepa_surveys are already done here.
+runVizsurvey_from_folder("data",is_double_folder = T)
 ```

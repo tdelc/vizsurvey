@@ -46,8 +46,8 @@ create_fake_silc <- function(
       path_out_P <- paste0(path_out, "PFILE/", country_code, "_", year)
       path_out_H <- paste0(path_out, "HFILE/", country_code, "_", year)
 
-      write_csv(df_p, file = paste0(path_out_P, "p_EUSILC.csv"), col_names = T)
-      write_csv(df_h, file = paste0(path_out_H, "h_EUSILC.csv"), col_names = T)
+      readr::write_csv(df_p, file = paste0(path_out_P, "p_EUSILC.csv"), col_names = T)
+      readr::write_csv(df_h, file = paste0(path_out_H, "h_EUSILC.csv"), col_names = T)
     })
   })
   return(NULL)

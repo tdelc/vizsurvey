@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # vizsurvey
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 vizsurvey is an R package designed to streamline the quality assessment of survey data by providing intuitive visual diagnostics through an interactive dashboard. It takes as input a survey database containing annual or quarterly data, enriched with both interviewer-specific variables and a wide array of survey variables.
@@ -28,10 +29,7 @@ vizsurvey is especially useful for institutions or researchers conducting large-
 
 You can install the development version of vizsurvey like so:
 
-``` r
-install.github('tdelc/vizsurvey')
-library(vizsurvey)
-```
+`install.github('tdelc/vizsurvey')`
 
 ## Example
 
@@ -39,7 +37,8 @@ This is tree option to lauch the dashboard:
 
 ### From a R object
 
-```{r example}
+```{r example1, eval=FALSE}
+library(vizsurvey)
 library(laeken)
 data(eusilc)
 runVizsurvey_from_r(eusilc,var_itw = "db040")
@@ -47,13 +46,13 @@ runVizsurvey_from_r(eusilc,var_itw = "db040")
 
 ### From a csv file
 
-```{r example}
+```{r example2, eval=FALSE}
 runVizsurvey_from_file(path="inst/shiny-examples/complete/data/ESS/ESS9/ESS9.csv",var_itw = "INTNUM1",var_domain="CNTRY",var_group = "PREINTF")
 ```
 
 ### From a directory of prepared data
 
-```{r example}
+```{r example3, eval=FALSE}
 # We assume that config.txt, and prepa_surveys are already done here.
 runVizsurvey_from_folder("data",is_double_folder = T)
 ```
