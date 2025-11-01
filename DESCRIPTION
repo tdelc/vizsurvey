@@ -1,0 +1,42 @@
+Package: vizsurvey
+Type: Package
+Title: Visualisation And Analysis During a Survey Field
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Thomas", "Delclite",
+      email = "thomas.delclite@economie.fgov.be",
+      role = c("aut", "cre")
+    ),
+    person(
+      "Adrien", "Mierop",
+      email = "adrien.mierop@economie.fgov.be",
+      role = c("aut")
+    )
+  )
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    cli,
+    data.table,
+    dplyr,
+    ggplot2,
+    isotree,
+    laeken,
+    magrittr,
+    plotly,
+    purrr,
+    rlang,
+    scales,
+    shiny,
+    survey,
+    tibble,
+    tidyr,
+    tidyselect
+RoxygenNote: 7.3.2
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

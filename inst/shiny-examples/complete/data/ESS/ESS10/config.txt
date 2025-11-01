@@ -1,0 +1,11 @@
+name_survey = ESS10
+
+vars_discretes =
+vars_continous =
+
+var_domain = cntry
+lab_domain = Country
+var_group = 
+lab_group = 
+
+var_itw = intnum1
