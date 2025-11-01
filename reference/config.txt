@@ -1,0 +1,9 @@
+name_survey = 
+
+vars_discretes = 
+vars_continous = 
+
+var_domain = 
+var_group = 
+
+var_itw = 
