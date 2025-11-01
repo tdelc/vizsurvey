@@ -32,6 +32,7 @@ Imports:
     rlang,
     scales,
     shiny,
+    stats,
     survey,
     tibble,
     tidyr,

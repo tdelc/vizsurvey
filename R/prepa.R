@@ -101,7 +101,7 @@ prepa_stats <- function(db, vars_vd, vars_vc, var_group) {
 
     out <- tryCatch(
       {
-        t_chi <- chisq.test(obs, p = exp_prop, simulate.p.value = TRUE, B = 1)
+        t_chi <- stats::chisq.test(obs, p = exp_prop, simulate.p.value = TRUE, B = 1)
         t_chi$statistic
       },
       error = function(e) {

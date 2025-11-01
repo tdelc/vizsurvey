@@ -3,6 +3,7 @@
 
 ## usethis namespace: start
 #' @importFrom dplyr across
+#' @importFrom dplyr any_of
 #' @importFrom dplyr arrange
 #' @importFrom dplyr case_when
 #' @importFrom dplyr cur_column
@@ -31,6 +32,7 @@
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 theme_minimal
 #' @importFrom magrittr %>%
+#' @importFrom purrr map
 #' @importFrom purrr map_df
 #' @importFrom rlang sym
 #' @importFrom tidyr pivot_longer
