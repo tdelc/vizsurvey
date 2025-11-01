@@ -250,6 +250,8 @@ server <- function(input, output, session) {
       ungroup() %>%
       arrange(variable,stat)
 
+    print(db_longer)
+
     db_longer %>%
       arrange(!!sym(list_config()$vt),stat) %>%
       pivot_wider(

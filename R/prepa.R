@@ -362,8 +362,18 @@ folder_to_df <- function(folder,
 
   # minimal correction of the file
   df <- df %>%
-    mutate_at(vars(configs$vd), as.factor) %>%
-    mutate_at(vars(configs$vc), as.numeric)
+    mutate(
+      across(any_of(configs$vc), as.numeric),
+      across(any_of(configs$vd), as.factor)
+    )
+
+  if (!is.na(configs$vt)){
+    df <- df <- mutate(across(any_of(configs$vt), as.character))
+  }
+
+  if (!is.na(configs$vg)){
+    df <- df <- mutate(across(any_of(configs$vg), as.character))
+  }
 
   return(list(df = df, configs = configs))
 }
@@ -408,14 +418,15 @@ create_df_stats <- function(df_, configs,
 #'
 #' @returns df
 loop_stats <- function(df, configs, var_calculs) {
-  cli::cli_alert("df_stats for {var_calculs}")
+  cli::cli_progress_step("df_stats for {var_calculs}", spinner = TRUE)
   df_stats <- create_df_stats(df, configs, var_calculs)
 
-  if (length(configs$vg) > 0) {
+  if (length(pull(unique(df[, configs$vg]))) > 1) {
     vec_group <- pull(unique(df[, configs$vg]))
 
+    cli::cli_alert_info("create_df_stats for group {configs$vg}")
     df_stats_group <- vec_group %>% map_df(~ {
-      cli::cli_alert("create_df_stats for {.x}")
+      cli::cli_progress_step("{configs$vg} = {.x}", spinner = TRUE)
       create_df_stats(df, configs, var_calculs, filter_group = .x)
     })
 
@@ -448,12 +459,12 @@ prepa_survey <- function(folder, ...) {
   df <- list_df$df
 
   # Create a fake all domain or group if null
-  if (!is.null(configs$vt)){
+  if (is.na(configs$vt)){
     df <- df %>% mutate(domain = "All")
     configs$vt <- "domain"
   }
 
-  if (!is.null(configs$vg)){
+  if (is.na(configs$vg)){
     df <- df %>% mutate(group = "All")
     configs$vg <- "group"
   }
@@ -467,7 +478,7 @@ prepa_survey <- function(folder, ...) {
 
   # Interviewer variation
   df_stats_itw <- pull(unique(df[, configs$vt])) %>% map_df(~ {
-    cli::cli_alert("df_stats_itw for domain {.x}")
+    cli::cli_progress_step("df_stats_itw for domain {.x}",spinner = TRUE)
     sub_df <- df %>%
       filter(!!sym(configs$vt) == .x) %>%
       loop_stats(configs, configs$id_itw) %>%
