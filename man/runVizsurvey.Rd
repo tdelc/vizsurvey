@@ -7,7 +7,9 @@
 runVizsurvey(link_data_folder = NULL, is_double_folder = T)
 }
 \arguments{
-\item{link_data_rep}{Link of the data folder}
+\item{link_data_folder}{link to directory of data}
+
+\item{is_double_folder}{is the directory contains subdirectories of survey}
 }
 \value{
 shinyapp

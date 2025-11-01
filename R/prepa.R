@@ -259,7 +259,8 @@ correct_list_df <- function(list_df) {
   list_DB_FORMAT <- lapply(list_df, function(df) {
     tibble(variable = names(df), format = sapply(df, class))
   })
-  variables_correction <- bind_rows(list_DB_FORMAT, .id = "df") %>%
+
+  variables_correction <- dplyr::bind_rows(list_DB_FORMAT, .id = "df") %>%
     group_by(variable) %>%
     mutate(fus_format = paste(format, collapse = "-")) %>%
     mutate(check = n_distinct(format) == 1) %>%
@@ -308,7 +309,7 @@ folder_to_df <- function(folder,
   path_df <- list.files(folder, full.names = TRUE, pattern = file_pattern)
 
   list_df <- lapply(path_df, function(link) {
-    df <- as_tibble(data.table::fread(link, encoding = "UTF-8"))
+    df <- tidyr::as_tibble(data.table::fread(link, encoding = "UTF-8"))
     colnames(df) <- toupper(colnames(df))
     return(df)
   })
@@ -320,7 +321,7 @@ folder_to_df <- function(folder,
   # bind rows all the df
   df <- list_df %>%
     correct_list_df() %>%
-    bind_rows() %>%
+    dplyr::bind_rows() %>%
     mutate_if(is.character, function(col) iconv(col, to = "UTF-8"))
 
   # load config file
@@ -407,19 +408,19 @@ create_df_stats <- function(df_, configs,
 #'
 #' @returns df
 loop_stats <- function(df, configs, var_calculs) {
-  message(paste0("df_stats for ", var_calculs))
+  cli::cli_alert("df_stats for {var_calculs}")
   df_stats <- create_df_stats(df, configs, var_calculs)
 
   if (length(configs$vg) > 0) {
     vec_group <- pull(unique(df[, configs$vg]))
 
     df_stats_group <- vec_group %>% map_df(~ {
-      message(paste0("create_df_stats for ", .x))
+      cli::cli_alert("create_df_stats for {.x}")
       create_df_stats(df, configs, var_calculs, filter_group = .x)
     })
 
     df_stats <- df_stats %>%
-      add_row(df_stats_group)
+      dplyr::add_row(df_stats_group)
   }
   return(df_stats)
 }
@@ -466,17 +467,17 @@ prepa_survey <- function(folder, ...) {
 
   # Interviewer variation
   df_stats_itw <- pull(unique(df[, configs$vt])) %>% map_df(~ {
-    message(paste0("df_stats_itw for domain ", .x))
+    cli::cli_alert("df_stats_itw for domain {.x}")
     sub_df <- df %>%
       filter(!!sym(configs$vt) == .x) %>%
       loop_stats(configs, configs$id_itw) %>%
       mutate(!!sym(configs$vt) := .x)
   })
 
-  write_rds(configs, paste0(folder, "/list_config.rds"), compress = "gz")
-  write_rds(df, paste0(folder, "/df.rds"), compress = "gz")
-  write_rds(df_stats, paste0(folder, "/df_stats.rds"), compress = "gz")
-  write_rds(df_stats_itw, paste0(folder, "/df_stats_itw.rds"), compress = "gz")
+  readr::write_rds(configs, file.path(folder,"list_config.rds"), compress = "gz")
+  readr::write_rds(df, file.path(folder,"df.rds"), compress = "gz")
+  readr::write_rds(df_stats, file.path(folder,"df_stats.rds"), compress = "gz")
+  readr::write_rds(df_stats_itw, file.path(folder,"df_stats_itw.rds"), compress = "gz")
 
   cli::cli_alert_success("File list_config.rds created.")
   cli::cli_alert_success("File df.rds created.")

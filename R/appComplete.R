@@ -1,6 +1,7 @@
 #' Shiny vizsurvey
 #'
-#' @param link_data_rep Link of the data folder
+#' @param link_data_folder link to directory of data
+#' @param is_double_folder is the directory contains subdirectories of survey
 #'
 #' @returns shinyapp
 #' @export
@@ -51,13 +52,11 @@ runAlone <- function(
     create_config(folder_path = link_data_folder,
                   file_name = "config.txt",
                   name_survey = NULL,
-                  vars_discretes,
-                  vars_continous,
-                  var_domain,
-                  lab_domain,
-                  var_group,
-                  lab_group,
-                  var_itw)
+                  vars_discretes = vars_discretes,
+                  vars_continous = vars_continous,
+                  var_domain = var_domain,
+                  var_group = var_group,
+                  var_itw = var_itw)
     prepa_survey(link_data_folder)
   }
 
