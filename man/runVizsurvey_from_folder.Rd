@@ -4,10 +4,10 @@
 \alias{runVizsurvey_from_folder}
 \title{Shiny vizsurvey with already prepared data}
 \usage{
-runVizsurvey_from_folder(link_data_folder = NULL, is_double_folder = T)
+runVizsurvey_from_folder(link = NULL, is_double_folder = T)
 }
 \arguments{
-\item{link_data_folder}{link to directory of data}
+\item{link}{link to directory of data}
 
 \item{is_double_folder}{is the directory contains subdirectories of survey}
 }
@@ -19,5 +19,5 @@ Shiny vizsurvey with already prepared data
 }
 \examples{
 # We assume that config.txt, and prepa_surveys are already done here.
-\dontrun{runVizsurvey_from_folder("data",is_double_folder = T)}
+\dontrun{runVizsurvey_from_folder("inst/extdata",is_double_folder = T)}
 }

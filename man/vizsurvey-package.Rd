@@ -6,7 +6,7 @@
 \alias{vizsurvey-package}
 \title{vizsurvey: Visualisation And Analysis During a Survey Field}
 \description{
-More about what it does (maybe more than one line). Continuation lines should be indented.
+vizsurvey is an R package designed to streamline the quality assessment of survey data by providing intuitive visual diagnostics through an interactive dashboard. It takes as input a survey database containing annual or quarterly data, enriched with both interviewer-specific variables and a wide array of survey variables.
 }
 \seealso{
 Useful links:

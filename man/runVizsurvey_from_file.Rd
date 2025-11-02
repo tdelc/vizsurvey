@@ -33,6 +33,6 @@ shinyapp
 Shiny vizsurvey from a csv/tsv
 }
 \examples{
-path <- "inst/shiny-examples/complete/data/ESS/ESS9/ESS9.csv"
+path <- "inst/extdata/data/ESS/ESS9/ESS9.csv"
 \dontrun{runVizsurvey_from_file(path,var_itw = "INTNUM1",var_domain="CNTRY")}
 }

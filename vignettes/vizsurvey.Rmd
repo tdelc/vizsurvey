@@ -108,7 +108,7 @@ Lorsqu'on clique sur une variable numérique, la fonction de densité s'affiche 
 
 6.  **Consigner** les cas récurrents (mêmes écarts sur plusieurs variables ou dans le temps).
 
-```{r}
+```{r, eval=F, warning = F, message = F}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 data(eusilc)
 set.seed(123)
@@ -152,9 +152,9 @@ Dès qu'un score est supérieur à un seuil, la variable est affichée, et sa di
 
 Quand le volume de croisements est important, il est difficile de savoir **où commencer**. **vizsurvey** propose un classement **enquêteur·rices** via un modèle **Isolation Forest** appliqué aux **vecteurs de χ²** (une composante par variable catégorielle).
 
--    **Idée** : un profil “atypique” est **plus facile à isoler** dans l’espace des distances.
+-   **Idée** : un profil “atypique” est **plus facile à isoler** dans l’espace des distances.
 
--   **Entrées** : pour chaque enquêteur·rice, un vecteur (χ2(V1),χ2(V2),…)(\chi^2(V_1), \chi^2(V_2), \ldots)(χ2(V1​),χ2(V2​),…), éventuellement **standardisé** et **tronqué** (winsorisation) pour limiter l’influence des très grands χ² dus à de minuscules effectifs.
+-   **Entrées** : pour chaque enquêteur·rice, un vecteur (χ2(V1),χ2(V2),…)(\chi\^2(V_1), \chi\^2(V_2), \ldots)(χ2(V1​),χ2(V2​),…), éventuellement **standardisé** et **tronqué** (winsorisation) pour limiter l’influence des très grands χ² dus à de minuscules effectifs.
 
 -   **Sortie** : un **score d’anomalie** (continu) permettant de **trier** les personnes à examiner **en premier**.
 
@@ -403,7 +403,7 @@ Chaque jeu de données sera préparé avec le fichier YAML du même nom (à l'ex
 ## Résolution de problèmes
 
 | Symptôme | Cause probable | Solution |
-|-------------------|--------------------------------|---------------------|
+|------------------------|------------------------|------------------------|
 | `argument is of length zero` | Clé absente dans le YAML (`vt`, `vg`, etc.) | Vérifiez la présence des clés et leur orthographe. |
 | `object 'write_csv' not found` | `readr` non attaché lors de `create_fake_silc()` | Chargez `readr` ou utilisez `readr::write_csv`. |
 | `non-numeric argument to binary operator` | Colonnes non numériques lors d'un calcul | Filtrez avec `dplyr::select(where(is.numeric))` avant traitement. |

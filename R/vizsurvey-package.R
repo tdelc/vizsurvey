@@ -6,6 +6,7 @@
 #' @importFrom dplyr any_of
 #' @importFrom dplyr arrange
 #' @importFrom dplyr case_when
+#' @importFrom dplyr count
 #' @importFrom dplyr cur_column
 #' @importFrom dplyr everything
 #' @importFrom dplyr filter
@@ -36,5 +37,6 @@
 #' @importFrom purrr map_df
 #' @importFrom rlang sym
 #' @importFrom tidyr pivot_longer
+#' @importFrom tidyr pivot_wider
 ## usethis namespace: end
 NULL

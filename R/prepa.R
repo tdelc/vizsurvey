@@ -439,6 +439,7 @@ loop_stats <- function(df, configs, var_calculs) {
 #' Preparation of a survey
 #'
 #' @param folder folder of survey
+#' @param name_file (optional) name to save file (in the same folder)
 #' @param ... argument to pass to folder_to_df (example : file_pattern)
 #'
 #' @returns NULL (creation of rds)
@@ -448,7 +449,7 @@ loop_stats <- function(df, configs, var_calculs) {
 #' \dontrun{
 #' prepa_survey("shiny-examples/complete/ESS10")
 #' }
-prepa_survey <- function(folder, ...) {
+prepa_survey <- function(folder, name_file = NULL, ...) {
   list_df <- folder_to_df(folder,...)
   if (is.null(list_df)) {
     return(NULL)
@@ -485,16 +486,22 @@ prepa_survey <- function(folder, ...) {
       mutate(!!sym(configs$vt) := .x)
   })
 
-  readr::write_rds(configs, file.path(folder,"list_config.rds"), compress = "gz")
-  readr::write_rds(df, file.path(folder,"df.rds"), compress = "gz")
-  readr::write_rds(df_stats, file.path(folder,"df_stats.rds"), compress = "gz")
-  readr::write_rds(df_stats_itw, file.path(folder,"df_stats_itw.rds"), compress = "gz")
+  global <- list(
+    configs = configs,
+    df = df,
+    df_stats = df_stats,
+    df_stats_itw = df_stats_itw
+  )
 
-  cli::cli_alert_success("File list_config.rds created.")
-  cli::cli_alert_success("File df.rds created.")
-  cli::cli_alert_success("File df_stats.rds created.")
-  cli::cli_alert_success("File df_stats_itw.rds created.")
-  cli::cli_alert("Files in directory {folder}")
+  if (!is.null(name_file)){
+    readr::write_rds(global, file.path(folder,paste0(name_file,".rds")),
+                     compress = "gz")
+
+    cli::cli_alert_success("File {name_file}.rds created.")
+    cli::cli_alert("File in directory {folder}")
+  }
+
+  return(global)
 }
 
 #' Preparation of all surveys from a folder
@@ -517,5 +524,5 @@ prepa_all_surveys <- function(folder) {
     }) %>%
     unlist()
 
-  list_dirs %>% map(prepa_survey)
+  list_dirs %>% map({prepa_survey(.x,"global")})
 }

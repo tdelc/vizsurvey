@@ -194,7 +194,7 @@ heat_map_itw <- function(db_stat, threshold) {
       oob = scales::squish
     ) +
     theme_minimal() +
-    theme_fonctionr() +
+    # theme_fonctionr() +
     labs(x = "") +
     theme(
       panel.background = element_rect(fill = "grey80"),
@@ -239,18 +239,18 @@ itw_main_corr <- function(M, variable) {
 ### GT ####
 
 tidy_to_gt <- function(tidy_db, sensibility = 0.05) {
-  colnames(tidy_db) <- colnames(tidy_db) %>% str_remove("^value\\|")
+  colnames(tidy_db) <- colnames(tidy_db) %>% stringr::str_remove("^value\\|")
 
   vars <- colnames(tidy_db)
-  indicators <- vars[str_starts(vars, "sd\\|.*?\\|")] %>%
-    str_remove("sd\\|.*?\\|") %>%
+  indicators <- vars[stringr::str_starts(vars, "sd\\|.*?\\|")] %>%
+    stringr::str_remove("sd\\|.*?\\|") %>%
     unique()
 
-  group <- vars[str_starts(vars, "sd\\|.*?\\|")] %>%
-    str_extract(".*?\\|(.*?)\\|.*", group = 1) %>%
+  group <- vars[stringr::str_starts(vars, "sd\\|.*?\\|")] %>%
+    stringr::str_extract(".*?\\|(.*?)\\|.*", group = 1) %>%
     unique()
 
-  hide <- vars[str_starts(vars, "sd")] %>% unique()
+  hide <- vars[stringr::str_starts(vars, "sd")] %>% unique()
 
   specs <- lapply(indicators, function(ind) {
     list(
@@ -265,7 +265,7 @@ tidy_to_gt <- function(tidy_db, sensibility = 0.05) {
          - Only one domain <br/>
          - No outlier at this level of sensitivity") %>%
         mutate(INFO = gt::html(INFO)) %>%
-        gt() %>% fmt_markdown() %>% cols_align("left")
+        gt::gt() %>% gt::fmt_markdown() %>% gt::cols_align("left")
     )
   }
 
@@ -275,12 +275,12 @@ tidy_to_gt <- function(tidy_db, sensibility = 0.05) {
       type == "num" ~ "Continuous",
       TRUE ~ "Error"
     )) %>%
-    gt(rowname_col = "variable", groupname_col = "type")
+    gt::gt(rowname_col = "variable", groupname_col = "type")
 
   for (s in specs) {
     sd_col_sym <- sym(s$sd_col)
     gt_table <- gt_table %>%
-      tab_style(
+      gt::tab_style(
         style = list(cell_fill(color = "red2"), cell_text(color = "white")),
         locations = cells_body(
           columns = all_of(s$value_cols),
@@ -290,25 +290,26 @@ tidy_to_gt <- function(tidy_db, sensibility = 0.05) {
   }
 
   gt_table %>%
-    cols_hide(columns = hide) %>%
-    tab_spanner_delim(delim = "|") %>%
-    fmt_number(
-      columns = vars[str_ends(vars, "\\|Nmod|\\|mean|\\|median|\\|sd|\\|khi2")],
+    gt::cols_hide(columns = hide) %>%
+    gt::tab_spanner_delim(delim = "|") %>%
+    gt::fmt_number(
+      columns = vars[stringr::str_ends(
+        vars, "\\|Nmod|\\|mean|\\|median|\\|sd|\\|khi2")],
       decimals = 2,
       drop_trailing_zeros = TRUE,
       suffixing = TRUE
     ) %>%
-    fmt_percent(
-      columns = vars[str_ends(vars, "\\|missing")],
+    gt::fmt_percent(
+      columns = vars[stringr::str_ends(vars, "\\|missing")],
       decimals = 2,
       drop_trailing_zeros = TRUE
     ) %>%
-    sub_missing(
+    gt::sub_missing(
       missing_text = "-"
     ) %>%
-    text_transform(
+    gt::text_transform(
       locations = cells_body(
-        columns = vars[str_ends(vars, "presence")]
+        columns = vars[stringr::str_ends(vars, "presence")]
       ),
       fn = function(x) {
         ifelse(x == 1,
@@ -317,10 +318,10 @@ tidy_to_gt <- function(tidy_db, sensibility = 0.05) {
         )
       }
     ) %>%
-    tab_style(
+    gt::tab_style(
       style = list(cell_fill(color = "white")),
       locations = cells_body(
-        columns = vars[str_ends(vars, "presence")]
+        columns = vars[stringr::str_ends(vars, "presence")]
       )
     )
 }

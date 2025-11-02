@@ -3,9 +3,10 @@ library(shiny.i18n)
 library(shinydashboard)
 library(shinydashboardPlus)
 library(shinyWidgets)
-library(DT)
 library(shinybusy)
+
 library(plotly)
+library(DT)
 library(gt)
 
 i18n <- Translator$new(translation_csvs_path = "i18n")

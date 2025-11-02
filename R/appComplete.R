@@ -1,25 +1,28 @@
 #' Shiny vizsurvey with already prepared data
 #'
-#' @param link_data_folder link to directory of data
+#' @param link link to directory of data
 #' @param is_double_folder is the directory contains subdirectories of survey
+#' @param data_rds_pattern name of the rds file contains all the data
 #'
 #' @returns shinyapp
 #' @export
 #'
 #' @examples
 #' # We assume that config.txt, and prepa_surveys are already done here.
-#' \dontrun{runVizsurvey_from_folder("data",is_double_folder = T)}
+#' \dontrun{runVizsurvey_from_folder("inst/extdata",is_double_folder = T)}
 runVizsurvey_from_folder <- function(
-    link_data_folder = NULL,
+    link,
+    data_rds_pattern = "global",
     is_double_folder = T
-    ) {
+) {
 
   appDir <- system.file("shiny-examples", "complete", package = "vizsurvey")
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `vizsurvey`.", call. = FALSE)
   }
 
-  shiny::shinyOptions(link_data_folder = link_data_folder)
+  shiny::shinyOptions(link_data_folder = normalizePath(link))
+  shiny::shinyOptions(data_rds_pattern = data_rds_pattern)
   shiny::shinyOptions(is_double_folder = is_double_folder)
   shiny::runApp(appDir, display.mode = "normal")
 
@@ -84,9 +87,10 @@ runVizsurvey_from_r <- function(
     var_itw        = var_itw
   )
 
-  prepa_survey(link_data_folder)
+  prepa_survey(link_data_folder,"global")
 
   shiny::shinyOptions(link_data_folder = link_folder)
+  shiny::shinyOptions(data_rds_pattern = "global")
   shiny::shinyOptions(is_double_folder = F)
   shiny::runApp(appDir, display.mode = "normal")
 
@@ -106,7 +110,7 @@ runVizsurvey_from_r <- function(
 #' @export
 #'
 #' @examples
-#' path <- "inst/shiny-examples/complete/data/ESS/ESS9/ESS9.csv"
+#' path <- "inst/extdata/ESS/ESS9/ESS9.csv"
 #' \dontrun{runVizsurvey_from_file(path,var_itw = "INTNUM1",var_domain="CNTRY")}
 runVizsurvey_from_file <- function(
     path,
@@ -149,9 +153,10 @@ runVizsurvey_from_file <- function(
     var_itw        = var_itw
   )
 
-  prepa_survey(link_data_folder)
+  prepa_survey(link_data_folder, "global")
 
   shiny::shinyOptions(link_data_folder = link_folder)
+  shiny::shinyOptions(data_rds_pattern = "global")
   shiny::shinyOptions(is_double_folder = F)
   shiny::runApp(appDir, display.mode = "normal")
 

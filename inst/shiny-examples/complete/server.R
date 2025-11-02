@@ -1,27 +1,11 @@
 source("functions.R")
 
 link_data_folder <- getShinyOption("link_data_folder", "data")
+data_rds_pattern <- getShinyOption("data_rds_pattern", "global")
 is_double_folder <- getShinyOption("is_double_folder", FALSE)
 
-library(shiny)
-library(shiny.i18n)
-library(shinydashboard)
-library(shinydashboardPlus)
-library(shinyWidgets)
-library(DT)
-library(shinybusy)
-library(gt)
-library(tibble)
-library(openxlsx)
-library(tidyverse)
-library(rlang)
-library(corrplot)
-library(arrow)
-library(plotly)
-
-library(data.table)
-library(fonctionr)
 library(summarytools)
+library(corrplot)
 
 i18n <- Translator$new(translation_csvs_path = "i18n")
 i18n$set_translation_language(i18n$get_key_translation())
@@ -92,68 +76,62 @@ server <- function(input, output, session) {
 
   ##### Load RDS #####
 
-  path_survey <- reactive({
-    file.path(link_data_folder,values_ini$path_survey)
-  })
+  observeEvent(values_ini$path_survey,{
+    path <- file.path(link_data_folder,values_ini$path_survey)
+    name_file <- paste0(data_rds_pattern,".rds")
+    req(file.exists(file.path(path,name_file)))
 
-  df <- reactive({
-    req(path_survey(),file.exists(file.path(path_survey(),"df.rds")))
-    readRDS(file.path(path_survey(),"df.rds"))
-  })
+    global <- readRDS(file.path(path,name_file))
 
-  df_stats <- reactive({
-    req(path_survey(),file.exists(file.path(path_survey(),"df_stats.rds")))
-    readRDS(file.path(path_survey(),"df_stats.rds"))
-  })
+    values_ini$df           <- global[['df']]
+    values_ini$df_stats     <- global[['df_stats']]
+    values_ini$df_stats_itw <- global[['df_stats_itw']]
+    values_ini$config       <- global[['configs']]
 
-  df_stats_itw <- reactive({
-    req(path_survey(),file.exists(file.path(path_survey(),"df_stats_itw.rds")))
-    readRDS(file.path(path_survey(),"df_stats_itw.rds"))
-  })
-
-  list_config <- reactive({
-    req(path_survey(),file.exists(file.path(path_survey(),"list_config.rds")))
-    readRDS(file.path(path_survey(),"list_config.rds"))
+    print(values_ini$df)
+    print(values_ini$df_stats)
+    print(values_ini$df_stats_itw)
+    print(values_ini$config)
   })
 
   ##### Update inputs #####
 
-  observeEvent(df(),{
+  observeEvent(values_ini$df,{
 
     # Data configuration
-    modality <- sort(pull(unique(df()[,list_config()$vt])))
+    modality <- sort(pull(unique(values_ini$df[,values_ini$config$vt])))
     updateRadioGroupButtons(session,"config_domain",size="xs",
-                            label=list_config()$vt,
+                            label=values_ini$config$vt,
                             choices = modality,
                             selected = modality[length(modality)],
                             status = "custom-class")
 
     updateCheckboxGroupButtons(session,"domain_compare",size="xs",
-                               label=list_config()$vt,
+                               label=values_ini$config$vt,
                                choices = modality,
                                selected = modality[length(modality)-1],
                                status = "custom-class")
 
     # Micro-Data
-    domain_data <- unique(c(list_config()$vt,list_config()$id_itw))
+    domain_data <- unique(c(values_ini$config$vt,values_ini$config$id_itw))
 
     updateCheckboxGroupButtons(session,"data_variables",size="xs",
-                               choices = colnames(df()),
+                               choices = colnames(values_ini$df),
                                selected = domain_data,
                                status = "custom-class")
 
-    if (length(list_config()$vg)){
-      modality <- sort(pull(unique(df()[,list_config()$vg])))
+    if (length(values_ini$config$vg)){
+      modality <- sort(pull(unique(values_ini$df[,values_ini$config$vg])))
 
       updateRadioGroupButtons(session,"config_zone",
-                              label=list_config()$vg,
+                              label=values_ini$config$vg,
                               choices = unique(c(i18n$t("All"),modality)),
                               size="xs",
                               selected = c(i18n$t("All"),modality)[1],
                               status = "custom-class")
     }else{
       updateRadioGroupButtons(session,"config_zone",
-                              label=list_config()$vg,
+                              label=values_ini$config$vg,
                               choices = i18n$t("All"),
                               size="xs",
                               status = "custom-class")
@@ -180,14 +158,14 @@ server <- function(input, output, session) {
   ##### df zone and domain #####
 
   df_sub <- reactive({
-    req(df(),list_config()$vt,verif_init())
+    req(values_ini$df,values_ini$config$vt,verif_init())
 
-    df_sub <- df() %>%
-      filter(!!sym(list_config()$vt) %in% input$config_domain)
+    df_sub <- values_ini$df %>%
+      filter(!!sym(values_ini$config$vt) %in% input$config_domain)
 
-    if (length(list_config()$vg) &&
-        input$config_zone %in% pull(df_sub[,list_config()$vg]))
-      df_sub <- df_sub %>% filter(!!sym(list_config()$vg) == input$config_zone)
+    if (length(values_ini$config$vg) &&
+        input$config_zone %in% pull(df_sub[,values_ini$config$vg]))
+      df_sub <- df_sub %>% filter(!!sym(values_ini$config$vg) == input$config_zone)
 
     return(df_sub)
   })
@@ -199,19 +177,19 @@ server <- function(input, output, session) {
 
     vec_domain <- c(input$config_domain,input$domain_compare)
 
-    df_stats <- df_stats()
+    df_stats <- values_ini$df_stats
     if (is.null(df_stats)) return(NULL)
     df_stats %>%
-      filter(!!sym(list_config()$vt) %in% vec_domain,
+      filter(!!sym(values_ini$config$vt) %in% vec_domain,
              group == input$config_zone)
   })
 
   ##### df_stats_itw zone and domain #####
   df_stats_itw_sub <- reactive({
-    req(df_stats_itw(),verif_init())
+    req(values_ini$df_stats_itw,verif_init())
 
-    df_stats_itw() %>%
-      filter(!!sym(list_config()$vt) == input$config_domain,
+    values_ini$df_stats_itw %>%
+      filter(!!sym(values_ini$config$vt) == input$config_domain,
              group == input$config_zone)
     # collect()
   })
@@ -231,7 +209,7 @@ server <- function(input, output, session) {
     req(df_stats_sub())
 
     db_longer <- df_stats_sub() %>%
-      select(variable,!!sym(list_config()$vt),Nrow,Nval,type,
+      select(variable,!!sym(values_ini$config$vt),Nrow,Nval,type,
              stat,value,standard,value_ref) %>%
       filter(!stat %in% c("chi2")) %>%
       group_by(variable,stat) %>%
@@ -243,19 +221,17 @@ server <- function(input, output, session) {
       select(-standard,-Nrow,-Nval,-value_ref) %>%
       # group_by(variable,stat) %>%
       group_by(variable,stat) %>%
-      # arrange(!!sym(list_config()$vt)) %>%
+      # arrange(!!sym(values_ini$config$vt)) %>%
       # mutate(sd = (value-lag(value))/lag(value),
       mutate(sd = sd(value,na.rm=T)/mean(value,na.rm=T),
-             sd = replace_na(sd,0)) %>%
+             sd = tidyr::replace_na(sd,0)) %>%
       ungroup() %>%
       arrange(variable,stat)
 
-    print(db_longer)
-
     db_longer %>%
-      arrange(!!sym(list_config()$vt),stat) %>%
+      arrange(!!sym(values_ini$config$vt),stat) %>%
       pivot_wider(
-        names_from = c(!!sym(list_config()$vt),stat),
+        names_from = c(!!sym(values_ini$config$vt),stat),
         names_sep = "|",
         values_from = c(value,sd)
       )
@@ -308,13 +284,14 @@ server <- function(input, output, session) {
 
     vec_domain <- c(input$config_domain,input$domain_compare)
 
-    df_zone_compa <- df() %>%
-      filter(!!sym(list_config()$vt) %in% vec_domain)
+    df_zone_compa <- values_ini$df %>%
+      filter(!!sym(values_ini$config$vt) %in% vec_domain)
 
-    if (length(list_config()$vg) &&
-        input$config_zone %in% pull(df_sub()[,list_config()$vg]))
+    if (length(values_ini$config$vg) &&
+        input$config_zone %in% pull(df_sub()[,values_ini$config$vg])){
       df_zone_compa <- df_zone_compa %>%
-      filter(!!sym(list_config()$vg) == input$config_zone)
+        filter(!!sym(values_ini$config$vg) == input$config_zone)
+    }
 
     lapply(vars_outliers(), function(i) {
       local({
@@ -322,35 +299,46 @@ server <- function(input, output, session) {
         plot_domain_name <- paste(my_i, "_plot_domain", sep = "")
         plot_evol_name <- paste(my_i, "_plot_evol", sep = "")
 
-        if (my_i %in% list_config()$vd){
+        if (my_i %in% values_ini$config$vd){
           output[[plot_domain_name]] <- renderPlot({
-            plot <- shiny_distrib_discrete(
-              db = df_sub(), quali_var = my_i, facet = NULL,
-              filter_exp = TRUE, group = NULL)
-            plot$graph
+
+            syn <- df_sub() %>%
+              count(!!sym(my_i)) %>%
+              mutate(prop = n/sum(n),
+                     !!sym(my_i):=as.character(!!sym(my_i)))
+
+            ggplot(syn)+
+              aes(x=!!sym(my_i),fill=!!sym(my_i),y=prop)+
+              geom_bar(stat="identity") +
+              scale_y_continuous(labels = scales::percent) +
+              coord_flip() +
+              theme_minimal(base_size = 15)
           })
 
           output[[plot_evol_name]] <- renderPlot({
-            plot <- shiny_distrib_discrete(
-              db = df_zone_compa, quali_var = list_config()$vt,
-              facet = NULL, filter_exp = TRUE, group = my_i)
-            plot$graph
+            ggplot(df_zone_compa)+
+              aes(x=!!sym(values_ini$config$vt),fill=!!sym(my_i))+
+              geom_bar(position="fill") +
+              scale_y_continuous(labels = scales::percent) +
+              coord_flip() +
+              theme_minimal(base_size = 15)
           })
         }
 
-        if (my_i %in% list_config()$vc){
+        if (my_i %in% values_ini$config$vc){
           output[[plot_domain_name]] <- renderPlot({
-            plot <- shiny_distrib_continuous(
-              db=df_sub(),quanti_exp=my_i,facet=NULL,
-              filter_exp=TRUE,group=NULL,type="median")
-            plot$graph
+            ggplot(df_sub())+
+              aes(x=!!sym(my_i))+
+              geom_histogram(color="purple3",fill="#ee82ee") +
+              theme_minimal(base_size = 15)
           })
 
           output[[plot_evol_name]] <- renderPlot({
-            plot <- shiny_distrib_continuous(
-              db=df_zone_compa,quanti_exp=my_i,facet=NULL,
-              filter_exp=TRUE,group=list_config()$vt,type="median")
-            plot$graph
+            ggplot(df_zone_compa)+
+              aes(x=!!sym(my_i))+
+              geom_histogram(color="purple3",fill="#ee82ee") +
+              theme_minimal(base_size = 15)+
+              facet_wrap(vars(!!sym(values_ini$config$vt)),ncol=1)
           })
         }
       })
@@ -371,7 +359,7 @@ server <- function(input, output, session) {
 
     df_stats_itw_sub() %>%
       filter(stat != "presence",!type == "txt") %>%
-      group_by(!!sym(list_config()$id_itw),stat) %>%
+      group_by(!!sym(values_ini$config$id_itw),stat) %>%
       filter(abs(standard)>input$itw_threshold,
              Nrow > input$itw_Nrow,
              Nval > input$itw_Nval) %>%
@@ -391,23 +379,23 @@ server <- function(input, output, session) {
              Nrow >= input$itw_Nrow,
              Nval >= input$itw_Nval,
              standard >= input$itw_threshold) %>%
-      group_by(!!sym(list_config()$id_itw)) %>%
+      group_by(!!sym(values_ini$config$id_itw)) %>%
       count(name="N_outliers")
 
     df_prepa <- df_stats_itw_sub() %>%
       filter(stat == "chi2",Nrow > input$itw_Nrow) %>%
-      select(!!sym(list_config()$id_itw),!!sym(list_config()$vt),
+      select(!!sym(values_ini$config$id_itw),!!sym(values_ini$config$vt),
              group,variable,standard,Nrow) %>%
       pivot_wider(
-        id_cols = c(!!sym(list_config()$id_itw),
-                    !!sym(list_config()$vt),
+        id_cols = c(!!sym(values_ini$config$id_itw),
+                    !!sym(values_ini$config$vt),
                     group,Nrow),
         names_from = variable,
         values_from = standard
       )
 
     out <- df_prepa %>%
-      group_by(!!sym(list_config()$vt),group) %>%
+      group_by(!!sym(values_ini$config$vt),group) %>%
       mutate(score = score_isoforest(across(where(is.numeric))),
              score = round(score*100,1)) %>%
       ungroup() %>%
@@ -420,7 +408,7 @@ server <- function(input, output, session) {
   output$itw_ranking <- renderDT({
 
     df <- prepa_itw_ranking() %>%
-      select(!!sym(list_config()$id_itw),Nrow,N_outliers,score)
+      select(!!sym(values_ini$config$id_itw),Nrow,N_outliers,score)
 
     dt <- datatable(df, filter='top', selection = 'single',escape   = FALSE,
                     options = list(pageLength = 15,dom = 'tp'),
@@ -431,11 +419,11 @@ server <- function(input, output, session) {
   prepa_itw_listing <- reactive({
     req(input$itw_ranking_rows_selected)
     s <- input$itw_ranking_rows_selected
-    id_itw <- pull(prepa_itw_ranking()[s,list_config()$id_itw])
+    id_itw <- pull(prepa_itw_ranking()[s,values_ini$config$id_itw])
     if(length(s)){
       out <- prepa_itw_ranking() %>%
-        select(-Nrow,-N_outliers,-score,-!!sym(list_config()$vt),-group) %>%
-        filter(!!sym(list_config()$id_itw) == id_itw) %>%
+        select(-Nrow,-N_outliers,-score,-!!sym(values_ini$config$vt),-group) %>%
+        filter(!!sym(values_ini$config$id_itw) == id_itw) %>%
         pivot_longer(cols = where(is.numeric),names_to = "variable",
                      values_to = "chi2") %>%
         mutate(chi2 = round(chi2,1)) %>%
@@ -481,16 +469,16 @@ server <- function(input, output, session) {
 
     df_prepa <- df_stats_itw_sub() %>%
       filter(stat == "chi2",Nrow > input$itw_Nrow) %>%
-      select(!!sym(list_config()$id_itw),!!sym(list_config()$vt),
+      select(!!sym(values_ini$config$id_itw),!!sym(values_ini$config$vt),
              group,variable,standard) %>%
       pivot_wider(
-        id_cols = c(!!sym(list_config()$vt),variable,group),
-        names_from = !!sym(list_config()$id_itw),
+        id_cols = c(!!sym(values_ini$config$vt),variable,group),
+        names_from = !!sym(values_ini$config$id_itw),
         values_from = standard
       )
 
     out <- df_prepa %>%
-      group_by(!!sym(list_config()$vt),group) %>%
+      group_by(!!sym(values_ini$config$vt),group) %>%
       mutate(score = score_isoforest(across(where(is.numeric))),
              score = round(score*100,1)) %>%
       ungroup() %>%
@@ -518,9 +506,9 @@ server <- function(input, output, session) {
     if(length(s)){
       out <- prepa_var_ranking() %>%
         filter(variable == id_variable) %>%
-        select(-N_outliers,-score,-!!sym(list_config()$vt),-group) %>%
+        select(-N_outliers,-score,-!!sym(values_ini$config$vt),-group) %>%
         pivot_longer(cols = where(is.numeric),
-                     names_to = list_config()$id_itw,
+                     names_to = values_ini$config$id_itw,
                      values_to = "chi2") %>%
         mutate(chi2 = round(chi2,1)) %>%
         arrange(desc(abs(chi2)))
@@ -567,7 +555,7 @@ server <- function(input, output, session) {
 
     if (input$itw_choice_heatmap %in% c("enq","both"))
       df_stats <- df_stats %>%
-      group_by(!!sym(list_config()$id_itw)) %>%
+      group_by(!!sym(values_ini$config$id_itw)) %>%
       filter(max(abs(standard),na.rm=TRUE)>input$itw_threshold) %>%
       ungroup()
 
@@ -578,14 +566,14 @@ server <- function(input, output, session) {
       ungroup()
 
     df_stats <- df_stats %>%
-      mutate(!!sym(list_config()$id_itw) := factor(
-        !!sym(list_config()$id_itw),levels = sort(
-          unique(!!sym(list_config()$id_itw)))))
+      mutate(!!sym(values_ini$config$id_itw) := factor(
+        !!sym(values_ini$config$id_itw),levels = sort(
+          unique(!!sym(values_ini$config$id_itw)))))
 
     if (nrow(df_stats) == 0) return(NULL)
 
     values_itw$heatmap_itw <- df_stats %>%
-      pull(!!sym(list_config()$id_itw)) %>%
+      pull(!!sym(values_ini$config$id_itw)) %>%
       unique() %>% as.character() %>% sort()
 
     values_itw$heatmap_var <- sort(unique(df_stats$variable))
@@ -625,22 +613,22 @@ server <- function(input, output, session) {
 
   output$itw_distrib_spe_text <- renderText({
     req(values_itw$id_itw)
-    paste(i18n$t("Distribution for"), list_config()$id_itw, "=",values_itw$id_itw)
+    paste(i18n$t("Distribution for"), values_ini$config$id_itw, "=",values_itw$id_itw)
   })
 
   output$itw_distrib_glo_text <- renderText({
     req(values_itw$id_itw)
-    paste(i18n$t("Distribution for"), list_config()$id_itw, "!=",values_itw$id_itw)
+    paste(i18n$t("Distribution for"), values_ini$config$id_itw, "!=",values_itw$id_itw)
   })
 
   output$itw_corr_spe_text <- renderText({
     req(values_itw$id_itw)
-    paste(i18n$t("Correlations for"), list_config()$id_itw, "=",values_itw$id_itw)
+    paste(i18n$t("Correlations for"), values_ini$config$id_itw, "=",values_itw$id_itw)
   })
 
   output$itw_corr_glo_text <- renderText({
     req(values_itw$id_itw)
-    paste(i18n$t("Correlations for"), list_config()$id_itw, "!=",values_itw$id_itw)
+    paste(i18n$t("Correlations for"), values_ini$config$id_itw, "!=",values_itw$id_itw)
   })
 
   ###### Reactive Distributions #####
@@ -652,23 +640,30 @@ server <- function(input, output, session) {
       need(values_itw$variable, i18n$t('Choose a variable.'))
     )
 
-    filtre_itw <- paste0(list_config()$id_itw, " == '",values_itw$id_itw,"'")
+    syn_spe <- df_sub_details() %>%
+      filter(!!sym(values_ini$config$id_itw) == values_itw$id_itw)
 
-    # Analysis of the number of remaining modalities
-    sub_var <- df_sub_details() %>%
-      filter(!!sym(list_config()$id_itw) == values_itw$id_itw) %>%
-      pull(!!sym(values_itw$variable))
-    fl_discrete <- length(sub_var) < 15 | length(unique(sub_var)) < 15
+    if (values_itw$variable %in% values_ini$config$vc){
+      p <- ggplot(syn_spe)+
+        aes(x=!!sym(values_itw$variable))+
+        geom_histogram(color="purple3",fill="#ee82ee") +
+        theme_minimal()
 
-    if (!fl_discrete & values_itw$variable %in% list_config()$vc){
-      shiny_distrib_continuous(
-        db=df_sub_details(),quanti_exp=values_itw$variable,
-        filter_exp=filtre_itw,type="mean",pal = c("purple3","#ee82ee"))
-    } else if (fl_discrete | values_itw$variable %in% list_config()$vd){
-      shiny_distrib_discrete(
-        db=df_sub_details(),quali_var=values_itw$variable,
-        filter_exp=filtre_itw,pal="yellow3")
+    } else if (values_itw$variable %in% values_ini$config$vd){
+
+      syn_spe <- syn_spe %>%
+        count(!!sym(values_itw$variable)) %>%
+        mutate(prop = n/sum(n),
+               !!sym(values_itw$variable):=as.character(!!sym(values_itw$variable)))
+
+      p <- ggplot(syn_spe)+
+        aes(x=!!sym(values_itw$variable),y=prop)+
+        geom_bar(fill="yellow3",stat="identity") +
+        scale_y_continuous(labels = scales::percent) +
+        coord_flip()+
+        theme_minimal()
     }
+    p + theme_minimal(base_size = 15)
   })
 
   output$itw_distrib_glo <- renderPlot({
@@ -678,23 +673,27 @@ server <- function(input, output, session) {
       need(values_itw$variable, i18n$t('Choose a variable.'))
     )
 
-    filtre_ne_itw <- paste0(list_config()$id_itw," != '",values_itw$id_itw,"'")
+    syn_glo <- df_sub_details() %>%
+      filter(!!sym(values_ini$config$id_itw) != values_itw$id_itw)
 
-    # Analysis of the number of remaining modalities
-    sub_var <- df_sub_details() %>%
-      filter(!!sym(list_config()$id_itw) != values_itw$id_itw) %>%
-      pull(!!sym(values_itw$variable))
-    fl_discrete <- length(sub_var) < 15 | length(unique(sub_var)) < 15
+    if (values_itw$variable %in% values_ini$config$vc){
+      p <- ggplot(syn_glo)+
+        aes(x=!!sym(values_itw$variable))+
+        geom_histogram(color="#00708C",fill="mediumturquoise")
+    } else if (values_itw$variable %in% values_ini$config$vd){
+      syn_glo <- syn_glo %>%
+        dplyr::count(!!sym(values_itw$variable)) %>%
+        mutate(prop = n/sum(n),
+               !!sym(values_itw$variable):=as.character(!!sym(values_itw$variable)))
 
-    if (!fl_discrete & values_itw$variable %in% list_config()$vc){
-      shiny_distrib_continuous(
-        db=df_sub_details(),quanti_exp=values_itw$variable,
-        filter_exp=filtre_ne_itw,type="mean")
-    } else if (fl_discrete | values_itw$variable %in% list_config()$vd){
-      shiny_distrib_discrete(
-        db=df_sub_details(),quali_var=values_itw$variable,
-        filter_exp=filtre_ne_itw)
+      p <- syn_glo %>%
+        ggplot()+
+        aes(x=!!sym(values_itw$variable),y=prop)+
+        geom_bar(fill="orange3",stat="identity") +
+        scale_y_continuous(labels = scales::percent) +
+        coord_flip()
     }
+    p + theme_minimal(base_size = 15)
   })
 
   ###### Reactive Summary ######
@@ -702,51 +701,51 @@ server <- function(input, output, session) {
   output$itw_summary_spe <- renderPrint({
     req(values_itw$id_itw,values_itw$variable)
     data_itw <- df_sub_details() %>%
-      filter(!!sym(list_config()$id_itw) == values_itw$id_itw)
+      filter(!!sym(values_ini$config$id_itw) == values_itw$id_itw)
     dfSummary(data_itw[,values_itw$variable],graph.col=FALSE)
   })
 
   output$itw_summary_glo <- renderPrint({
     req(values_itw$id_itw,values_itw$variable)
     data_itw <- df_sub_details() %>%
-      filter(!!sym(list_config()$id_itw) != values_itw$id_itw)
+      filter(!!sym(values_ini$config$id_itw) != values_itw$id_itw)
     dfSummary(data_itw[,values_itw$variable],graph.col=FALSE)
   })
 
   ###### Reactive Correlations ######
 
   prepa_corr <- reactive({
-    req(list_config()$id_itw,values_itw$id_itw,values_itw$variable)
+    req(values_ini$config$id_itw,values_itw$id_itw,values_itw$variable)
 
-    id <- list_config()$id_itw
+    id <- values_ini$config$id_itw
     df <- df_sub_details()
     df <- df %>%
       select(-all_of(id)) %>%
       mutate(across(where(is.character), as.factor),
-             across(where(is.Date), as.factor),
+             across(where(lubridate::is.Date), as.factor),
              across(where(is.factor), ~ as.numeric(.x))) %>%
       select(where(is.numeric)) %>%
-      bind_cols(df[all_of(id)])
+      dplyr::bind_cols(df[all_of(id)])
 
     df <- df %>% select(where(~ sum(!is.na(.x)) >= input$itw_Nrow))
     df <- df %>% select(where(~ sum(!is.na(.x)) >= input$itw_Nval))
 
     vars_corr <- df %>%
-      select(-!!sym(list_config()$id_itw)) %>%
+      select(-!!sym(values_ini$config$id_itw)) %>%
       cor(y = .[[values_itw$variable]],
           use = "pairwise.complete.obs", method= "pearson") %>%
       as.table %>% as.data.frame %>%
       mutate(Freq_abs = abs(Freq)) %>%
-      slice_max(Freq_abs,n=10,with_ties = FALSE) %>%
+      dplyr::slice_max(Freq_abs,n=10,with_ties = FALSE) %>%
       pull(Var1) %>% as.character()
 
-    df %>% select(!!sym(list_config()$id_itw),any_of(vars_corr))
+    df %>% select(!!sym(values_ini$config$id_itw),any_of(vars_corr))
   })
 
   output$itw_corr_spe <- renderPlot({
     M <- prepa_corr() %>%
-      filter(!!sym(list_config()$id_itw) == values_itw$id_itw) %>%
-      select(-!!sym(list_config()$id_itw)) %>%
+      filter(!!sym(values_ini$config$id_itw) == values_itw$id_itw) %>%
+      select(-!!sym(values_ini$config$id_itw)) %>%
       cor(use = "pairwise.complete.obs",method="spearman")
 
     output$itw_main_corr_spe <- renderPlot(
@@ -760,8 +759,8 @@ server <- function(input, output, session) {
 
   output$itw_corr_glo <- renderPlot({
     M <- prepa_corr() %>%
-      filter(!!sym(list_config()$id_itw) != values_itw$id_itw) %>%
-      select(-!!sym(list_config()$id_itw)) %>%
+      filter(!!sym(values_ini$config$id_itw) != values_itw$id_itw) %>%
+      select(-!!sym(values_ini$config$id_itw)) %>%
       cor(use = "pairwise.complete.obs",method="spearman")
 
     output$itw_main_corr_glo <- renderPlot(
@@ -777,7 +776,7 @@ server <- function(input, output, session) {
   observeEvent(input$itw_all_distrib,{
 
     data_glo <- df_sub_details() %>%
-      select(!!sym(list_config()$id_itw),!!sym(values_itw$variable))
+      select(!!sym(values_ini$config$id_itw),!!sym(values_itw$variable))
 
     sub_var <- data_glo %>% pull(!!sym(values_itw$variable))
     fl_discrete <- length(sub_var) < 15 | length(unique(sub_var)) < 15
@@ -798,12 +797,12 @@ server <- function(input, output, session) {
       ))
 
       values_dis$syn_distrib <- data_glo %>%
-        group_by(!!sym(list_config()$id_itw),!!sym(values_itw$variable)) %>%
+        group_by(!!sym(values_ini$config$id_itw),!!sym(values_itw$variable)) %>%
         count() %>%
-        group_by(!!sym(list_config()$id_itw)) %>%
+        group_by(!!sym(values_ini$config$id_itw)) %>%
         mutate(N = sum(n),prop = n/N) %>%
         ungroup() %>%
-        select(!!sym(list_config()$id_itw),!!sym(values_itw$variable),N,prop) %>%
+        select(!!sym(values_ini$config$id_itw),!!sym(values_itw$variable),N,prop) %>%
         arrange(!!sym(values_itw$variable)) %>%
         pivot_wider(names_from=!!sym(values_itw$variable),values_from = prop) %>%
         arrange(desc(N))
@@ -821,7 +820,7 @@ server <- function(input, output, session) {
       gt() %>%
       fmt_percent(columns = -c(1,2),decimals = 1,drop_trailing_zeros = TRUE) %>%
       data_color(
-        rows = !!sym(list_config()$id_itw) == values_itw$id_itw,
+        rows = !!sym(values_ini$config$id_itw) == values_itw$id_itw,
         direction = "row",palette = c("red")
       )
   })
@@ -829,12 +828,12 @@ server <- function(input, output, session) {
   observeEvent(input$config_modalities_itw,{
 
     syn_distrib <- df_sub() %>%
-      group_by(!!sym(list_config()$id_itw),!!sym(values_itw$variable)) %>%
-      count() %>%
-      group_by(!!sym(list_config()$id_itw)) %>%
+      group_by(!!sym(values_ini$config$id_itw),!!sym(values_itw$variable)) %>%
+      dplyr::count() %>%
+      group_by(!!sym(values_ini$config$id_itw)) %>%
       mutate(N = sum(n),prop = n/N) %>%
       ungroup() %>%
-      complete(!!sym(list_config()$id_itw),!!sym(values_itw$variable),
+      tidyr::complete(!!sym(values_ini$config$id_itw),!!sym(values_itw$variable),
                fill=list(n=0,prop=0))
 
     if (input$config_modalities_itw == "NA"){
@@ -847,15 +846,14 @@ server <- function(input, output, session) {
 
     try({
       itw_value <- syn_distrib %>%
-        filter(!!sym(list_config()$id_itw) == values_itw$id_itw) %>%
+        filter(!!sym(values_ini$config$id_itw) == values_itw$id_itw) %>%
         pull(prop)
 
       values_dis$plot_distrib <-  syn_distrib %>%
         ggplot() +
         aes(x = prop) +
         geom_density(fill = "sienna2",alpha = 0.65) +
-        theme_minimal() +
-        theme_fonctionr() +
+        theme_minimal(base_size = 15) +
         scale_x_continuous(labels = scales::percent_format(accuracy = 1),
                            limits = c(0,1)) +
         labs(x = paste(i18n$t("Proportion of"),input$config_modalities_itw),
@@ -873,8 +871,8 @@ server <- function(input, output, session) {
 
   output$data_table <- renderDT({
 
-    # out <- df()[, colnames(df()) %in% input$data_variables]
-    out <- df()[, intersect(input$data_variables, names(df())), drop = FALSE]
+    # out <- values_ini$df[, colnames(values_ini$df) %in% input$data_variables]
+    out <- values_ini$df[, intersect(input$data_variables, names(values_ini$df)), drop = FALSE]
 
     # na_as_empty <- function(vec){
     #   ifelse(is.na(vec),"NA",vec)

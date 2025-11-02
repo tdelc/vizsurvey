@@ -1,9 +1,0 @@
-name_survey = ESS10
-
-vars_discretes =
-vars_continous =
-
-var_domain = cntry
-var_group = 
-
-var_itw = intnum1
