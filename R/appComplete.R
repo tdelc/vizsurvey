@@ -43,6 +43,7 @@ runVizsurvey_from_folder <- function(
 #'
 #' @examples
 #' library(laeken)
+#' library(tidyverse)
 #' data(eusilc)
 #' set.seed(123)
 #' eusilc <- eusilc %>%
