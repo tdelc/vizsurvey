@@ -17,3 +17,202 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(vizsurvey)
 ```
+
+
+## Préparer vos données
+
+### 1. Structurer les fichiers d'entrée
+
+Les données sont stockées avec cette arborescence :
+
+```         
+extdata/
+  ├── ESS/
+  │   ├── ESS9/
+  │   │   └── global.rds
+  │   └── ESS10/
+  │       └── global.rds
+  └── SILC/
+      ├── HFILE/
+      │   ├── global.rds
+      │   ├── config.txt
+      │   ├── BE_2012h_EUSILC.csv
+      │   ├── BE_2013h_EUSILC.csv
+      │   ├── RO_2012h_EUSILC.csv
+      │   ├── RO_2013h_EUSILC.csv
+      │   └── BE_2012h_EUSILC.csv
+      └── PFILE/
+          ├── global.rds
+          ├── config.txt
+          ├── BE_2012p_EUSILC.csv
+          ├── BE_2013p_EUSILC.csv
+          ├── RO_2012p_EUSILC.csv
+          ├── RO_2013p_EUSILC.csv
+          └── BE_2012p_EUSILC.csv
+```
+
+L'outil `prepa_survey()` attend une arborescence de type :
+
+
+### 2. Créer une configuration à partir d'un gabarit
+
+Vous pouvez générer un gabarit initial avec `create_config()` :
+
+```{r eval=FALSE}
+library(vizsurvey)
+
+template <- create_config(
+  interviewer = "id_enqueteur",
+  id_itw      = "id_interview",
+  vt          = "type_ménage",
+  vg          = "region",
+  weight      = "poids"
+)
+
+# Écrire le gabarit dans un fichier YAML
+config_path <- tempfile(fileext = ".yml")
+writeLines(template, config_path)
+cat(readLines(config_path), sep = "\n")
+```
+
+Adaptez ensuite les sections `variables` pour décrire les indicateurs que vous souhaitez analyser (numériques, catégoriels ou binaires).
+
+
+### 3. Lancer la préparation
+
+```{r eval=FALSE}
+library(vizsurvey)
+
+input_dir  <- "mon-projet"
+output_dir <- file.path(tempdir(), "prepa")
+
+prepa_survey(
+  input_dir  = input_dir,
+  output_dir = output_dir,
+  config     = "configs/config_enquête1.yml",
+  survey     = "data/enquête1.csv"
+)
+```
+
+
+## Traitements par lot
+
+Si vous avez plusieurs enquêtes à traiter dans un répertoire, `prepa_all_surveys()` automatisera la boucle :
+
+```{r eval=FALSE}
+prepa_all_surveys(
+  input_dir  = "mon-projet",
+  output_dir = output_dir,
+  pattern    = "*.csv"
+)
+```
+
+Chaque jeu de données sera préparé avec le fichier YAML du même nom (à l'extension près). Surveillez la console pour connaître l'avancement et les éventuels problèmes rencontrés sur un fichier spécifique.
+
+## Exemple reproductible complet
+
+Le bloc ci-dessous illustre un flux complet à partir d'un jeu de données synthétique :
+
+```{r eval=FALSE}
+library(vizsurvey)
+library(readr)
+library(dplyr)
+library(tidyr)
+
+# 1. Générer un exemple fictif
+tmp_dir <- tempdir()
+set.seed(123)
+
+df <- tibble::tibble(
+  id_interview = 1:200,
+  id_enqueteur = sample(sprintf("E%02d", 1:12), 200, replace = TRUE),
+  type_ménage  = sample(c("Solo", "Couple", "Famille"), 200, replace = TRUE),
+  region       = sample(c("Nord", "Sud", "Est", "Ouest"), 200, replace = TRUE),
+  poids        = runif(200, 0.5, 1.5),
+  satisfaction = rnorm(200, mean = 6, sd = 1.2),
+  mode         = sample(c("Téléphone", "Face-à-face", "Web"), 200, replace = TRUE)
+)
+
+# 2. Sauvegarder les fichiers d'entrée
+input_dir <- file.path(tmp_dir, "demo")
+dir.create(file.path(input_dir, "data"), recursive = TRUE)
+dir.create(file.path(input_dir, "configs"), recursive = TRUE)
+
+readr::write_csv(df, file.path(input_dir, "data", "demo.csv"))
+
+config_yaml <- "id_itw: id_interview\ninterviewer: id_enqueteur\nvt: type_ménage\nvg: region\nweight: poids\nvariables:\n  - name: satisfaction\n    type: numeric\n    label: Score de satisfaction\n  - name: mode\n    type: categorical\n    label: Mode de collecte\n"
+
+writeLines(config_yaml, file.path(input_dir, "configs", "demo.yml"))
+
+# 3. Préparer les données
+output_dir <- file.path(tmp_dir, "demo_prepa")
+prepa_survey(
+  input_dir  = input_dir,
+  output_dir = output_dir,
+  config     = "configs/demo.yml",
+  survey     = "data/demo.csv"
+)
+
+# 4. Lancer l'application (ouvre un onglet navigateur)
+runVizsurvey_from_folder(output_dir)
+```
+
+Cet exemple crée un environnement isolé dans le dossier temporaire de R, traite les données synthétiques et lance l'application. Adaptez les noms de variables aux vôtres pour reproduire le processus sur vos enquêtes réelles.
+
+
+
+# Limites et responsabilités
+
+-   **vizsurvey** **n'infère** rien : il **organise** l'exploration.
+
+-   Les **interprétations** doivent s'appuyer sur le **contexte** (terrain, consignes, scripts, logs).
+
+-   Les **données sensibles** (enquêteur·rices, ménages) doivent être traitées conformément aux règles de **confidentialité**.
+
+
+## Allers-retours analytiques
+
+### `prepa_stats()` : extraire les agrégats
+
+`prepa_stats()` vous renvoie un data.frame compilant les statistiques calculées pendant la préparation. Vous pouvez l'utiliser pour alimenter des rapports ou construire vos propres visualisations.
+
+```{r eval=FALSE}
+stats <- prepa_stats(output_dir)
+head(stats)
+```
+
+### `heat_map_group()` : personnaliser la visualisation
+
+Pour générer une heatmap hors Shiny :
+
+```{r eval=FALSE}
+library(dplyr)
+
+data_group <- stats %>%
+  dplyr::filter(variable == "satisfaction")
+
+heat_map_group(
+  data_group,
+  group_var   = "vg",
+  interviewer = "interviewer",
+  value       = "mean",
+  show_legend = TRUE
+)
+```
+
+Vous pouvez ajuster la palette via l'argument `palette` et contrôler les titres à l'aide de `title` et `subtitle`.
+
+### `score_isoforest()` : détecter les profils atypiques
+
+```{r eval=FALSE}
+library(dplyr)
+
+donnees_num <- df %>% dplyr::select(where(is.numeric))
+iso_scores  <- score_isoforest(donnees_num)
+
+head(iso_scores)
+```
+
+Avant de lancer cette fonction, assurez-vous que les colonnes sélectionnées sont numériques, sans valeurs manquantes excessives. Standardisez ou filtrez les variables constantes pour éviter des avertissements.
+
+

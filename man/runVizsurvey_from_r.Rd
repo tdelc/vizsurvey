@@ -6,7 +6,7 @@
 \usage{
 runVizsurvey_from_r(
   df,
-  var_itw,
+  var_itw = NULL,
   vars_discretes = NULL,
   vars_continous = NULL,
   var_domain = NULL,

@@ -87,11 +87,6 @@ server <- function(input, output, session) {
     values_ini$df_stats     <- global[['df_stats']]
     values_ini$df_stats_itw <- global[['df_stats_itw']]
     values_ini$config       <- global[['configs']]
-
-    print(values_ini$df)
-    print(values_ini$df_stats)
-    print(values_ini$df_stats_itw)
-    print(values_ini$config)
   })
 
   ##### Update inputs #####
@@ -329,14 +324,14 @@ server <- function(input, output, session) {
           output[[plot_domain_name]] <- renderPlot({
             ggplot(df_sub())+
               aes(x=!!sym(my_i))+
-              geom_histogram(color="purple3",fill="#ee82ee") +
+              geom_histogram(color="grey",fill="black") +
               theme_minimal(base_size = 15)
           })
 
           output[[plot_evol_name]] <- renderPlot({
             ggplot(df_zone_compa)+
               aes(x=!!sym(my_i))+
-              geom_histogram(color="purple3",fill="#ee82ee") +
+              geom_histogram(color="grey",fill="black") +
               theme_minimal(base_size = 15)+
               facet_wrap(vars(!!sym(values_ini$config$vt)),ncol=1)
           })
@@ -375,7 +370,7 @@ server <- function(input, output, session) {
     req(df_stats_itw_sub())
 
     df_count <- df_stats_itw_sub() %>%
-      filter(stat == "chi2",
+      filter(stat %in% c("chi2","median"),
              Nrow >= input$itw_Nrow,
              Nval >= input$itw_Nval,
              standard >= input$itw_threshold) %>%
@@ -383,7 +378,7 @@ server <- function(input, output, session) {
       count(name="N_outliers")
 
     df_prepa <- df_stats_itw_sub() %>%
-      filter(stat == "chi2",Nrow > input$itw_Nrow) %>%
+      filter(stat %in% c("chi2","median"),Nrow > input$itw_Nrow) %>%
       select(!!sym(values_ini$config$id_itw),!!sym(values_ini$config$vt),
              group,variable,standard,Nrow) %>%
       pivot_wider(
@@ -425,9 +420,9 @@ server <- function(input, output, session) {
         select(-Nrow,-N_outliers,-score,-!!sym(values_ini$config$vt),-group) %>%
         filter(!!sym(values_ini$config$id_itw) == id_itw) %>%
         pivot_longer(cols = where(is.numeric),names_to = "variable",
-                     values_to = "chi2") %>%
-        mutate(chi2 = round(chi2,1)) %>%
-        arrange(desc(abs(chi2)))
+                     values_to = "Difference") %>%
+        mutate(Difference = round(Difference,1)) %>%
+        arrange(desc(abs(Difference)))
     }else{
       out <- NULL
     }
@@ -460,7 +455,7 @@ server <- function(input, output, session) {
     req(df_stats_itw_sub())
 
     df_count <- df_stats_itw_sub() %>%
-      filter(stat == "chi2",
+      filter(stat %in% c("chi2","median"),
              Nrow >= input$itw_Nrow,
              Nval >= input$itw_Nval,
              standard >= input$itw_threshold) %>%
@@ -468,7 +463,7 @@ server <- function(input, output, session) {
       count(name="N_outliers")
 
     df_prepa <- df_stats_itw_sub() %>%
-      filter(stat == "chi2",Nrow > input$itw_Nrow) %>%
+      filter(stat %in% c("chi2","median"),Nrow > input$itw_Nrow) %>%
       select(!!sym(values_ini$config$id_itw),!!sym(values_ini$config$vt),
              group,variable,standard) %>%
       pivot_wider(
@@ -509,9 +504,9 @@ server <- function(input, output, session) {
         select(-N_outliers,-score,-!!sym(values_ini$config$vt),-group) %>%
         pivot_longer(cols = where(is.numeric),
                      names_to = values_ini$config$id_itw,
-                     values_to = "chi2") %>%
-        mutate(chi2 = round(chi2,1)) %>%
-        arrange(desc(abs(chi2)))
+                     values_to = "Difference") %>%
+        mutate(Difference = round(Difference,1)) %>%
+        arrange(desc(abs(Difference)))
     }else{
       out <- NULL
     }
