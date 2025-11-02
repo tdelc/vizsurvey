@@ -1,6 +1,9 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://tdelc.github.io/vizsurvey/404.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/LICENSE.html</loc></url>
+<url><loc>https://tdelc.github.io/vizsurvey/articles/data-preparation.html</loc></url>
+<url><loc>https://tdelc.github.io/vizsurvey/articles/index.html</loc></url>
+<url><loc>https://tdelc.github.io/vizsurvey/articles/vizsurvey.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/authors.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/index.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/classify_variables.html</loc></url>
