@@ -67,7 +67,216 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tdelc/vizsurvey" class="external-link">vizsurvey</a></span><span class="op">)</span></span></code></pre></div>
-  </main>
+<div class="section level3">
+<h3 id="préparer-vos-données">Préparer vos données<a class="anchor" aria-label="anchor" href="#pr%C3%A9parer-vos-donn%C3%A9es"></a>
+</h3>
+<div class="section level4">
+<h4 id="structurer-les-fichiers-dentrée">1. Structurer les fichiers d’entrée<a class="anchor" aria-label="anchor" href="#structurer-les-fichiers-dentr%C3%A9e"></a>
+</h4>
+<p>Les données sont stockées avec cette arborescence :</p>
+<pre><code>extdata/
+  ├── ESS/
+  │   ├── ESS9/
+  │   │   └── global.rds
+  │   └── ESS10/
+  │       └── global.rds
+  └── SILC/
+      ├── HFILE/
+      │   ├── global.rds
+      │   ├── config.txt
+      │   ├── BE_2012h_EUSILC.csv
+      │   ├── BE_2013h_EUSILC.csv
+      │   ├── RO_2012h_EUSILC.csv
+      │   ├── RO_2013h_EUSILC.csv
+      │   └── BE_2012h_EUSILC.csv
+      └── PFILE/
+          ├── global.rds
+          ├── config.txt
+          ├── BE_2012p_EUSILC.csv
+          ├── BE_2013p_EUSILC.csv
+          ├── RO_2012p_EUSILC.csv
+          ├── RO_2013p_EUSILC.csv
+          └── BE_2012p_EUSILC.csv</code></pre>
+<p>L’outil <code><a href="../reference/prepa_survey.html">prepa_survey()</a></code> attend une arborescence de type
+:</p>
+</div>
+<div class="section level4">
+<h4 id="créer-une-configuration-à-partir-dun-gabarit">2. Créer une configuration à partir d’un gabarit<a class="anchor" aria-label="anchor" href="#cr%C3%A9er-une-configuration-%C3%A0-partir-dun-gabarit"></a>
+</h4>
+<p>Vous pouvez générer un gabarit initial avec
+<code><a href="../reference/create_config.html">create_config()</a></code> :</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tdelc/vizsurvey" class="external-link">vizsurvey</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">template</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_config.html">create_config</a></span><span class="op">(</span></span>
+<span>  interviewer <span class="op">=</span> <span class="st">"id_enqueteur"</span>,</span>
+<span>  id_itw      <span class="op">=</span> <span class="st">"id_interview"</span>,</span>
+<span>  vt          <span class="op">=</span> <span class="st">"type_ménage"</span>,</span>
+<span>  vg          <span class="op">=</span> <span class="st">"region"</span>,</span>
+<span>  weight      <span class="op">=</span> <span class="st">"poids"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Écrire le gabarit dans un fichier YAML</span></span>
+<span><span class="va">config_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".yml"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="va">template</span>, <span class="va">config_path</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">config_path</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
+<p>Adaptez ensuite les sections <code>variables</code> pour décrire les
+indicateurs que vous souhaitez analyser (numériques, catégoriels ou
+binaires).</p>
+</div>
+<div class="section level4">
+<h4 id="lancer-la-préparation">3. Lancer la préparation<a class="anchor" aria-label="anchor" href="#lancer-la-pr%C3%A9paration"></a>
+</h4>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tdelc/vizsurvey" class="external-link">vizsurvey</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">input_dir</span>  <span class="op">&lt;-</span> <span class="st">"mon-projet"</span></span>
+<span><span class="va">output_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"prepa"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/prepa_survey.html">prepa_survey</a></span><span class="op">(</span></span>
+<span>  input_dir  <span class="op">=</span> <span class="va">input_dir</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="va">output_dir</span>,</span>
+<span>  config     <span class="op">=</span> <span class="st">"configs/config_enquête1.yml"</span>,</span>
+<span>  survey     <span class="op">=</span> <span class="st">"data/enquête1.csv"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="traitements-par-lot">Traitements par lot<a class="anchor" aria-label="anchor" href="#traitements-par-lot"></a>
+</h3>
+<p>Si vous avez plusieurs enquêtes à traiter dans un répertoire,
+<code><a href="../reference/prepa_all_surveys.html">prepa_all_surveys()</a></code> automatisera la boucle :</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/prepa_all_surveys.html">prepa_all_surveys</a></span><span class="op">(</span></span>
+<span>  input_dir  <span class="op">=</span> <span class="st">"mon-projet"</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="va">output_dir</span>,</span>
+<span>  pattern    <span class="op">=</span> <span class="st">"*.csv"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Chaque jeu de données sera préparé avec le fichier YAML du même nom
+(à l’extension près). Surveillez la console pour connaître l’avancement
+et les éventuels problèmes rencontrés sur un fichier spécifique.</p>
+</div>
+<div class="section level3">
+<h3 id="exemple-reproductible-complet">Exemple reproductible complet<a class="anchor" aria-label="anchor" href="#exemple-reproductible-complet"></a>
+</h3>
+<p>Le bloc ci-dessous illustre un flux complet à partir d’un jeu de
+données synthétique :</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tdelc/vizsurvey" class="external-link">vizsurvey</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://readr.tidyverse.org" class="external-link">readr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 1. Générer un exemple fictif</span></span>
+<span><span class="va">tmp_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  id_interview <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">200</span>,</span>
+<span>  id_enqueteur <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"E%02d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, <span class="fl">200</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  type_ménage  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Solo"</span>, <span class="st">"Couple"</span>, <span class="st">"Famille"</span><span class="op">)</span>, <span class="fl">200</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  region       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Nord"</span>, <span class="st">"Sud"</span>, <span class="st">"Est"</span>, <span class="st">"Ouest"</span><span class="op">)</span>, <span class="fl">200</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  poids        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span>,</span>
+<span>  satisfaction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">200</span>, mean <span class="op">=</span> <span class="fl">6</span>, sd <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span>,</span>
+<span>  mode         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Téléphone"</span>, <span class="st">"Face-à-face"</span>, <span class="st">"Web"</span><span class="op">)</span>, <span class="fl">200</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 2. Sauvegarder les fichiers d'entrée</span></span>
+<span><span class="va">input_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tmp_dir</span>, <span class="st">"demo"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="st">"data"</span><span class="op">)</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="st">"configs"</span><span class="op">)</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">readr</span><span class="fu">::</span><span class="fu">write_csv</span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="st">"data"</span>, <span class="st">"demo.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">config_yaml</span> <span class="op">&lt;-</span> <span class="st">"id_itw: id_interview\ninterviewer: id_enqueteur\nvt: type_ménage\nvg: region\nweight: poids\nvariables:\n  - name: satisfaction\n    type: numeric\n    label: Score de satisfaction\n  - name: mode\n    type: categorical\n    label: Mode de collecte\n"</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="va">config_yaml</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="st">"configs"</span>, <span class="st">"demo.yml"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 3. Préparer les données</span></span>
+<span><span class="va">output_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tmp_dir</span>, <span class="st">"demo_prepa"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/prepa_survey.html">prepa_survey</a></span><span class="op">(</span></span>
+<span>  input_dir  <span class="op">=</span> <span class="va">input_dir</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="va">output_dir</span>,</span>
+<span>  config     <span class="op">=</span> <span class="st">"configs/demo.yml"</span>,</span>
+<span>  survey     <span class="op">=</span> <span class="st">"data/demo.csv"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 4. Lancer l'application (ouvre un onglet navigateur)</span></span>
+<span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="va">output_dir</span><span class="op">)</span></span></code></pre></div>
+<p>Cet exemple crée un environnement isolé dans le dossier temporaire de
+R, traite les données synthétiques et lance l’application. Adaptez les
+noms de variables aux vôtres pour reproduire le processus sur vos
+enquêtes réelles.</p>
+</div>
+<div class="section level2">
+<h2 id="limites-et-responsabilités">Limites et responsabilités<a class="anchor" aria-label="anchor" href="#limites-et-responsabilit%C3%A9s"></a>
+</h2>
+<ul>
+<li><p><strong>vizsurvey</strong> <strong>n’infère</strong> rien : il
+<strong>organise</strong> l’exploration.</p></li>
+<li><p>Les <strong>interprétations</strong> doivent s’appuyer sur le
+<strong>contexte</strong> (terrain, consignes, scripts, logs).</p></li>
+<li><p>Les <strong>données sensibles</strong> (enquêteur·rices, ménages)
+doivent être traitées conformément aux règles de
+<strong>confidentialité</strong>.</p></li>
+</ul>
+<div class="section level3">
+<h3 id="allers-retours-analytiques">Allers-retours analytiques<a class="anchor" aria-label="anchor" href="#allers-retours-analytiques"></a>
+</h3>
+<div class="section level4">
+<h4 id="prepa_stats-extraire-les-agrégats">
+<code>prepa_stats()</code> : extraire les agrégats<a class="anchor" aria-label="anchor" href="#prepa_stats-extraire-les-agr%C3%A9gats"></a>
+</h4>
+<p><code><a href="../reference/prepa_stats.html">prepa_stats()</a></code> vous renvoie un data.frame compilant les
+statistiques calculées pendant la préparation. Vous pouvez l’utiliser
+pour alimenter des rapports ou construire vos propres
+visualisations.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepa_stats.html">prepa_stats</a></span><span class="op">(</span><span class="va">output_dir</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">stats</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="heat_map_group-personnaliser-la-visualisation">
+<code>heat_map_group()</code> : personnaliser la visualisation<a class="anchor" aria-label="anchor" href="#heat_map_group-personnaliser-la-visualisation"></a>
+</h4>
+<p>Pour générer une heatmap hors Shiny :</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data_group</span> <span class="op">&lt;-</span> <span class="va">stats</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"satisfaction"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/heat_map_group.html">heat_map_group</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_group</span>,</span>
+<span>  group_var   <span class="op">=</span> <span class="st">"vg"</span>,</span>
+<span>  interviewer <span class="op">=</span> <span class="st">"interviewer"</span>,</span>
+<span>  value       <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>  show_legend <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Vous pouvez ajuster la palette via l’argument <code>palette</code> et
+contrôler les titres à l’aide de <code>title</code> et
+<code>subtitle</code>.</p>
+</div>
+<div class="section level4">
+<h4 id="score_isoforest-détecter-les-profils-atypiques">
+<code>score_isoforest()</code> : détecter les profils atypiques<a class="anchor" aria-label="anchor" href="#score_isoforest-d%C3%A9tecter-les-profils-atypiques"></a>
+</h4>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">donnees_num</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/where.html" class="external-link">where</a></span><span class="op">(</span><span class="va">is.numeric</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">iso_scores</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/score_isoforest.html">score_isoforest</a></span><span class="op">(</span><span class="va">donnees_num</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">iso_scores</span><span class="op">)</span></span></code></pre></div>
+<p>Avant de lancer cette fonction, assurez-vous que les colonnes
+sélectionnées sont numériques, sans valeurs manquantes excessives.
+Standardisez ou filtrez les variables constantes pour éviter des
+avertissements.</p>
+</div>
+</div>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
