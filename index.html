@@ -69,7 +69,7 @@
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>This is tree option to lauch the dashboard:</p>
+<p>This is tree options to lauch the dashboard:</p>
 <div class="section level3">
 <h3 id="from-a-r-object">From a R object<a class="anchor" aria-label="anchor" href="#from-a-r-object"></a>
 </h3>
@@ -77,20 +77,24 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tdelc/vizsurvey" class="external-link">vizsurvey</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">laeken</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">eusilc</span>,var_itw <span class="op">=</span> <span class="st">"db040"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">eusilc</span> <span class="op">&lt;-</span> <span class="va">eusilc</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>NR_ITW <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">db040</span>,<span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>,replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,sep<span class="op">=</span><span class="st">"-"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">eusilc</span>,var_itw <span class="op">=</span> <span class="st">"NR_ITW"</span>,var_group <span class="op">=</span> <span class="st">"db040"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="from-a-csv-file">From a csv file<a class="anchor" aria-label="anchor" href="#from-a-csv-file"></a>
 </h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/runVizsurvey_from_file.html">runVizsurvey_from_file</a></span><span class="op">(</span>path<span class="op">=</span><span class="st">"inst/shiny-examples/complete/data/ESS/ESS9/ESS9.csv"</span>,var_itw <span class="op">=</span> <span class="st">"INTNUM1"</span>,var_domain<span class="op">=</span><span class="st">"CNTRY"</span>,var_group <span class="op">=</span> <span class="st">"PREINTF"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="st">"inst/extdata/ESS/ESS9/ESS9.csv"</span></span>
+<span><span class="fu"><a href="reference/runVizsurvey_from_file.html">runVizsurvey_from_file</a></span><span class="op">(</span><span class="va">path</span>,var_itw <span class="op">=</span> <span class="st">"INTNUM1"</span>,var_domain<span class="op">=</span><span class="st">"CNTRY"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="from-a-directory-of-prepared-data">From a directory of prepared data<a class="anchor" aria-label="anchor" href="#from-a-directory-of-prepared-data"></a>
 </h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We assume that config.txt, and prepa_surveys are already done here.</span></span>
-<span><span class="fu"><a href="reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>,is_double_folder <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"inst/extdata"</span>,is_double_folder <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 </div>
