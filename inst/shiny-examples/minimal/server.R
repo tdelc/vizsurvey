@@ -1,9 +1,8 @@
 library(shiny)
 library(shinydashboard)
-library(shinydashboardPlus)
 library(shinyWidgets)
+library(vizsurvey)
 library(laeken)
-library(survey)
 library(plotly)
 
 options(shiny.maxRequestSize=100*1024^2)
