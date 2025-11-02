@@ -53,7 +53,6 @@ server <- function(input, output, session) {
       values_ini$path_survey <- input$path_survey
   })
 
-
   ##### Load RDS #####
 
   observeEvent(values_ini$path_survey,{
