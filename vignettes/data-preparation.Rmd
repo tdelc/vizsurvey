@@ -216,3 +216,4 @@ head(iso_scores)
 Avant de lancer cette fonction, assurez-vous que les colonnes sélectionnées sont numériques, sans valeurs manquantes excessives. Standardisez ou filtrez les variables constantes pour éviter des avertissements.
 
 
+
