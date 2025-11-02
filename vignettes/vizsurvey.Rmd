@@ -1,7 +1,7 @@
 ---
-title: "Explorer et contrôler vos données d’enquête avec **vizsurvey**"
+title: "Monitorer vos données d’enquête avec **vizsurvey**"
 subtitle: "Vignette 1 — Guide pas à pas pour fouiller et détecter les anomalies"
-author: "Équipe méthodologie — vizsurvey"
+author: "Thomas Delclite - Statbel"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -21,13 +21,13 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-## Pourquoi vizsurvey ? (positionnement GSBPM)
+## Pourquoi vizsurvey ?
 
 Dans un processus statistique conforme au GSBPM, la qualité ne se joue pas uniquement en amont (échantillonnage, questionnaire, collecte) ni en aval (analyse, diffusion). Entre collecte et analyse, une phase clé consiste à contrôler et monitorer le matériau collecté pour repérer rapidement les anomalies, documenter les écarts et, si nécessaire, déclencher des actions correctrices.
 
 vizsurvey répond à cette problématique : il offre une interface interactive pour parcourir vos données, comparer des profils de réponses et prioriser les investigations. L’objectif n’est pas de conclure statistiquement, mais de guider le regard de l’analyste avec des indicateurs simples (distances, rangs) et des visualisations adaptées.
 
-## Effets **enquêteur·rice**
+## Cohérence **par enquêteur·rice**
 
 Le rôle des enquêteur·rices est **central** : compréhension fine du questionnaire, respect du routage, gestion de l’entretien. Il peut néanmoins apparaître des **effets enquêteur** (différences systématiques de distribution des réponses selon la personne qui interroge), dus à des styles d’administration, des biais involontaires, des erreurs récurrentes ou, plus rarement, à de la fraude.
 
@@ -39,59 +39,99 @@ Sur ce sujet, **vizsurvey** permet de :
 
 -   **Focaliser** l’examen sur les combinaisons enquêteur·rice × variable **les plus atypiques**.
 
-## Cohérence **d’une année à l’autre**
+## Cohérence **par domaine**
 
-D’une année à l’autre, les questionnaires évoluent (libellés, routage, filtres), mais les **variables cibles** doivent rester **comparables**. **vizsurvey** met en évidence :
+D’une année à l’autre, les questionnaires évoluent (libellés, routage, filtres), mais les **variables cibles** doivent rester **comparables**. **vizsurvey** permet de définir une variable de domaine (ici par exemple l'année de l'enquête), permettant de mettre en évidence :
 
 -   les **écarts** de distributions ou de niveaux (proportions, moyennes) ;
 
 -   les variables présentant des **ruptures** qui méritent une relecture (mise en œuvre du routage, recodages, versionnement du questionnaire, changement de collecte, etc.).
 
-# Lancement vizsurvey
+# Lancement de vizsurvey
 
-Il y a trois manières de lancer {vizsurvey} : à partir d'une base de données en R (`runVizsurvey_from_r`), à partir d'un fichier csv (`runVizsurvey_from_file`), ou en préparant une structure de fichier pour analyser en simultané plusieurs enquêtes (`runVizsurvey_from_folder`). Nous allons ici nous intéresser aux deux premiers cas.
+Il y a trois manières de lancer {vizsurvey} : à partir d'une base de données en R (`runVizsurvey_from_r`), à partir d'un fichier csv (`runVizsurvey_from_file`), ou en préparant une structure de fichier pour analyser en simultané plusieurs enquêtes (`runVizsurvey_from_folder`).
 
-Le package {laeken} fournit un fichier d'exemple de l'enquête SILC (survey on income and living condition). Nous pouvons prendre ce fichier comme exemple, et venir créer un numéro d'enquêteur-rice à partir de la variable de province `DB040`. Nous exécutons la fonction `runVizsurvey_from_r` avec comme argument supplémentaire `var_group = "DB040"` afin de prévoir des subdivisions du travail de terrain par province.
+Pour lancer l'interface à partir d'un objet R, il suffit de
 
 ```{r setup, eval=F, warning = F, message = F}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
-library(vizsurvey)
-library(laeken)
-data(eusilc)
-set.seed(123)
-eusilc$NR_ITW <- paste(eusilc$NR_ITW,sample(1:5,nrow(eusilc),replace = T),sep="-")
+library(vizsurvey) 
+library(laeken) 
+data(eusilc) 
+set.seed(123) 
+eusilc$NR_ITW <- paste(eusilc$db040,sample(1:5,nrow(eusilc),replace = T),sep="-")
 runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")
 ```
 
-Si vous avez lancé les packages nécessaires, une interface shiny doit se lancer dans votre navigateur, et afficher cette carte de chaleur. Celle-ci est le coeur du fonctionnement de vizsurvey, car elle permet de naviguer de manière interactive à travers les situations détectées comme anormales.
+Si vous avez lancé les packages nécessaires, une interface {shiny} doit se lancer dans votre navigateur
+
+# Analyse de la cohérence par enquêteur-rice
+
+## Données d'exemples
+
+Le package {laeken} fournit un fichier d'exemple de l'enquête SILC (survey on income and living condition). Nous pouvons prendre ce fichier comme exemple, et venir créer un numéro d'enquêteur-rice à partir de la variable de province `DB040`. Nous exécutons la fonction `runVizsurvey_from_r` avec comme argument supplémentaire `var_group = "DB040"` afin de prévoir des subdivisions de l'analyse par province.
+
+```{r}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+data(eusilc) 
+set.seed(123) 
+eusilc$NR_ITW <- paste(eusilc$db040,sample(1:5,nrow(eusilc),replace = T),sep="-") 
+runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")
+```
+
+, et afficher cette carte de chaleur. Celle-ci est le cœur du fonctionnement de {vizsurvey}, car elle permet de naviguer de manière interactive à travers les situations détectées comme anormales.
 
 ![](images/clipboard-3454725579.png)
 
+## Analyse de la carte de chaleur
+
 Chaque ligne est un ou une enquêtrice. Ici, nous reconnaissons les provinces australiennes avec un index, issu de notre simulation de numéro. Chaque colonne est une variable, catégorielle ou continue. Chaque cellule est colorée si les réponses de l'enquêteur-rice pour cette variable est suffisamment différentes des réponses du reste de la base de données.
 
--   Pour les variables catégorielles, il peut s'agir d'un écart trop important sur le pourcentage de données manquantes, ou d'un $$\chi²$$ trop élevé (donc d'une distribution très éloigné du reste de la base de données) ;
+Pour les variables catégorielles, il peut s'agir d'un écart trop important sur le pourcentage de données manquantes, ou d'un $\chi²$ trop élevé (donc d'une distribution très éloigné du reste de la base de données). Pour les variables numériques, il peut s'agir d'un écart trop important sur le pourcentage de données manquantes, ou d'un écart trop important sur la médiane. Dans les deux cas, ces écarts sont normalisés par variable avant affichage, et la cellule s'affiche si l'écart dépasse cinq écarts-types pour cette variable.
 
--   Pour les variables numériques, il peut s'agir d'un écart trop important sur le pourcentage de données manquantes, ou d'une écart trop important sur la médiane.
+En survolant les cellules, toutes les informations sont affichées, de sorte à comprendre la source de la coloration. Voici une première manière d'analyser la carte de chaleur :
 
-Eu survolant les cellules, toutes les informations sont affichées, de sorte à comprendre la source de la coloration. Voici une première manière d'analyser la carte de chaleur :
+-   Une **cellule isolée** rouge n’est pas problématique en soi — avec beaucoup de croisements, il est **normal** d’observer quelques extrêmes.
 
--   Une **cellule isolée** “chaude” n’est pas problématique en soi — avec beaucoup de croisements, il est **normal** d’observer quelques extrêmes.
+-   Une **ligne** largement rouge (plusieurs variables) évoque un **comportement récurrent** (erreur de procédure, incompréhension, routage mal appliqué, voire fraude).
 
--   Une **ligne** largement “chaude” (plusieurs variables) évoque un **comportement récurrent** (erreur de procédure, incompréhension, routage mal appliqué, voire fraude).
+-   Une **colonne** rouge (plusieurs enquêteur-rices) pointe une **variable fragile** (libellé ambigu, routing, aide à l’enquêteur, effet d'une zone).
 
--   Une **colonne** “chaude” (plusieurs enquêteur-rices) pointe une **variable fragile** (libellé ambigu, routing, aide à l’enquêteur, effet d'une zone).
+Par défaut, la carte de chaleur affiche une cellule en rouge lorsque les écarts dépassent 5 écarts-types de la variable. Dans notre situation, cela conduit à afficher 7 cellules, toutes pour Vienne. En réduisant le seuil de sensibilité dans les paramètres, on affiche bien plus de cellules. Il n'y a pas de seuil prédéterminée, ou statistiquement valide, pour une telle analyse. Cela doit être déterminé par tatônement par l'équipe en charge de la coordination de l'enquête. Il est également possible de modifier le nombre de lignes minimum (donc d'enquêtes) pour afficher la ligne, ou le nombre de valeur non manquantes nécessaires pour l'affichage d'une cellule.
 
-Dans notre exemple, plusieurs cellules s'allument en rouge pour la région de Vienne. En cliquant sur le croisement Vienne-1 / HHSIZE, on peut afficher la distribution de cette variable HHSIZE pour l'enquêteur Vienne-1, et le comparer avec la distribution de cette variable pour les autres. On découvre ainsi que le pourcentage de modalités 3 et 4 sont bien plus présent chez les autres que chez l'enquêteur Vienne-1.
+![](images/clipboard-1081520372.png)
 
-![](images/clipboard-4139068194.png)
+Enfin, il est possible de zoomer dans la carte de chaleur, sur les lignes, les colonnes, ou les cellules à risque. Cela permet, lorsque la carte de chaleur est trop vaste, de cibler plus efficacement les situations à analyser. Voici par exemple la même carte de chaleur pour une sensibilité de deux écarts-types avec un zoom sur les cellules à risque. On voit que d'autres cellules apparaissent suite à la hausse de sensibilité, mais que certaines provinces ont disparu, car n'affichant aucune cellule rouge.
 
-Ici, on remarque que les 5 lignes de Vienne sont allumées en rouge, preuve d'un effet de zone plutôt qu'un effet d'enquêteur·rice. Pour s'en convaincre, on peut sélectionner DB040 = Vienne en haut de l'interface. Dès lors, la carte de chaleur se limite aux données de Vienne, et n'affiche que les écarts des enquêteur-rices par rapport à cette province. Il n'y a plus aucune cellule s'affichant en rouge ainsi.
+![](images/clipboard-902632245.png)
+
+## Analyser une variable catégorielle
+
+Dans notre exemple, avec une sensibilité de 5 écarts-types, sept cellules s'allument en rouge pour la région de Vienne. En cliquant sur le croisement Vienne-1 / HHSIZE, on peut afficher la distribution de cette variable HHSIZE pour l'enquêteur Vienne-1, et le comparer avec la distribution de cette variable pour les autres. Un résumé statistique de la variable est disponible en dessous à l'aide du package `summarytools`.
+
+On découvre ainsi que les modalités 3 et 4 de la variable HHSIZE sont bien plus présentes chez les autres que chez l'enquêteur Vienne-1.
+
+![](images/clipboard-4063476803.png)
+
+Pour essayer de comprendre les différences, nous avons inclu un algorithme qui calcule les dix corrélations les plus hautes dans la base de données, pour ensuite projeter les corrélations effectives pour l'enquêteur-rice et celle du reste de la base de données. Il s'agit uniquement de corrélations de pearson en transformant au préalable les variables catégorielles en facteur.
+
+Pour notre enquêteur Vienne-1 et son résultat surprenant pour la variable HHSIZE, on observe que les corrélations de cette variable sont identiques chez lui et pour le reste de la base de données. Cela semble écarter l'hypothèse d'une anomalie spécifique à cette variable.
+
+![](images/clipboard-3734839128.png)
+
+Pour revenir sur la carte de chaleur, on remarque que les cinq cellules de Vienne sont allumées en rouge pour la variable HHSIZE, preuve d'un effet de zone plutôt qu'un effet d'enquêteur-rice. Pour s'en convaincre, on peut sélectionner DB040 = Vienne en haut de l'interface. Dès lors, la carte de chaleur se limite aux données de Vienne, et n'affiche que les écarts des enquêteur-rices par rapport à cette province. Il n'y a plus aucune cellule s'affichant en rouge ainsi.
 
 ![](images/clipboard-1042724936.png)
 
-Lorsqu'on clique sur une variable numérique, la fonction de densité s'affiche alors, toujours avec le point de comparaison. Voici un exemple pour la variable d'âge pour l'enquêtrice Carinthia-5 :
+## Analyse d'une variable numérique
 
-![](images/clipboard-4047038565.png)
+Lorsqu'on clique sur une variable numérique, la fonction de densité s'affiche alors, toujours avec le point de comparaison entre l'enquêteur-rice, et le reste de la base de données. Dans notre cas Voici un exemple pour la variable d'âge pour l'enquêtrice Carinthia-5 :
+
+![](images/clipboard-3649549679.png)
+
+# Analyse de la cohérence par domaine
+
+## Résumé de l'analyse
 
 ### Pas à pas — volet enquêteurs
 

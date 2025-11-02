@@ -49,7 +49,7 @@ runVizsurvey_from_folder <- function(
 #' \dontrun{runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")}
 runVizsurvey_from_r <- function(
     df,
-    var_itw,
+    var_itw        = NULL,
     vars_discretes = NULL,
     vars_continous = NULL,
     var_domain     = NULL,
@@ -58,9 +58,6 @@ runVizsurvey_from_r <- function(
 
   if (is.null(df)) {
     stop("df not present.", call. = FALSE)
-  }
-  if (missing(var_itw) || is.null(var_itw) || !nzchar(as.character(var_itw))) {
-    stop("`var_itw` is mandatory (name of interviewer variable).", call. = FALSE)
   }
 
   appDir <- system.file("shiny-examples", "complete", package = "vizsurvey")

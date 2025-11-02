@@ -459,15 +459,20 @@ prepa_survey <- function(folder, name_file = NULL, ...) {
 
   df <- list_df$df
 
-  # Create a fake all domain or group if null
-  if (is.na(configs$vt)){
+  # Create a fake all domain or group or id_itw if null
+  if (length(configs$vt) == 0 || is.na(configs$vt)){
     df <- df %>% mutate(domain = "All")
     configs$vt <- "domain"
   }
 
-  if (is.na(configs$vg)){
+  if (length(configs$vg) == 0 || is.na(configs$vg)){
     df <- df %>% mutate(group = "All")
     configs$vg <- "group"
+  }
+
+  if (length(configs$id_itw) == 0 || is.na(configs$id_itw)){
+    df <- df %>% mutate(id_itw = "All")
+    configs$id_itw <- "id_itw"
   }
 
   # Domain variation
@@ -478,13 +483,17 @@ prepa_survey <- function(folder, name_file = NULL, ...) {
   }
 
   # Interviewer variation
-  df_stats_itw <- pull(unique(df[, configs$vt])) %>% map_df(~ {
-    cli::cli_progress_step("df_stats_itw for domain {.x}",spinner = TRUE)
-    sub_df <- df %>%
-      filter(!!sym(configs$vt) == .x) %>%
-      loop_stats(configs, configs$id_itw) %>%
-      mutate(!!sym(configs$vt) := .x)
-  })
+  if (length(pull(unique(df[, configs$id_itw]))) > 1) {
+    df_stats_itw <- pull(unique(df[, configs$vt])) %>% map_df(~ {
+      cli::cli_progress_step("df_stats_itw for domain {.x}",spinner = TRUE)
+      sub_df <- df %>%
+        filter(!!sym(configs$vt) == .x) %>%
+        loop_stats(configs, configs$id_itw) %>%
+        mutate(!!sym(configs$vt) := .x)
+    })
+  } else {
+    df_stats_itw <- NULL
+  }
 
   global <- list(
     configs = configs,

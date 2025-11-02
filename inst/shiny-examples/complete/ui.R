@@ -193,7 +193,7 @@ ui <- dashboardPage(
                              choices=c("All" = "all",
                                        "Risky rows" = "enq",
                                        "Risky columns" = "var",
-                                       "Risky data" = "both"),
+                                       "Risky cells" = "both"),
                              selected = "all")
                     )
                 )
