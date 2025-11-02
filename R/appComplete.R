@@ -43,11 +43,9 @@ runVizsurvey_from_folder <- function(
 #'
 #' @examples
 #' library(laeken)
-#' library(tidyverse)
 #' data(eusilc)
 #' set.seed(123)
-#' eusilc <- eusilc %>%
-#'   mutate(NR_ITW = paste(db040,sample(1:5,nrow(.), replace = T),sep="-"))
+#' eusilc$NR_ITW <- paste(eusilc$db040,sample(1:5,nrow(eusilc),replace = TRUE),sep="-")
 #' \dontrun{runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")}
 runVizsurvey_from_r <- function(
     df,

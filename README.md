@@ -40,8 +40,7 @@ library(vizsurvey)
 library(laeken)
 data(eusilc)
 set.seed(123)
-eusilc <- eusilc %>% 
-  mutate(NR_ITW = paste(db040,sample(1:5,nrow(.),replace = T),sep="-"))
+eusilc$NR_ITW <- paste(eusilc$NR_ITW,sample(1:5,nrow(eusilc),replace = T),sep="-")
 runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")
 ```
 

@@ -59,8 +59,7 @@ library(vizsurvey)
 library(laeken)
 data(eusilc)
 set.seed(123)
-eusilc <- eusilc %>% 
-  mutate(NR_ITW = paste(db040,sample(1:5,nrow(.), replace = T),sep="-"))
+eusilc$NR_ITW <- paste(eusilc$NR_ITW,sample(1:5,nrow(eusilc),replace = T),sep="-")
 runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")
 ```
 
@@ -403,7 +402,7 @@ Chaque jeu de données sera préparé avec le fichier YAML du même nom (à l'ex
 ## Résolution de problèmes
 
 | Symptôme | Cause probable | Solution |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | `argument is of length zero` | Clé absente dans le YAML (`vt`, `vg`, etc.) | Vérifiez la présence des clés et leur orthographe. |
 | `object 'write_csv' not found` | `readr` non attaché lors de `create_fake_silc()` | Chargez `readr` ou utilisez `readr::write_csv`. |
 | `non-numeric argument to binary operator` | Colonnes non numériques lors d'un calcul | Filtrez avec `dplyr::select(where(is.numeric))` avant traitement. |
