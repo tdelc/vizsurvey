@@ -7,24 +7,8 @@ is_double_folder <- getShinyOption("is_double_folder", FALSE)
 library(summarytools)
 library(corrplot)
 
-i18n <- Translator$new(translation_csvs_path = "i18n")
-i18n$set_translation_language(i18n$get_key_translation())
-
 server <- function(input, output, session) {
 
-  # Quand la langue change :
-  observeEvent(input$lang, ignoreInit = TRUE, {
-    i18n$set_translation_language(input$lang)
-    shiny.i18n::update_lang(input$lang)
-
-    updateRadioGroupButtons(session,"itw_choice_heatmap",
-                            status = "custom-class",
-                            choiceValues = c("all","enq","var","both"),
-                            choiceNames = i18n$t(c("All","Risky rows",
-                                                   "Risky columns",
-                                                   "Risky data")),
-                            selected = "all")
-  })
 
   values_ini <- reactiveValues(vec_path_folder = list.files(link_data_folder))
   values_dis <- reactiveValues()
@@ -38,8 +22,7 @@ server <- function(input, output, session) {
     else
       path_folder <- "-"
 
-    updateRadioGroupButtons(session,"path_folder",status = "custom-class",
-                            choices = path_folder)
+    updateRadioButtons(session,"path_folder",inline = T,choices = path_folder)
   })
 
   observeEvent(input$path_folder, {
@@ -59,9 +42,7 @@ server <- function(input, output, session) {
     vec_path_survey <- basename(vec_path_survey)
 
     if (length(vec_path_survey) == 0) vec_path_survey <- "-"
-    size_path_survey <- ifelse(length(vec_path_survey) > 10,"xs","normal")
-    updateRadioGroupButtons(session,"path_survey",status = "custom-class",
-                            size = size_path_survey,
+    updateRadioButtons(session,"path_survey",inline = T,
                             choices = sort(vec_path_survey),
                             selected = sort(vec_path_survey)[1])
   })
@@ -95,47 +76,40 @@ server <- function(input, output, session) {
 
     # Data configuration
     modality <- sort(pull(unique(values_ini$df[,values_ini$config$vt])))
-    updateRadioGroupButtons(session,"config_domain",size="xs",
-                            label=values_ini$config$vt,
-                            choices = modality,
-                            selected = modality[length(modality)],
-                            status = "custom-class")
+    updateRadioButtons(session,"config_domain",inline=T,
+                       label=values_ini$config$vt,
+                       choices = modality,
+                       selected = modality[length(modality)])
 
-    updateCheckboxGroupButtons(session,"domain_compare",size="xs",
-                               label=values_ini$config$vt,
-                               choices = modality,
-                               selected = modality[length(modality)-1],
-                               status = "custom-class")
+    updateCheckboxGroupInput(session,"domain_compare",inline=T,
+                             label=values_ini$config$vt,
+                             choices = modality,
+                             selected = modality[length(modality)-1])
 
     # Micro-Data
     domain_data <- unique(c(values_ini$config$vt,values_ini$config$id_itw))
 
-    updateCheckboxGroupButtons(session,"data_variables",size="xs",
-                               choices = colnames(values_ini$df),
-                               selected = domain_data,
-                               status = "custom-class")
+    updateCheckboxGroupInput(session,"data_variables",inline = T,
+                             choices = colnames(values_ini$df),
+                             selected = domain_data)
 
     if (length(values_ini$config$vg)){
       modality <- sort(pull(unique(values_ini$df[,values_ini$config$vg])))
 
-      updateRadioGroupButtons(session,"config_zone",
-                              label=values_ini$config$vg,
-                              choices = unique(c(i18n$t("All"),modality)),
-                              size="xs",
-                              selected = c(i18n$t("All"),modality)[1],
-                              status = "custom-class")
+      updateRadioButtons(session,"config_zone",inline=T,
+                         label=values_ini$config$vg,
+                         choices = unique(c("All",modality)),
+                         selected = c("All",modality)[1])
     }else{
-      updateRadioGroupButtons(session,"config_zone",
-                              label=values_ini$config$vg,
-                              choices = i18n$t("All"),
-                              size="xs",
-                              status = "custom-class")
+      updateRadioButtons(session,"config_zone",inline=T,
+                         label=values_ini$config$vg,
+                         choices = "All")
     }
   })
 
   verif_init <- reactive({
-    if (input$config_domain == i18n$t("Loading...")) return(NULL)
-    if (input$config_zone == i18n$t("Loading...")) return(NULL)
+    if (input$config_domain == "Loading...") return(NULL)
+    if (input$config_zone == "Loading...") return(NULL)
 
     return(TRUE)
   })
@@ -191,11 +165,6 @@ server <- function(input, output, session) {
 
 
   #### Domain outliers ####
-
-  observeEvent(input$domain_subtab_choice, {
-    updateTabsetPanel(session, "domain_subtab",
-                      selected = input$domain_subtab_choice)
-  })
 
   ##### reactive df outliers #####
 
@@ -268,8 +237,8 @@ server <- function(input, output, session) {
 
     tagList(
       fluidRow(
-        column(6,h3(i18n$t("Distribution"))),
-        column(6,h3(i18n$t("Comparaison")))
+        column(6,h3("Distribution")),
+        column(6,h3("Comparaison"))
       ),
       do.call(tagList, unlist(plot_output_list, recursive = FALSE))
     )
@@ -608,22 +577,22 @@ server <- function(input, output, session) {
 
   output$itw_distrib_spe_text <- renderText({
     req(values_itw$id_itw)
-    paste(i18n$t("Distribution for"), values_ini$config$id_itw, "=",values_itw$id_itw)
+    paste("Distribution for", values_ini$config$id_itw, "=",values_itw$id_itw)
   })
 
   output$itw_distrib_glo_text <- renderText({
     req(values_itw$id_itw)
-    paste(i18n$t("Distribution for"), values_ini$config$id_itw, "!=",values_itw$id_itw)
+    paste("Distribution for", values_ini$config$id_itw, "!=",values_itw$id_itw)
   })
 
   output$itw_corr_spe_text <- renderText({
     req(values_itw$id_itw)
-    paste(i18n$t("Correlations for"), values_ini$config$id_itw, "=",values_itw$id_itw)
+    paste("Correlations for", values_ini$config$id_itw, "=",values_itw$id_itw)
   })
 
   output$itw_corr_glo_text <- renderText({
     req(values_itw$id_itw)
-    paste(i18n$t("Correlations for"), values_ini$config$id_itw, "!=",values_itw$id_itw)
+    paste("Correlations for", values_ini$config$id_itw, "!=",values_itw$id_itw)
   })
 
   ###### Reactive Distributions #####
@@ -631,8 +600,8 @@ server <- function(input, output, session) {
   output$itw_distrib_spe <- renderPlot({
 
     validate(
-      need(values_itw$id_itw, i18n$t('Choose a interviewer.')),
-      need(values_itw$variable, i18n$t('Choose a variable.'))
+      need(values_itw$id_itw, 'Choose a interviewer.'),
+      need(values_itw$variable, 'Choose a variable.')
     )
 
     syn_spe <- df_sub_details() %>%
@@ -664,8 +633,8 @@ server <- function(input, output, session) {
   output$itw_distrib_glo <- renderPlot({
 
     validate(
-      need(values_itw$id_itw, i18n$t('Choose a interviewer.')),
-      need(values_itw$variable, i18n$t('Choose a variable.'))
+      need(values_itw$id_itw, 'Choose a interviewer.'),
+      need(values_itw$variable, 'Choose a variable.')
     )
 
     syn_glo <- df_sub_details() %>%
@@ -694,14 +663,14 @@ server <- function(input, output, session) {
   ###### Reactive Summary ######
 
   output$itw_summary_spe <- renderPrint({
-    req(values_itw$id_itw,values_itw$variable)
+    req(df_sub_details())
     data_itw <- df_sub_details() %>%
       filter(!!sym(values_ini$config$id_itw) == values_itw$id_itw)
     dfSummary(data_itw[,values_itw$variable],graph.col=FALSE)
   })
 
   output$itw_summary_glo <- renderPrint({
-    req(values_itw$id_itw,values_itw$variable)
+    req(df_sub_details())
     data_itw <- df_sub_details() %>%
       filter(!!sym(values_ini$config$id_itw) != values_itw$id_itw)
     dfSummary(data_itw[,values_itw$variable],graph.col=FALSE)
@@ -710,7 +679,7 @@ server <- function(input, output, session) {
   ###### Reactive Correlations ######
 
   prepa_corr <- reactive({
-    req(values_ini$config$id_itw,values_itw$id_itw,values_itw$variable)
+    req(values_ini$config$id_itw,df_sub_details())
 
     id <- values_ini$config$id_itw
     df <- df_sub_details()
@@ -745,7 +714,7 @@ server <- function(input, output, session) {
 
     output$itw_main_corr_spe <- renderPlot(
       itw_main_corr(M,values_itw$variable)  +
-        labs(title = paste(i18n$t("10 First Correlations with"),
+        labs(title = paste("10 First Correlations with",
                            values_itw$variable))
     )
 
@@ -760,7 +729,7 @@ server <- function(input, output, session) {
 
     output$itw_main_corr_glo <- renderPlot(
       itw_main_corr(M,values_itw$variable)  +
-        labs(title = paste(i18n$t("10 First Correlations with"),
+        labs(title = paste("10 First Correlations with",
                            values_itw$variable))
       )
     corrplot(M,type="upper", tl.col="grey20", tl.srt=45)
@@ -779,15 +748,14 @@ server <- function(input, output, session) {
     if (fl_discrete){
 
       showModal(modalDialog(
-        title = paste(i18n$t("Analysis of distribution of variable "),values_itw$variable),
+        title = paste("Analysis of distribution of variable ",values_itw$variable),
         size = "l",easyClose = TRUE,
-        h3(paste0(i18n$t("Interviewer position"))),
-        radioGroupButtons(
-          inputId = "config_modalities_itw",label = i18n$t("Modality"),
-          status = "primary",justified = TRUE,
-          choices = i18n$t("Loading...")),
+        h3(paste0("Interviewer position")),
+        radioButtons(
+          inputId = "config_modalities_itw",label = "Modality",inline = T,
+          choices = "Loading..."),
         renderPlot(values_dis$plot_distrib),
-        h3(paste0(i18n$t("List of distributions"))),
+        h3(paste0("List of distributions")),
         render_gt(values_dis$gt_distrib)
       ))
 
@@ -804,9 +772,8 @@ server <- function(input, output, session) {
 
       modalities <- sort(colnames(values_dis$syn_distrib[,-c(1:2)]))
 
-      updateRadioGroupButtons(session,"config_modalities_itw",size="xs",
-                              choices = modalities,selected = modalities[1],
-                              status = "custom-class")
+      updateRadioButtons(session,"config_modalities_itw",inline = T,
+                         choices = modalities,selected = modalities[1])
     }
   })
 
@@ -851,8 +818,8 @@ server <- function(input, output, session) {
         theme_minimal(base_size = 15) +
         scale_x_continuous(labels = scales::percent_format(accuracy = 1),
                            limits = c(0,1)) +
-        labs(x = paste(i18n$t("Proportion of"),input$config_modalities_itw),
-             y = i18n$t("Density")) +
+        labs(x = paste("Proportion of",input$config_modalities_itw),
+             y = "Density") +
         geom_vline(xintercept = itw_value, color = "red",
                    linetype = "dashed", linewidth = 1.2) +
         annotate("text", x = itw_value, y = 0,
