@@ -16,46 +16,6 @@ ui <- dashboardPage(
     )
   ),
   body = dashboardBody(
-    tags$style(HTML("
-      .content-wrapper { overflow: auto; }
-
-      .UI_output iframe {
-        width: 100% !important;
-        height: 800px !important;
-      }
-
-      .leaflet-top{
-        position: relative;
-      }
-
-      .custom-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .btn-group-toggle .btn-custom-class.active {
-        /*background: lightgreen !important;*/
-        background: #28a745 !important;
-        color: #fff !important;
-      }
-
-      .btn-group-toggle .btn-blue-class.active {
-        background: lightblue !important;
-      }
-
-      .flex-container {
-        display: flex;
-      }
-
-      .rightAlign{float:right;}
-
-      .box_cadre {
-        flex: 1;
-        border: 1px solid #3c8dbc;
-        padding: 10px;
-        border-radius: 2px;
-      }")),
     #### Configure Zone and domain ####
     fluidRow(
       box(width = 5,title="Database loading",
@@ -184,16 +144,13 @@ ui <- dashboardPage(
                        fluidRow(
                          column(width = 4,
                                 checkboxInput("itw_missing",label = "Missings?",
-                                            value = TRUE)
-                         )
-                       )
+                                            value = TRUE)))
                 ),
                 column(width = 6,
                        column(width = 4,
                               actionButton(
                                 inputId = "itw_all_distrib",
-                                label = "Show Distributions")
-                       )
+                                label = "Show Distributions"))
                 )
               ),
               # Graphiques
@@ -234,7 +191,7 @@ ui <- dashboardPage(
       tabItem(tabName = "tab_data",
               fluidRow(
                 box(width = 12,title="Variables to show",
-                    status = "info", solidHeader = TRUE,collapsible = TRUE,
+                    status = "primary", solidHeader = TRUE,
                     checkboxGroupInput("data_variables",label = "Choice",
                                        inline=T,choices = character(0)
                     )

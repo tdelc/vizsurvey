@@ -9,7 +9,6 @@ library(corrplot)
 
 server <- function(input, output, session) {
 
-
   values_ini <- reactiveValues(vec_path_folder = list.files(link_data_folder))
   values_dis <- reactiveValues()
   values_itw <- reactiveValues()
