@@ -2,61 +2,73 @@ source("functions.R")
 
 link_data_folder <- getShinyOption("link_data_folder", "data")
 data_rds_pattern <- getShinyOption("data_rds_pattern", "global")
-is_double_folder <- getShinyOption("is_double_folder", FALSE)
+depth_folder <- getShinyOption("depth_folder", 1)
+
+if (depth_folder == 3){
+  vec_path_folder <- list.files(link_data_folder)
+}else{
+  vec_path_folder <- basename(link_data_folder)
+}
 
 library(summarytools)
 library(corrplot)
 
 server <- function(input, output, session) {
 
-  values_ini <- reactiveValues(vec_path_folder = list.files(link_data_folder))
+  values_ini <- reactiveValues(vec_path_folder = vec_path_folder)
   values_dis <- reactiveValues()
   values_itw <- reactiveValues()
 
   #### Database Loading ####
 
   observeEvent(values_ini$vec_path_folder,{
-    if (is_double_folder)
-      path_folder <- sort(values_ini$vec_path_folder)
-    else
-      path_folder <- "-"
-
-    updateRadioButtons(session,"path_folder",inline = T,choices = path_folder)
+    path_folder <- values_ini$vec_path_folder
+    updateRadioButtons(session,"path_folder",inline=T,choices = path_folder)
   })
 
   observeEvent(input$path_folder, {
 
-    if (is_double_folder){
+    if (depth_folder == 1){
+      vec_path_survey <- values_ini$vec_path_folder
+    }
+
+    if (depth_folder == 2){
+      vec_path_survey <- list.dirs(link_data_folder,
+                               full.names = TRUE,recursive = FALSE)
+    }
+
+    if (depth_folder == 3){
       path_folder <- file.path(link_data_folder,input$path_folder)
       vec_path_survey <- list.dirs(path_folder,full.names = T,recursive = F)
-
       values_ini$path_folder <- input$path_folder
-
-    }else{
-      vec_path_survey <- list.dirs(link_data_folder,
-                                   full.names = TRUE,recursive = FALSE)
-
-      values_ini$path_folder <- "-"
     }
+
     vec_path_survey <- basename(vec_path_survey)
 
-    if (length(vec_path_survey) == 0) vec_path_survey <- "-"
     updateRadioButtons(session,"path_survey",inline = T,
                             choices = sort(vec_path_survey),
                             selected = sort(vec_path_survey)[1])
   })
 
   observeEvent(input$path_survey, {
-    if (is_double_folder)
-      values_ini$path_survey <- file.path(values_ini$path_folder,input$path_survey)
-    else
-      values_ini$path_survey <- input$path_survey
+    if (depth_folder == 1){
+      values_ini$path_survey <- link_data_folder
+    }
+    if (depth_folder == 2){
+      values_ini$path_survey <- file.path(link_data_folder,
+                                          input$path_survey)
+    }
+    if (depth_folder == 3){
+      values_ini$path_survey <- file.path(link_data_folder,
+                                          input$path_folder,
+                                          input$path_survey)
+    }
   })
 
   ##### Load RDS #####
 
   observeEvent(values_ini$path_survey,{
-    path <- file.path(link_data_folder,values_ini$path_survey)
+    path <- values_ini$path_survey
     name_file <- paste0(data_rds_pattern,".rds")
     req(file.exists(file.path(path,name_file)))
 
@@ -367,7 +379,7 @@ server <- function(input, output, session) {
     return(out)
   })
 
-  output$itw_ranking <- renderDT({
+  output$itw_ranking <- renderDataTable({
 
     df <- prepa_itw_ranking() %>%
       select(!!sym(values_ini$config$id_itw),Nrow,N_outliers,score)
@@ -396,7 +408,7 @@ server <- function(input, output, session) {
     return(out)
   })
 
-  output$itw_listing <- renderDT({
+  output$itw_listing <- renderDataTable({
     df <- prepa_itw_listing()
 
     dt <- datatable(df, filter='top', selection = 'single',
@@ -450,7 +462,7 @@ server <- function(input, output, session) {
     return(out)
   })
 
-  output$itw_var_ranking <- renderDT({
+  output$itw_var_ranking <- renderDataTable({
 
     df <- prepa_var_ranking() %>%
       select(variable,N_outliers,score)
@@ -480,7 +492,7 @@ server <- function(input, output, session) {
     return(out)
   })
 
-  output$itw_var_listing <- renderDT({
+  output$itw_var_listing <- renderDataTable({
     df <- prepa_var_listing()
 
     dt <- datatable(df, filter='top', selection = 'single',
@@ -829,7 +841,7 @@ server <- function(input, output, session) {
 
   #### Data ####
 
-  output$data_table <- renderDT({
+  output$data_table <- renderDataTable({
 
     # out <- values_ini$df[, colnames(values_ini$df) %in% input$data_variables]
     out <- values_ini$df[, intersect(input$data_variables, names(values_ini$df)), drop = FALSE]

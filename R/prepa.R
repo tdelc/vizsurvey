@@ -7,12 +7,12 @@
 #'
 #' @examples
 #' classify_variables(iris)
-classify_variables <- function(df) {
+classify_variables <- function(df, threhold = 15) {
   df %>%
     summarise(across(everything(), ~ {
       if (n_distinct(.) == 1) {
         return("Solo")
-      } else if (n_distinct(.) < 15) {
+      } else if (n_distinct(.) <= 15) {
         return("Modal")
       } else {
         if (is.numeric(.)) {
@@ -449,8 +449,8 @@ loop_stats <- function(df, configs, var_calculs) {
 #' \dontrun{
 #' prepa_survey("shiny-examples/complete/ESS10")
 #' }
-prepa_survey <- function(folder, name_file = NULL, ...) {
-  list_df <- folder_to_df(folder,...)
+prepa_survey <- function(folder_path, ...) {
+  list_df <- folder_to_df(folder_path,...)
   if (is.null(list_df)) {
     return(NULL)
   }
@@ -502,15 +502,12 @@ prepa_survey <- function(folder, name_file = NULL, ...) {
     df_stats_itw = df_stats_itw
   )
 
-  if (!is.null(name_file)){
-    readr::write_rds(global, file.path(folder,paste0(name_file,".rds")),
-                     compress = "gz")
+  readr::write_rds(global, file.path(folder_path,"global.rds"),compress = "gz")
 
-    cli::cli_alert_success("File {name_file}.rds created.")
-    cli::cli_alert("File in directory {folder}")
-  }
+  cli::cli_alert_success("File {name_file}.rds created.")
+  cli::cli_alert("File in directory {folder}")
 
-  return(global)
+  invisible(TRUE)
 }
 
 #' Preparation of all surveys from a folder

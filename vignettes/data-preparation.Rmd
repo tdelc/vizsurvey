@@ -1,8 +1,13 @@
 ---
-title: "data-preparation"
-output: rmarkdown::html_vignette
+title: "Monitorer vos données d'enquête avec vizsurvey"
+subtitle: "Vignette 2 — Préparer les données"
+author: "Thomas Delclite - Statbel"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{data-preparation}
+  %\VignetteIndexEntry{Explorer et contrôler vos données avec vizsurvey}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,12 +23,94 @@ knitr::opts_chunk$set(
 library(vizsurvey)
 ```
 
+# Introduction
 
-## Préparer vos données
+Cette vignette se concentre sur la préparation des données pour utiliser {vizsurvey} avec l'appel `runVizsurvey_from_folder`. L'objectif ici est de pouvoir utiliser {vizsurvey} de manière régulière, dans un équipe devant gérer plusieurs enquêtes.
 
-### 1. Structurer les fichiers d'entrée
+Dans cette situation, devoir lancer l'interface pour une seule base de données est une limitation peu pratique. De même, faire les calculs d'écarts sont gourmands en calculs, notamment si on multiplie les domaines et les groupes.
 
-Les données sont stockées avec cette arborescence :
+{vizsurvey} contient plusieurs fonctions permettant de préparer les données, et de préparer les données en une seule étape. Cette vignette présente cela pas à pas.
+
+# Préparer vos données
+
+## Structure simple : 1 seul fichier
+
+Le fichier de votre base de données doivent pouvoir être lus par la fonction `data.table::fread`. Cette fonction détecte automatiquement le format de vos données pour les formats standards (csv/tsv). Vous devez placer le fichier dans un répertoire où il est le seul fichier du même type.
+
+### Fichier de configuration de l'enquête
+
+{vizsurvey} requiert qu'un fichier de configuration `config.txt` soit placé au même emplacement que votre base de données. Voici les éléments qu'il doit comporter :
+
+```         
+name_survey = 
+
+vars_discretes =
+vars_continous =
+
+var_domain = 
+var_group = 
+
+var_itw = 
+```
+
+-   `name_survey` : nom de l'enquête, utile pour distinguer les fichiers
+
+-   `vars_discretes` : liste des variables dont on veut forcer le format catégoriel
+
+-   `vars_continous` : liste des variables dont on veut forcer le format continus
+
+-   var_domain : variable de domaine, pour séparer chaque calcul selon cette variable (exemple : année)
+
+-   var_group : variable de groupe, pour séparer les calculs également. À savoir que les calculs sont également effectué sans distinction des groupes (exemple : province)
+
+-   var_itw : variable identifiant l'enquêteur-rice
+
+Vous pouvez créer vous même le fichier, ou faire appel à la fonction dédiée `create_config`. Voici la création du fichier config.txt pour les fichiers ménages de l'enquête SILC, avec l'année comme variable de domaine (`HB010`) et la province comme variable de groupe (`HB020`) :
+
+```{r}
+create_config(
+  folder_path = "inst/extdata/SILC/HFILE",
+  name_survey = "SILC-H",
+  var_domain  = "HB010",
+  var_group   = "HB020",
+  var_itw     = "NR_ITW"
+)
+```
+
+Les variables discrètes et continues ne doivent être forcées que si vous constatez une mauvaise classification de la part de la fonction dédiée `classify_variables` qui préparera ensuite le fichier. Cette fonction détermine le type de variable en fonction du format de la colonne, mais également selon le nombre de modalités. Le nombre de modalités maximal pour classer une variable comme catégorielle est modifiable avec l'argument `threhold` et est fixé par défaut à 15.
+
+```{r}
+classify_variables(iris)
+```
+
+### Préparation de l'enquête
+
+{vizsurvey} permet de calculer en avancer toutes les statistiques d'écarts de votre enquête. La fonction `prepa_survey` part de votre répertoire contenant le fichier de données et le fichier config.txt pour générer :
+
+-   Par domaine, Les statistiques de chaque variable ;
+
+-   Par domaine, pour chaque variable, les écarts de chaque enquêteur·rice avec le reste du domaine
+
+-   Par domaine, par groupe, pour chaque variable, les écarts de chaque enquêteur·rice avec le reste du groupe dans le domaine
+
+La fonction `prepa_survey` peut inclure un pattern pour la base de données. Par défaut, seuls les fichiers csv sont inclus. La fonction génère un fichier global.rda dans le même répertoire que les données. C'est ce fichier qui sera utilisé par l'interface interactive.
+
+```{r, eval=F, warning = F, message = F}
+prepa_survey(
+  folder_path  = "inst/extdata/SILC/HFILE",
+  file_pattern = "*.csv")
+```
+
+Il suffit d'appeler la fonction runVizsurvey_from_folder avec le nom du répertoire, et l'argument
+
+```{r}
+runVizsurvey_from_folder("inst/extdata/SILC/HFILE",
+                         is_double_folder = F)
+```
+
+## 1. Structurer les fichiers d'entrée
+
+Les données du package sont stockées avec cette arborescence :
 
 ```         
 extdata/
@@ -53,7 +140,6 @@ extdata/
 
 L'outil `prepa_survey()` attend une arborescence de type :
 
-
 ### 2. Créer une configuration à partir d'un gabarit
 
 Vous pouvez générer un gabarit initial avec `create_config()` :
@@ -77,7 +163,6 @@ cat(readLines(config_path), sep = "\n")
 
 Adaptez ensuite les sections `variables` pour décrire les indicateurs que vous souhaitez analyser (numériques, catégoriels ou binaires).
 
-
 ### 3. Lancer la préparation
 
 ```{r eval=FALSE}
@@ -93,7 +178,6 @@ prepa_survey(
   survey     = "data/enquête1.csv"
 )
 ```
-
 
 ## Traitements par lot
 
@@ -159,8 +243,6 @@ runVizsurvey_from_folder(output_dir)
 
 Cet exemple crée un environnement isolé dans le dossier temporaire de R, traite les données synthétiques et lance l'application. Adaptez les noms de variables aux vôtres pour reproduire le processus sur vos enquêtes réelles.
 
-
-
 # Limites et responsabilités
 
 -   **vizsurvey** **n'infère** rien : il **organise** l'exploration.
@@ -168,7 +250,6 @@ Cet exemple crée un environnement isolé dans le dossier temporaire de R, trait
 -   Les **interprétations** doivent s'appuyer sur le **contexte** (terrain, consignes, scripts, logs).
 
 -   Les **données sensibles** (enquêteur·rices, ménages) doivent être traitées conformément aux règles de **confidentialité**.
-
 
 ## Allers-retours analytiques
 
@@ -214,6 +295,3 @@ head(iso_scores)
 ```
 
 Avant de lancer cette fonction, assurez-vous que les colonnes sélectionnées sont numériques, sans valeurs manquantes excessives. Standardisez ou filtrez les variables constantes pour éviter des avertissements.
-
-
-

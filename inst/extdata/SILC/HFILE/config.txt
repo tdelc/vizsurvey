@@ -1,11 +1,9 @@
 name_survey = SILC-H
 
-vars_discretes =
-vars_continous =
+vars_discretes = 
+vars_continous = 
 
 var_domain = HB010
-lab_domain = YEAR
 var_group = HB020
-lab_group = Country
 
 var_itw = NR_ITW

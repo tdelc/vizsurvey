@@ -120,22 +120,22 @@ ui <- dashboardPage(
                                   fluidRow(
                                     box(width = 6,title="Ranking of Interviewer",
                                         status = "primary", solidHeader = TRUE,
-                                        DTOutput("itw_ranking")
+                                        dataTableOutput("itw_ranking")
                                     ),
                                     box(width = 6,title="Listing of variables",
                                         status = "primary", solidHeader = TRUE,
-                                        DTOutput("itw_listing")
+                                        dataTableOutput("itw_listing")
                                     )
                                   )),
                          tabPanel("Column Synthesis",
                                   fluidRow(
                                     box(width = 6,title="Ranking of Interviewer",
                                         status = "primary", solidHeader = TRUE,
-                                        DTOutput("itw_var_ranking")
+                                        dataTableOutput("itw_var_ranking")
                                     ),
                                     box(width = 6,title="Listing of variables",
                                         status = "primary", solidHeader = TRUE,
-                                        DTOutput("itw_var_listing")
+                                        dataTableOutput("itw_var_listing")
                                     )
                                   ))
               ),

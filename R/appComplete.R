@@ -1,7 +1,7 @@
 #' Shiny vizsurvey with already prepared data
 #'
 #' @param link link to directory of data
-#' @param is_double_folder is the directory contains subdirectories of survey
+#' @param depth_folder level of depth for the tree structure
 #' @param data_rds_pattern name of the rds file contains all the data
 #'
 #' @returns shinyapp
@@ -9,11 +9,11 @@
 #'
 #' @examples
 #' # We assume that config.txt, and prepa_surveys are already done here.
-#' \dontrun{runVizsurvey_from_folder("inst/extdata",is_double_folder = T)}
+#' \dontrun{runVizsurvey_from_folder("inst/extdata",depth_folder = T)}
 runVizsurvey_from_folder <- function(
     link,
     data_rds_pattern = "global",
-    is_double_folder = T
+    depth_folder = T
 ) {
 
   appDir <- system.file("shiny-examples", "complete", package = "vizsurvey")
@@ -23,7 +23,7 @@ runVizsurvey_from_folder <- function(
 
   shiny::shinyOptions(link_data_folder = normalizePath(link))
   shiny::shinyOptions(data_rds_pattern = data_rds_pattern)
-  shiny::shinyOptions(is_double_folder = is_double_folder)
+  shiny::shinyOptions(depth_folder = depth_folder)
   shiny::runApp(appDir, display.mode = "normal")
 
   invisible(TRUE)
