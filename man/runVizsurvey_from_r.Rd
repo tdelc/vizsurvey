@@ -34,6 +34,7 @@ Shiny vizsurvey from a R data.frame
 }
 \examples{
 library(laeken)
+library(tidyverse)
 data(eusilc)
 set.seed(123)
 eusilc <- eusilc \%>\%
