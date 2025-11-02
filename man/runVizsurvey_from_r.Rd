@@ -35,5 +35,8 @@ Shiny vizsurvey from a R data.frame
 \examples{
 library(laeken)
 data(eusilc)
-\dontrun{runVizsurvey_from_r(eusilc,var_itw = "db040")}
+set.seed(123)
+eusilc <- eusilc \%>\%
+  mutate(NR_ITW = paste(db040,sample(1:5,nrow(.), replace = T),sep="-"))
+\dontrun{runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")}
 }

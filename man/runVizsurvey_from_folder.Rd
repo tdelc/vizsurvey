@@ -4,10 +4,16 @@
 \alias{runVizsurvey_from_folder}
 \title{Shiny vizsurvey with already prepared data}
 \usage{
-runVizsurvey_from_folder(link = NULL, is_double_folder = T)
+runVizsurvey_from_folder(
+  link,
+  data_rds_pattern = "global",
+  is_double_folder = T
+)
 }
 \arguments{
 \item{link}{link to directory of data}
+
+\item{data_rds_pattern}{name of the rds file contains all the data}
 
 \item{is_double_folder}{is the directory contains subdirectories of survey}
 }

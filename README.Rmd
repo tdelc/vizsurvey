@@ -33,7 +33,7 @@ You can install the development version of vizsurvey like so:
 
 ## Example
 
-This is tree option to lauch the dashboard:
+This is tree options to lauch the dashboard:
 
 ### From a R object
 
@@ -41,18 +41,22 @@ This is tree option to lauch the dashboard:
 library(vizsurvey)
 library(laeken)
 data(eusilc)
-runVizsurvey_from_r(eusilc,var_itw = "db040")
+set.seed(123)
+eusilc <- eusilc %>% 
+  mutate(NR_ITW = paste(db040,sample(1:5,nrow(.),replace = T),sep="-"))
+runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")
 ```
 
 ### From a csv file
 
 ```{r example2, eval=FALSE}
-runVizsurvey_from_file(path="inst/shiny-examples/complete/data/ESS/ESS9/ESS9.csv",var_itw = "INTNUM1",var_domain="CNTRY",var_group = "PREINTF")
+path <- "inst/extdata/ESS/ESS9/ESS9.csv"
+runVizsurvey_from_file(path,var_itw = "INTNUM1",var_domain="CNTRY")
 ```
 
 ### From a directory of prepared data
 
 ```{r example3, eval=FALSE}
 # We assume that config.txt, and prepa_surveys are already done here.
-runVizsurvey_from_folder("data",is_double_folder = T)
+runVizsurvey_from_folder("inst/extdata",is_double_folder = T)
 ```
