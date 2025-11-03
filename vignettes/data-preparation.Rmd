@@ -1,7 +1,5 @@
 ---
-title: "Monitorer vos données d'enquête avec vizsurvey"
-subtitle: "Vignette 2 — Préparer les données"
-author: "Thomas Delclite - Statbel"
+title: "Préparer les données"
 output:
   rmarkdown::html_vignette:
     toc: true

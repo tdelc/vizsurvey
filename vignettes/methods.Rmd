@@ -1,7 +1,5 @@
 ---
-title: "Monitorer vos données d'enquête avec vizsurvey"
-subtitle: "Vignette 3 — Méthodologie et principes des fonctions"
-author: "Thomas Delclite - Statbel"
+title: "Méthodologie et usages des fonctions"
 output:
   rmarkdown::html_vignette:
     toc: true
