@@ -559,7 +559,7 @@ server <- function(input, output, session) {
 
     req(prepa_heatmap())
 
-    p <- heat_map_itw(prepa_heatmap(),input$itw_threshold)
+    p <- heatmap_group(prepa_heatmap(),input$itw_threshold)
 
     ggplotly(p, tooltip = "text", source = "heatmap_source") %>%
       event_register("plotly_click")

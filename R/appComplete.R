@@ -70,13 +70,11 @@ runVizsurvey_from_r <- function(
   unlink(file.path(temporary_dir, "DATA"),recursive = T)
   dir.create(file.path(temporary_dir, "DATA"))
   link_folder <- file.path(temporary_dir, "DATA")
-  dir.create(file.path(temporary_dir, "DATA","DATA"))
-  link_data_folder <- file.path(temporary_dir, "DATA","DATA")
-  readr::write_csv(df,file=file.path(link_data_folder,"data_from_r.csv"),
+  readr::write_csv(df,file=file.path(link_folder,"data_from_r.csv"),
                    col_names = T)
 
   create_config(
-    folder_path    = link_data_folder,
+    folder_path    = link_folder,
     file_name      = "config.txt",
     name_survey    = NULL,
     vars_discretes = vars_discretes,
@@ -86,11 +84,13 @@ runVizsurvey_from_r <- function(
     var_itw        = var_itw
   )
 
-  prepa_survey(link_data_folder,"global")
+  # prepa_survey("C:/Users/thomas.delclite/AppData/Local/Temp/RtmpCShE5t/DATA")
+
+  prepa_survey(link_folder)
 
   shiny::shinyOptions(link_data_folder = link_folder)
   shiny::shinyOptions(data_rds_pattern = "global")
-  shiny::shinyOptions(is_double_folder = F)
+  shiny::shinyOptions(depth_folder = 1)
   shiny::runApp(appDir, display.mode = "normal")
 
   invisible(TRUE)
@@ -156,7 +156,7 @@ runVizsurvey_from_file <- function(
 
   shiny::shinyOptions(link_data_folder = link_folder)
   shiny::shinyOptions(data_rds_pattern = "global")
-  shiny::shinyOptions(is_double_folder = F)
+  shiny::shinyOptions(depth_folder = 1)
   shiny::runApp(appDir, display.mode = "normal")
 
   invisible(TRUE)

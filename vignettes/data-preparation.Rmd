@@ -79,10 +79,10 @@ create_config(
 )
 ```
 
-Les variables discrètes et continues ne doivent être précisées que si la fonction `classify_variables` identifie mal leur type. Cette fonction détermine automatiquement le type de chaque variable, à partir du format et du nombre de modalités. Le seuil de classification d’une variable comme catégorielle est fixé par défaut à 15.
+Les variables discrètes et continues ne doivent être précisées que si la fonction `classify_df` identifie mal leur type. Cette fonction détermine automatiquement le type de chaque variable, à partir du format et du nombre de modalités. Le seuil de classification d’une variable comme catégorielle est fixé par défaut à 15.
 
 ```{r}
-classify_variables(iris)
+classify_df(iris)
 ```
 
 ### Préparation de l'enquête

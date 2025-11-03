@@ -4,16 +4,16 @@
 \alias{prepa_stats}
 \title{Create a summarise of all the difference}
 \usage{
-prepa_stats(db, vars_vd, vars_vc, var_group)
+prepa_stats(df, var_group, vars_vd = NULL, vars_vc = NULL)
 }
 \arguments{
-\item{db}{data frame for the summary}
-
-\item{vars_vd}{Vector of discrete variables}
-
-\item{vars_vc}{Vector of continuous variables}
+\item{df}{data frame for the summary}
 
 \item{var_group}{Name of group variable}
+
+\item{vars_vd}{(optional) Vector of discrete variables}
+
+\item{vars_vc}{(optional) Vector of continuous variables}
 }
 \value{
 data frame
@@ -25,8 +25,8 @@ Create a summarise of all the difference
 library(laeken)
 data(eusilc)
 
-info_vars <- classify_variables(eusilc)
+info_vars <- classify_df(eusilc)
 vars_vd <- info_vars[info_vars$type == "Modal", ]$variable
 vars_vc <- info_vars[info_vars$type == "Continuous", ]$variable
-prepa_stats(eusilc, vars_vd, vars_vc, "db040")
+prepa_stats(eusilc, "db040", vars_vd, vars_vc)
 }

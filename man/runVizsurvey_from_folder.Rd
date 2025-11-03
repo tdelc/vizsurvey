@@ -4,7 +4,7 @@
 \alias{runVizsurvey_from_folder}
 \title{Shiny vizsurvey with already prepared data}
 \usage{
-runVizsurvey_from_folder(link, data_rds_pattern = "global", depth_folder = T)
+runVizsurvey_from_folder(link, data_rds_pattern = "global", depth_folder = 1)
 }
 \arguments{
 \item{link}{link to directory of data}
@@ -21,5 +21,5 @@ Shiny vizsurvey with already prepared data
 }
 \examples{
 # We assume that config.txt, and prepa_surveys are already done here.
-\dontrun{runVizsurvey_from_folder("inst/extdata",depth_folder = T)}
+\dontrun{runVizsurvey_from_folder("inst/extdata",depth_folder = 3)}
 }

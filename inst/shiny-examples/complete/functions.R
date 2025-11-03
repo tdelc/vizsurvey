@@ -157,55 +157,6 @@ shiny_distrib_continuous <- function(db, quanti_exp, facet = NULL,
   }
 }
 
-
-#### Heatmap ####
-
-heat_map_itw <- function(db_stat, threshold) {
-  var_group <- colnames(db_stat)[1]
-
-  db_stat <- db_stat %>%
-    mutate(stat_standard = paste(stat, round(standard, 2), sep = " : ")) %>%
-    group_by(!!sym(var_group), variable, Nrow, Nval, type) %>%
-    summarise(
-      standard = max(abs(standard)),
-      stat_standard = paste(stat_standard, collapse = "\n")
-    ) %>%
-    ungroup() %>%
-    mutate(
-      info = paste0(
-        "Variable : ", variable, " (", type, ")\n",
-        "Itw : ", !!sym(var_group), "\n",
-        "N rows : ", Nrow, "\n",
-        "Valid N rows : ", Nval, "\n",
-        stat_standard
-      )
-    )
-
-  p <- ggplot(db_stat) +
-    aes(variable, !!sym(var_group), fill = standard, text = info) +
-    geom_tile(color = "white", lwd = 1.5, linetype = 1) +
-    scale_fill_gradientn(
-      na.value = "cyan3", colours = c("green2", "white", "white", "red2"),
-      values = scales::rescale(c(
-        -threshold * 2, -threshold,
-        threshold, threshold * 2
-      )),
-      limits = c(-threshold * 2, threshold * 2),
-      oob = scales::squish
-    ) +
-    theme_minimal() +
-    # theme_fonctionr() +
-    labs(x = "") +
-    theme(
-      panel.background = element_rect(fill = "grey80"),
-      legend.position = "none",
-      axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
-      panel.grid = element_blank()
-    )
-
-  p
-}
-
 #### Correlation ####
 
 itw_main_corr <- function(M, variable) {

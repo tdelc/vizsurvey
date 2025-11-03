@@ -72,60 +72,7 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
       across(any_of(var_group), as.character)
     )
 
-  # Calcul de la distribution globale pour chaque variable catégorielle
-  dist_list <- lapply(vars_vd, function(varname) {
-    expected_prop <- prop.table(table(df[[varname]], useNA = "ifany"))
-    names(expected_prop)[which(is.na(names(expected_prop)))] <- "NA_"
-    expected_prop <- tibble(category = names(expected_prop), prop = expected_prop) %>%
-      mutate(category = ifelse(prop < 0.01, "OTH_", category)) %>%
-      group_by(category) %>%
-      summarise(prop = sum(prop)) %>%
-      ungroup()
-    setNames(expected_prop$prop, expected_prop$category)
-  })
-  names(dist_list) <- vars_vd
-
-  my_chisq_test <- function(x, varname, ldist = dist_list) {
-    if (all(is.na(x))) {
-      return(NA_real_)
-    }
-    observed_counts <- table(x, useNA = "ifany")
-    expected_prop <- ldist[[varname]]
-
-    names(observed_counts)[which(is.na(names(observed_counts)))] <- "NA_"
-    rare_categories <- setdiff(names(observed_counts), names(expected_prop))
-    observed_counts["OTH_"] <- sum(observed_counts[rare_categories], na.rm = TRUE)
-    observed_counts <- observed_counts[!names(observed_counts) %in% rare_categories]
-    observed_counts <- observed_counts[which(observed_counts > 0)]
-
-    all_levels <- union(names(observed_counts), names(expected_prop))
-    obs <- observed_counts[all_levels]
-    names(obs) <- all_levels
-    obs[is.na(obs)] <- 0
-    exp_prop <- expected_prop[all_levels]
-    exp_prop[is.na(exp_prop)] <- 0
-
-    out <- tryCatch(
-      {
-        t_chi <- stats::chisq.test(obs, p = exp_prop, simulate.p.value = TRUE, B = 1)
-        t_chi$statistic
-      },
-      error = function(e) {
-        NA_real_
-      }
-    )
-    out
-  }
-
-  scale_borne <- function(x) {
-    IIQ <- quantile(x, probs = 0.75, na.rm = TRUE) - quantile(x, probs = 0.25, na.rm = TRUE)
-    if (is.na(IIQ) | IIQ == 0) {
-      scale(x)[, 1]
-    } else {
-      if (!all(x < 1, na.rm = TRUE)) IIQ <- max(IIQ, 1)
-      (x - median(x, na.rm = TRUE)) / IIQ
-    }
-  }
+  ldist <- list_dist(df,vars_vd)
 
   df_stats <- df %>%
     group_by(!!sym(var_group)) %>%
@@ -138,7 +85,7 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
           missing = ~ mean(is.na(.x)),
           presence = ~ mean(is.na(.x)) != 1,
           Nmod = ~ ifelse(mean(is.na(.x)) > 0.95, NA, length(unique(.x))),
-          chi2 = ~ my_chisq_test(.x, cur_column())
+          chi2 = ~ my_chisq_test(.x, cur_column(),ldist)
         ),
         .names = "{.col}|cha|{.fn}"
       ),
@@ -170,7 +117,7 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
     mutate(
       value = ifelse(is.infinite(value), 1000, value),
       value_ref = mean(value, na.rm = TRUE),
-      standard = scale_borne(value),
+      standard = scale_IQR(value),
       standard = case_when(
         sd(value, na.rm = TRUE) == 0 ~ 0,
         is.nan(standard) ~ NA,
@@ -512,8 +459,8 @@ prepa_survey <- function(folder_path, ...) {
 
   readr::write_rds(global, file.path(folder_path,"global.rds"),compress = "gz")
 
-  cli::cli_alert_success("File {name_file}.rds created.")
-  cli::cli_alert("File in directory {folder}")
+  cli::cli_alert_success("File global.rds created.")
+  cli::cli_alert("File in directory {folder_path}")
 
   invisible(TRUE)
 }

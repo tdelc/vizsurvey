@@ -36,36 +36,116 @@ Les retours d’expérience des responsables d’enquête, les échanges entre s
 
 La publication de ce package vise à partager ces choix. En rendant publiques les formules, les fonctions et la logique de calcul, nous souhaitons favoriser la transparence, encourager la réutilisation et stimuler les contributions d’autres équipes confrontées à des problématiques similaires. Notre ambition est de construire, avec d’autres instituts de statistique et organismes de sondage, une base commune d’outils et de pratiques pour le monitoring des enquêtes, en intégrant les retours des enquêteur-rices et des responsables d'enquête et des méthodologues.
 
-# `classify_df()` : extraire les agrégats
+Les exemples fournis dans cette vignette se baseront sur la base de données eusilc du package {laeken}. Ce fichier ne contient pas d'identifiant d'enquêteur-rice, nous en créons un à partir de la variable de province. Cela permet de simuler la présence de 45 enquêteur-rices.
+
+```{r}
+library(laeken)
+data(eusilc)
+set.seed(123)
+eusilc$NR_ITW <- paste(eusilc$db040,sample(1:5,nrow(eusilc),replace = T),sep="-")
+
+table(eusilc$NR_ITW)
+```
+
+# `classify_df()` : Classer les variables
+
+`classify_df()` nécessite une base de données en entrée et produit une table en sortie avec une catégorie pour chaque variable : "Solo" si la variable ne contient qu'une seule modalité ; "Modal" lors que la variable contient au plus 15 modalités ; "Continuous" lorsque la variable est numérique avec plus de 15 modalités ; "Text" sinon. Le nombre de modalités pour choisir la catégorie de variable peut être décidé avec le paramètre `threhold` (fixé à 15 par défaut).
+
+Cette fonction guide l'analyse de {vizsurvey} dans le choix des indicateurs pour chaque variable. Vous pouvez laisser la fonction décider seule de la catégorie de vos variables, ou forcer vous mêmes la catégorie de certaines variables avec le `config.txt` (voir vignette 2)
+
+```{r}
+classify_df(eusilc)
+```
 
 # `prepa_stats()` : extraire les agrégats
 
-`prepa_stats()` vous renvoie un data.frame compilant les statistiques calculées pendant la préparation. Vous pouvez l'utiliser pour alimenter des rapports ou construire vos propres visualisations.
+`prepa_stats()` nécessite en entrée une base de données et une variable de groupe, et renvoie un data.frame compilant les statistiques calculées pour chaque variable par groupe. Vous pouvez indiquer la catégorie de chaque variable, avec les argument `vars_vd` (variables discrètes) et `vars_vc` (variables continues). Si ces deux arguments sont laissés vides, la fonction `classify_df` est passée sur la base de données avant de procéder aux statistiques. Vous pouvez l'utiliser pour alimenter des rapports ou construire vos propres visualisations.
 
 ```{r eval=FALSE}
-stats <- prepa_stats(iris,
-                     var_group = "Species")
-head(stats)
+prepa_stats(eusilc,var_group = "NR_ITW")
 ```
 
-# `heat_map_group()` : personnaliser la visualisation
+Cette fonction renvoie un fichier long avec une ligne par croisement groupe/variable/indicateur. Pour chaque croisement groupe/variable, le nombre de lignes, le nombre de lignes valides (non manquantes) et le type de la variable sont renseignés. Les indicateurs calculés sont, pour un groupe donné :
 
-Pour générer une heatmap hors Shiny :
+-   "missing" : pourcentage de valeurs manquantes dans la variable ;
 
-```{r eval=FALSE}
-library(dplyr)
+-   "presence" : indicatrice si au moins une valeur est non manquante ;
 
-data_group <- stats %>%
-  dplyr::filter(variable == "satisfaction")
+-   "Nmod" (pour les variables catégorielles) : nombre de modalités de la variable ;
 
-heat_map_group(
-  data_group,
-  group_var   = "vg",
-  interviewer = "interviewer",
-  value       = "mean",
-  show_legend = TRUE
-)
+-   "chi2" (pour les variables catégorielles) : mesure de distance de la variable pour ce groupe vis-à-vis de la base complète ;
+
+-   "mean" / "median" (pour les variables continues) : moyenne / médiane de la variable.
+
+La variable `value` donne la valeur brute de l'indicateur. La variable `value_ref` donne la valeur de l'indicateur pour tout le groupe. La variable `standard` est une standardisation de la variable.
+
+La plupart des indicateurs ont des formules de calculs évidente. Seul l'indicateur "chi2" mérite une attention particulière ici. Ce calcul est fait à l'aide des fonctions list_dist et my_chisq_test. Voici les étapes de calculs du $\chi2$ :
+1.  On commence par calculer la distribution des modalités de la variable sur l'ensemble des lignes avec la fonction list_dist. On construit un tableau des effectifs par modalité, puis on le convertit en proportions. On inclue une modalité NA lorsqu'il existe des données manquantes dans la variable. Les catégories rares (moins de 1%) sont regroupés dans une catégorie "Autre". On obtient un objet expected_prop pour chaque variable ;
+2.  Dans chaque groupe, la fonction my_chisq_test identifie les valeurs manquantes et les modalités rares pour les regrouper ;
+3.  On compare la distribution du groupe complet avec celle du groupe, avec la fonction stats::chisq.test(obs, p = exp_prop).
+
+Regrouper les modalités inférieures à 1% évite le bruit visuel et les comparaisons peu informatives. De plus, traiter les données manquantes comme une modalité dédiée permet de suivre les non-réponses au même titre que les réponses valides.
+
+Un groupe est ici comparé en partie à lui même, car la distribution globale est calculée une seule fois. Cela peut poser problème si le groupe est trop influent sur la base de données complète. Nous avons fait ce choix pour limiter le temps de calcul. Une seule distribution doit ici être calculé par variable, et {vizsurvey} permet ensuite de ventiler ces calculs par domaine/groupe.
+
+La standardisation des indicateurs est réalisée avec la fonction scale_IQR. La fonction scale_IQR vise à ramener une variable numérique dans une échelle comparable, mais en remplaçant l'écart-type classique par un écart interquartile (IIQ). C'est donc une normalisation robuste, moins sensible aux valeurs extrêmes que la standardisation usuelle. Elle est conçue pour utiliser la standardisation classique scale dans des situations "non idéales" : valeurs manquantes, absence de variabilité, ou données bornées entre 0 et 1.
+
+# `heatmap_group()` : personnaliser la visualisation
+
+Il est possible de générer la carte de chaleur en dehors de l'interface interactive de {vizsurvey}. La fonction heatmap_group requiert un data.frame issue de prepa_stats et renvoie un ggplot avec une ligne par groupe et une colonne par variable. La fonction va utiliser tous les indicateurs disponibles pour une variable donnée afin de déterminer l'intensité de couleur de la cellule. Si vous souhaitez limiter l'analyse à certains indicateurs, il faut filtrer l'output de prepa_stats avant de calculer la carte de chaleur. 
+
+Par défaut, les cellules s'affichent si la standardisation dépasse 5, il est possible de modifier ce seuil avec l'argument threshold. La couleur ira de blanc à la couleur sélectionnée par l'argument color (rouge par défaut) sur une échelle du seuil à deux fois celui-ci. Ainsi, un écart trop important n'invisible pas les autres écarts. 
+
+```{r}
+df_stats_eusilc <- prepa_stats(eusilc, "NR_ITW")
+
+heatmap_group(df_stats_eusilc, threshold = 1, color = "green2") +
+  ggtitle("Carte de chaleur de eusilc par DB040")
+
+df_stats_eusilc %>% 
+  filter(stat == 'chi2') %>% 
+  heatmap_group(threshold = 1,color = "purple2") +
+  ggtitle("Carte de chaleur des chi² de eusilc par DB040")
 ```
+
+Il est aussi possible de zoomer sur la carte de chaleur, à nouveau en filtrant les données du data.frame issu de prepa_stats. Voici les trois exemples repris dans l'interface interactive :
+
+```{r}
+threshold <- 3
+
+df_stats_eusilc %>%
+  group_by(db040) %>%
+  filter(max(abs(standard),na.rm=TRUE)>threshold) %>%
+  ungroup() %>% 
+  heatmap_group(threshold) +
+  ggtitle("Zoom sur les lignes")
+
+df_stats_eusilc %>%
+  group_by(variable) %>%
+  filter(max(abs(standard),na.rm=TRUE)>threshold) %>%
+  ungroup() %>% 
+  heatmap_group(threshold) +
+  ggtitle("Zoom sur les colonnes")
+
+df_stats_eusilc %>%
+  group_by(db040,variable) %>%
+  filter(max(abs(standard),na.rm=TRUE)>threshold) %>%
+  ungroup() %>% 
+  heatmap_group(threshold) +
+  ggtitle("Zoom sur les cellules")
+```
+
+L'objet ggplot issu de heatmap_group intègre des infos bulles pouvant être activées par plotly. 
+
+```{r}
+p <- df_stats_eusilc %>%
+  heatmap_group(3) +
+  ggtitle("Carte de chaleur interactive")
+
+ggplotly(p, tooltip = "text")
+```
+
+
 
 Vous pouvez ajuster la palette via l'argument `palette` et contrôler les titres à l'aide de `title` et `subtitle`.
 

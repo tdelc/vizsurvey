@@ -181,7 +181,7 @@ server <- function(input, output, session) {
     values$heatmap_vec_itw <- db_stat %>% pull(!!sym(var_group)) %>%
       unique() %>% as.character() %>% sort()
 
-    p <- heat_map_group(db_stat,input$itw_threshold)
+    p <- heatmap_group(db_stat,input$itw_threshold)
 
     ggplotly(p, tooltip = "text", source = "heatmap_source") %>%
       event_register("plotly_click")
