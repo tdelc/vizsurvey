@@ -119,7 +119,7 @@ server <- function(input, output, session) {
     vd <- intersect(values$vd, names(db))
     vc <- intersect(values$vc, names(db))
 
-    db_stat <- prepa_stats(db,vd,vc,values$itw)
+    db_stat <- prepa_stats(db,values$itw,vd,vc)
 
     return(db_stat)
   })

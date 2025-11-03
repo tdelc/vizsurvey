@@ -31,77 +31,24 @@ Les calculs réalisés dans `{vizsurvey}` reposent sur des mesures simples mais 
 
 L’ensemble des fonctions utilisées dans `{vizsurvey}` a été conçu pour être applicable à tout type de variable, qu’elle soit catégorielle (codes, modalités, réponses à choix) ou numérique (valeurs continues, durées, âges, revenus). L’objectif est de fournir un cadre de calcul générique, reproductible et robuste, permettant d’assurer la comparabilité des résultats entre enquêtes, années ou domaines. La priorité a toujours été donnée à la stabilité des indicateurs et à la simplicité des formules, afin de faciliter leur lecture et leur appropriation par les équipes de terrain comme par les analystes.
 
-Ces choix méthodologiques ne sont pas figés : ils ont été progressivement affinés au sein de Statbel, sur base des premiers résultats produits par les tableaux de contrôle.\
-Les retours d’expérience des coordinateur-rices d’enquête, les échanges entre départements, ainsi que plusieurs références issues de la littérature sur la qualité des enquêtes ont guidé l’évolution des fonctions. Ainsi, `{vizsurvey}` reflète une démarche collective et empirique, fondée sur la confrontation directe aux données plutôt que sur des prescriptions théoriques.
+Ces choix méthodologiques ne sont pas figés : ils ont été progressivement affinés au sein de Statbel, sur base des premiers résultats produits par l'interface.\
+Les retours d’expérience des responsables d’enquête, les échanges entre service, ainsi que plusieurs références issues de la littérature sur la qualité des enquêtes ont guidé l’évolution des fonctions. Ainsi, `{vizsurvey}` reflète une démarche collective et empirique, fondée sur la confrontation directe aux données.
 
-La publication de ce package vise à partager ces choix, non à imposer une solution unique. En rendant publiques les formules, les fonctions et la logique de calcul, nous souhaitons favoriser la transparence, encourager la réutilisation et stimuler les contributions d’autres équipes confrontées à des problématiques similaires. Notre ambition est de construire, avec d’autres instituts de statistique et organismes de sondage, une base commune d’outils et de pratiques pour le monitoring des enquêtes, en intégrant les retours des enquêteur·rices, des superviseur·es et des méthodologues.
+La publication de ce package vise à partager ces choix. En rendant publiques les formules, les fonctions et la logique de calcul, nous souhaitons favoriser la transparence, encourager la réutilisation et stimuler les contributions d’autres équipes confrontées à des problématiques similaires. Notre ambition est de construire, avec d’autres instituts de statistique et organismes de sondage, une base commune d’outils et de pratiques pour le monitoring des enquêtes, en intégrant les retours des enquêteur-rices et des responsables d'enquête et des méthodologues.
 
-`{vizsurvey}` se veut donc un espace de collaboration ouverte : un point de départ pour mutualiser les efforts, confronter les approches et améliorer collectivement la qualité des enquêtes, étape par étape.
+# `classify_df()` : extraire les agrégats
 
-Cette vignette détaille les principes de calcul utilisés dans {vizsurvey}. Comme expliqué dans la vignette 1 , aucun test statistique n’est exécuté dans cet outil : {vizsurvey} ne tire aucune conclusion automatique. Son rôle est d’organiser l’exploration et de guider l’analyse, non de la remplacer.
-
-Les calculs mis en œuvre reposent sur des mesures de distance, des rangs et des écarts types, appliqués de manière homogène à différents types de variables (catégorielles ou numériques). Ces mesures permettent de détecter les anomalies, repérer les ruptures entre vagues d’enquête, ou encore évaluer la stabilité des distributions au fil du temps.
-
-# Objectif : des fonctions génériques et robustes
-
-L’objectif central du développement méthodologique de `{vizsurvey}` est de proposer des **fonctions génériques**, capables de s’appliquer à tout type de variable observée dans une enquête :
-
--    variables **catégorielles** (choix, modalités, codes, flags),
-
--   variables **numériques** (durées, revenus, âges, scores),
-
--   variables **de suivi** (dates, identifiants enquêteur·rices, etc.).
-
-Ces fonctions ont été conçues pour être :
-
--    **robustes**, afin de résister à la présence d’anomalies ou de valeurs manquantes ;
-
--   **cohérentes**, afin de pouvoir comparer les résultats entre vagues d’enquête ;
-
--   **reproductibles**, grâce à une structure de code claire et des formules explicites.
-
-# Construction progressive et validation empirique
-
-Le choix des indicateurs et des méthodes de calcul a été progressivement affiné au sein de Statbel, sur base des premiers résultats observés lors des contrôles de cohérence des enquêtes (SILC, ESS, ICT, etc.). Cette approche **empirique et collaborative** a permis d’identifier les combinaisons d’indicateurs les plus pertinentes pour...
-
-Plusieurs **références méthodologiques et articles scientifiques** ont également inspiré les choix retenus, notamment dans le domaine du *data quality monitoring*, des *survey paradata*, et du *robust statistics*.
-
-# Transparence et amélioration continue
-
-Nous ne prétendons pas ici proposer une solution parfaite. L’objectif de la publication de `{vizsurvey}` est au contraire de **rendre ces formules transparentes**, pour encourager leur **réutilisation, discussion et amélioration**.
-
-En rendant public le code source des fonctions et la logique de calcul :
-
--   nous permettons à d’autres instituts de **vérifier, adapter et améliorer** nos approches,
-
--   nous favorisons une **harmonisation méthodologique** entre pays et entre types d’enquêtes,
-
--   nous facilitons la **réplicabilité** des analyses et le **dialogue entre statisticiens**.
-
-# Une collaboration ouverte
-
-Le développement de `{vizsurvey}` s’inscrit dans une démarche de **coopération inter-institutionnelle**.\
-Nous souhaitons travailler avec les **instituts nationaux de statistique**, les **organismes réalisant des enquêtes de grande ampleur**, et les **équipes de terrain** impliquant des **enquêteur·rices** et des **coordinateur·rices de collecte**.
-
-L’objectif est de construire **collectivement une interface de contrôle efficace**, intégrant à la fois les besoins méthodologiques des analystes et les retours opérationnels des équipes de terrain.
-
-# Conclusion
-
-`{vizsurvey}` propose un cadre ouvert et évolutif pour le contrôle et la compréhension des données d’enquête.\
-En diffusant les formules, les fonctions et les principes de calcul, nous espérons contribuer à un **écosystème méthodologique partagé**, fondé sur la **transparence**, la **collaboration**, et la **qualité statistique**.
-
-## Allers-retours analytiques
-
-### `prepa_stats()` : extraire les agrégats
+# `prepa_stats()` : extraire les agrégats
 
 `prepa_stats()` vous renvoie un data.frame compilant les statistiques calculées pendant la préparation. Vous pouvez l'utiliser pour alimenter des rapports ou construire vos propres visualisations.
 
 ```{r eval=FALSE}
-stats <- prepa_stats(output_dir)
+stats <- prepa_stats(iris,
+                     var_group = "Species")
 head(stats)
 ```
 
-### `heat_map_group()` : personnaliser la visualisation
+# `heat_map_group()` : personnaliser la visualisation
 
 Pour générer une heatmap hors Shiny :
 
@@ -132,5 +79,36 @@ iso_scores  <- score_isoforest(donnees_num)
 
 head(iso_scores)
 ```
+
+`{vizsurvey}` se veut donc un espace de collaboration ouverte : un point de départ pour mutualiser les efforts, confronter les approches et améliorer collectivement la qualité des enquêtes, étape par étape.
+
+Cette vignette détaille les principes de calcul utilisés dans {vizsurvey}. Comme expliqué dans la vignette 1 , aucun test statistique n’est exécuté dans cet outil : {vizsurvey} ne tire aucune conclusion automatique. Son rôle est d’organiser l’exploration et de guider l’analyse, non de la remplacer.
+
+Les calculs mis en œuvre reposent sur des mesures de distance, des rangs et des écarts types, appliqués de manière homogène à différents types de variables (catégorielles ou numériques). Ces mesures permettent de détecter les anomalies, repérer les ruptures entre vagues d’enquête, ou encore évaluer la stabilité des distributions au fil du temps.
+
+# Objectif : des fonctions génériques et robustes
+
+L’objectif central du développement méthodologique de `{vizsurvey}` est de proposer des **fonctions génériques**, capables de s’appliquer à tout type de variable observée dans une enquête :
+
+-   variables **catégorielles** (choix, modalités, codes, flags),
+
+-   variables **numériques** (durées, revenus, âges, scores),
+
+-   variables **de suivi** (dates, identifiants enquêteur·rices, etc.).
+
+Ces fonctions ont été conçues pour être :
+
+-   **robustes**, afin de résister à la présence d’anomalies ou de valeurs manquantes ;
+
+-   **cohérentes**, afin de pouvoir comparer les résultats entre vagues d’enquête ;
+
+-   **reproductibles**, grâce à une structure de code claire et des formules explicites.
+
+# Conclusion
+
+`{vizsurvey}` propose un cadre ouvert et évolutif pour le contrôle et la compréhension des données d’enquête.\
+En diffusant les formules, les fonctions et les principes de calcul, nous espérons contribuer à un **écosystème méthodologique partagé**, fondé sur la **transparence**, la **collaboration**, et la **qualité statistique**.
+
+## Allers-retours analytiques
 
 Avant de lancer cette fonction, assurez-vous que les colonnes sélectionnées sont numériques, sans valeurs manquantes excessives. Standardisez ou filtrez les variables constantes pour éviter des avertissements.

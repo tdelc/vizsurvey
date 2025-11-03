@@ -6,8 +6,8 @@
 #' @export
 #'
 #' @examples
-#' classify_variables(iris)
-classify_variables <- function(df, threhold = 15) {
+#' classify_df(iris)
+classify_df <- function(df, threhold = 15) {
   df %>%
     summarise(across(everything(), ~ {
       if (n_distinct(.) == 1) {
@@ -31,10 +31,10 @@ classify_variables <- function(df, threhold = 15) {
 
 #' Create a summarise of all the difference
 #'
-#' @param db data frame for the summary
-#' @param vars_vd Vector of discrete variables
-#' @param vars_vc Vector of continuous variables
+#' @param df data frame for the summary
 #' @param var_group Name of group variable
+#' @param vars_vd (optional) Vector of discrete variables
+#' @param vars_vc (optional) Vector of continuous variables
 #'
 #' @returns data frame
 #' @export
@@ -43,22 +43,28 @@ classify_variables <- function(df, threhold = 15) {
 #' library(laeken)
 #' data(eusilc)
 #'
-#' info_vars <- classify_variables(eusilc)
+#' info_vars <- classify_df(eusilc)
 #' vars_vd <- info_vars[info_vars$type == "Modal", ]$variable
 #' vars_vc <- info_vars[info_vars$type == "Continuous", ]$variable
-#' prepa_stats(eusilc, vars_vd, vars_vc, "db040")
-prepa_stats <- function(db, vars_vd, vars_vc, var_group) {
+#' prepa_stats(eusilc, "db040", vars_vd, vars_vc)
+prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
   if (length(var_group) == 0) {
     return(tibble(NULL))
+  }
+
+  if (is.null(vars_vd) & is.null(vars_vc)){
+    info_vars <- classify_df(df)
+    vars_vd <- info_vars[info_vars$type == "Modal", ]$variable
+    vars_vc <- info_vars[info_vars$type == "Continuous", ]$variable
   }
 
   vars_vd <- setdiff(vars_vd, var_group)
   vars_vc <- setdiff(vars_vc, var_group)
 
-  vars_vd <- intersect(vars_vd, names(db))
-  vars_vc <- intersect(vars_vc, names(db))
+  vars_vd <- intersect(vars_vd, names(df))
+  vars_vc <- intersect(vars_vc, names(df))
 
-  db <- db %>%
+  df <- df %>%
     mutate(
       across(any_of(vars_vc), as.numeric),
       across(any_of(vars_vd), as.factor),
@@ -68,7 +74,7 @@ prepa_stats <- function(db, vars_vd, vars_vc, var_group) {
 
   # Calcul de la distribution globale pour chaque variable catégorielle
   dist_list <- lapply(vars_vd, function(varname) {
-    expected_prop <- prop.table(table(db[[varname]], useNA = "ifany"))
+    expected_prop <- prop.table(table(df[[varname]], useNA = "ifany"))
     names(expected_prop)[which(is.na(names(expected_prop)))] <- "NA_"
     expected_prop <- tibble(category = names(expected_prop), prop = expected_prop) %>%
       mutate(category = ifelse(prop < 0.01, "OTH_", category)) %>%
@@ -121,7 +127,7 @@ prepa_stats <- function(db, vars_vd, vars_vc, var_group) {
     }
   }
 
-  db_stat <- db %>%
+  df_stats <- df %>%
     group_by(!!sym(var_group)) %>%
     summarise(
       Nrow = n(),
@@ -173,7 +179,7 @@ prepa_stats <- function(db, vars_vd, vars_vc, var_group) {
     ) %>%
     dplyr::relocate(!!sym(var_group), variable, Nrow, Nval) %>%
     ungroup()
-  return(db_stat)
+  return(df_stats)
 }
 
 #' Create a template of configuration file
@@ -340,7 +346,7 @@ folder_to_df <- function(folder,
   configs$enq <- config %>% extract_config("name_survey")
 
   # add automatic classification
-  df_variables <- classify_variables(df)
+  df_variables <- classify_df(df)
   prepa_vd <- df_variables %>%
     filter(type == "Modal") %>%
     pull(variable)
@@ -400,7 +406,7 @@ create_df_stats <- function(df_, configs,
   variables$variables_vd <- configs$vd
   variables$variables_vc <- configs$vc
 
-  df_stats <- df %>% prepa_stats(configs$vd, configs$vc, var_calculs)
+  df_stats <- df %>% prepa_stats(var_calculs, configs$vd, configs$vc)
 
   if (!is.null(filter_group)) {
     df_stats <- df_stats %>% mutate(group = filter_group)
