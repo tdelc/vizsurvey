@@ -21,7 +21,8 @@ knitr::opts_chunk$set(
 
 ```{r setup, warning = F, message = F}
 library(vizsurvey)
-library(tidyverse)
+library(dplyr)
+library(tidyr)
 library(plotly)
 ```
 
