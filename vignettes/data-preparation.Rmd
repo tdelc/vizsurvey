@@ -23,11 +23,11 @@ library(vizsurvey)
 
 # Introduction
 
-Cette vignette présente la préparation des données nécessaires à l’utilisation de {vizsurvey} via l’appel `runVizsurvey_from_folder`. L’objectif est de permettre une utilisation régulière et structurée de l’outil au sein d’une équipe gérant plusieurs enquêtes.
+Cette vignette présente la préparation des données nécessaires à l'utilisation de {vizsurvey} via l'appel `runVizsurvey_from_folder`. L'objectif est de permettre une utilisation régulière et structurée de l'outil au sein d'une équipe gérant plusieurs enquêtes.
 
-Dans ce contexte, lancer manuellement l’interface pour chaque base de données devient rapidement fastidieux. De plus, le calcul des écarts, notamment lorsqu’ils sont ventilés par domaine ou par groupe, peut s’avérer coûteux en ressources.
+Dans ce contexte, lancer manuellement l'interface pour chaque base de données devient rapidement fastidieux. De plus, le calcul des écarts, notamment lorsqu'ils sont ventilés par domaine ou par groupe, peut s'avérer coûteux en ressources.
 
-Pour faciliter ce processus, {vizsurvey} propose plusieurs fonctions de préparation automatisée. Cette vignette en décrit le fonctionnement pas à pas, depuis la structuration des fichiers jusqu’à la génération des objets nécessaires au lancement de l’application.
+Pour faciliter ce processus, {vizsurvey} propose plusieurs fonctions de préparation automatisée. Cette vignette en décrit le fonctionnement pas à pas, depuis la structuration des fichiers jusqu'à la génération des objets nécessaires au lancement de l'application.
 
 # Préparer vos données
 
@@ -35,7 +35,7 @@ Pour faciliter ce processus, {vizsurvey} propose plusieurs fonctions de prépara
 
 Le fichier de votre base de données doit pouvoir être lu par la fonction `data.table::fread`. Cette fonction reconnaît automatiquement les formats standards (CSV, TSV, etc.). Placez votre fichier dans un répertoire dédié, où il sera le **seul fichier de ce type.**
 
-Si votre enquête comporte plusieurs fichiers (par exemple un fichier par année ou par pays, comme pour l’enquête SILC), vous pouvez les placer dans un même répertoire. Tous les fichiers doivent toutefois contenir les mêmes variables que celles indiquées dans le fichier de configuration, et être au même format.
+Si votre enquête comporte plusieurs fichiers (par exemple un fichier par année ou par pays, comme pour l'enquête SILC), vous pouvez les placer dans un même répertoire. Tous les fichiers doivent toutefois contenir les mêmes variables que celles indiquées dans le fichier de configuration, et être au même format. De plus, aucun autre fichier de ce type ne doit être présent dans le répertoire.
 
 ### Fichier de configuration de l'enquête
 
@@ -59,13 +59,13 @@ var_itw =
 
 -   `vars_continous` : variables à traiter comme continues ;
 
--   var_domain : variable de domaine utilisée pour ventiler les calculs (exemple : année) ;
+-   `var_domain` : variable de domaine utilisée pour ventiler les calculs (exemple : année) ;
 
--   var_group : variable de groupe permettant une ventilation supplémentaire (exemple : province). Les calculs seront également produits sans distinction de groupe ;
+-   `var_group` : variable de groupe permettant une ventilation supplémentaire (exemple : province). Les calculs seront également produits sans distinction de groupe ;
 
--   var_itw : variable d'identifiant des enquêteur·rices.
+-   `var_itw` : variable d'identifiant des enquêteur·rices.
 
-Le fichier peut être créé manuellement, ou généré automatiquement à l’aide de la fonction `create_config`. Voici l'exemple pour les fichiers ménages de l’enquête SILC, avec l’année (`HB010`) comme domaine et la province (`HB020`) comme groupe :
+Le fichier peut être créé manuellement, ou généré automatiquement à l'aide de la fonction `create_config`. Voici l'exemple pour les fichiers ménages de l'enquête SILC, avec l'année (`HB010`) comme domaine et la province (`HB020`) comme groupe :
 
 ```{r, eval=F, warning = F, message = F}
 create_config(
@@ -77,7 +77,7 @@ create_config(
 )
 ```
 
-Les variables discrètes et continues ne doivent être précisées que si la fonction `classify_df` identifie mal leur type. Cette fonction détermine automatiquement le type de chaque variable, à partir du format et du nombre de modalités. Le seuil de classification d’une variable comme catégorielle est fixé par défaut à 15.
+Les variables discrètes et continues ne doivent être précisées que si la fonction `classify_df` identifie mal leur type. Cette fonction détermine automatiquement le type de chaque variable, à partir du format et du nombre de modalités. Le seuil de classification d'une variable comme catégorielle est fixé par défaut à 15.
 
 ```{r}
 classify_df(iris)
@@ -85,7 +85,7 @@ classify_df(iris)
 
 ### Préparation de l'enquête
 
-Une fois la configuration en place, {vizsurvey} peut calculer **en amont** toutes les statistiques nécessaires au suivi de l’enquête. La fonction `prepa_survey` utilise le dossier contenant les données et le fichier `config.txt` pour produire :
+Une fois la configuration en place, {vizsurvey} peut calculer **en amont** toutes les statistiques nécessaires au suivi de l'enquête. La fonction `prepa_survey` utilise le dossier contenant les données et le fichier `config.txt` pour produire :
 
 -   Par domaine, Les statistiques descriptives de chaque variable ;
 
@@ -93,7 +93,7 @@ Une fois la configuration en place, {vizsurvey} peut calculer **en amont** toute
 
 -   Par domaine, par groupe, pour chaque variable, les écarts de chaque enquêteur·rice avec le reste du groupe dans le domaine
 
-Par défaut, `prepa_survey` recherche les fichiers CSV du répertoire, mais l’argument `file_pattern` permet d’adapter ce comportement. Un fichier `global.rda` est ensuite généré dans le même dossier : c’est lui qui sera utilisé par l’interface interactive.
+Par défaut, `prepa_survey` recherche les fichiers CSV du répertoire, mais l'argument `file_pattern` permet d'adapter ce comportement. Un fichier `global.rda` est ensuite généré dans le même dossier : c'est lui qui sera utilisé par l'interface interactive.
 
 ```{r, eval=F, warning = F, message = F}
 prepa_survey(
@@ -101,7 +101,7 @@ prepa_survey(
   file_pattern = "*.csv")
 ```
 
-L’application peut ensuite être lancée simplement à l’aide de :
+L'application peut ensuite être lancée simplement à l'aide de :
 
 ```{r, eval=F, warning = F, message = F}
 runVizsurvey_from_folder("inst/extdata/SILC/HFILE",depth_folder = 1)
@@ -115,7 +115,7 @@ Si vous gérez plusieurs enquêtes, vous pouvez créer les répertoires côte-à
 prepa_surveys(folder_path  = "inst/extdata/SILC",depth_folder = 2)
 ```
 
-Vous pouvez ensuite lancer l’interface en précisant le même niveau de profondeur :
+Vous pouvez ensuite lancer l'interface en précisant le même niveau de profondeur :
 
 ```{r, eval=F, warning = F, message = F}
 runVizsurvey_from_folder("inst/extdata/SILC",depth_folder = 2)
@@ -123,20 +123,20 @@ runVizsurvey_from_folder("inst/extdata/SILC",depth_folder = 2)
 
 ## Structure triple : plusieurs niveaux de répertoires
 
-Il est également possible de gérer une arborescence complète d’enquêtes, avec plusieurs niveaux hiérarchiques. Voici un exemple de structure de fichiers attendue :
+Il est également possible de gérer une arborescence complète d'enquêtes, avec plusieurs niveaux hiérarchiques. Voici un exemple de structure de répertoires attendue :
 
 ```         
 extdata/
   ├── ESS/
   │   ├── ESS9/
-  │   │   └── global.rds
+  │   │   └── ...
   │   └── ESS10/
-  │       └── global.rds
+  │       └── ...
   └── SILC/
       ├── HFILE/
-      │   └── global.rds
+      │   └── ...
       └── PFILE/
-          └── global.rds
+          └── ...
 ```
 
 Chaque sous-répertoire doit comporter son propre `config.txt`, puis vous pouvez exécuter la préparation globale :
@@ -145,8 +145,16 @@ Chaque sous-répertoire doit comporter son propre `config.txt`, puis vous pouvez
 prepa_surveys(folder_path  = "inst/extdata",depth_folder = 3)}
 ```
 
-Enfin, l’interface est lancée à la même profondeur :
+Enfin, l'interface est lancée avec la même profondeur :
 
 ```{r, eval=F, warning = F, message = F}
 runVizsurvey_from_folder("inst/extdata",depth_folder = 3)
 ```
+
+Si les données sont mises à jour, par exemple durant le terrain, il suffit d'exécuter une nouvelle fois la fonction `prepa_surveys` pour obtenir une version mise à jour de l'objet `global.rda`, et ainsi une mise à jour complète de l'interface interactive.
+
+# Conclusion
+
+La préparation des données constitue une étape essentielle avant d'utiliser pleinement {vizsurvey} dans le cadre d'un organisme organisant des enquêtes au quotidien. Elle permet d'optimiser la fluidité de l'application et de garantir que tous les responsables d'enquête analyse les mêmes fichiers mis à jour.
+
+Une fois les fichiers structurés, configurés et préparés, chaque lancement de l'interface devient immédiat : toutes les statistiques nécessaires sont déjà calculées et stockées dans le fichier `global.rda`. Cette approche assure une réutilisation efficace des données, quel que soit le nombre d'enquêtes ou la complexité de leur arborescence. Elle facilite aussi le travail collaboratif au sein d'une équipe : chaque membre peut explorer les résultats sans devoir maîtriser R.
