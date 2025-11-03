@@ -1,6 +1,7 @@
 #' Classify all variable of a data.frame
 #'
 #' @param df A data frame
+#' @param threhold Maximum number of modalities to classify variable as modal
 #'
 #' @returns a data frame
 #' @export
@@ -392,7 +393,6 @@ loop_stats <- function(df, configs, var_calculs) {
 #' Preparation of a survey
 #'
 #' @param folder_path folder of survey
-#' @param name_file (optional) name to save file (in the same folder)
 #' @param ... argument to pass to folder_to_df (example : file_pattern)
 #'
 #' @returns NULL (creation of rds)

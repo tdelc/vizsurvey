@@ -1,14 +1,7 @@
-df <- classify_variables(mtcars)
-var_d <- df %>%
-  filter(type == "Modal") %>%
-  pull(variable)
-var_c <- df %>%
-  filter(type == "Continuous") %>%
-  pull(variable)
 var_group <- "cyl"
 
 test_that("prepa_stats works", {
-  db_stats <- prepa_stats(mtcars, var_d, var_c, var_group)
+  db_stats <- prepa_stats(mtcars,  var_group)
   colnames_expected <- c(
     var_group, "variable", "Nrow", "Nval", "type",
     "stat", "value", "value_ref", "standard"

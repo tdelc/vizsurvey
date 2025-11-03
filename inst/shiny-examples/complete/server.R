@@ -10,6 +10,7 @@ if (depth_folder == 3){
   vec_path_folder <- basename(link_data_folder)
 }
 
+library(DT)
 library(summarytools)
 library(corrplot)
 

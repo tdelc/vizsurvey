@@ -4,12 +4,14 @@
 \alias{heatmap_group}
 \title{Create a heatmap}
 \usage{
-heatmap_group(df_stats, threshold = 5)
+heatmap_group(df_stats, threshold = 5, color = "red2")
 }
 \arguments{
+\item{df_stats}{data frame from prepa_stats function}
+
 \item{threshold}{threshold to show difference}
 
-\item{db_stat}{data frame from preparation_stats function}
+\item{color}{color of the cells}
 }
 \value{
 heatmap (ggplot)

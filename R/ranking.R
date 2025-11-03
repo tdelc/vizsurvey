@@ -8,6 +8,8 @@
 #' @examples
 #' score_isoforest(iris[sapply(iris, is.numeric)])
 score_isoforest <- function(df) {
+
+  rownames_df <- rownames(df)
   df_scaled <- df %>%
     ungroup() %>%
     lapply(scale) %>%
@@ -21,5 +23,6 @@ score_isoforest <- function(df) {
   iso_model <- isotree::isolation.forest(df_scaled, ntrees = 1000, ndim = 1)
   scores <- predict(iso_model, newdata = df_scaled, type = "score")
 
-  scores
+  names(scores) <- rownames_df
+  return(scores)
 }

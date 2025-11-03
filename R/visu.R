@@ -1,7 +1,8 @@
 #' Create a heatmap
 #'
-#' @param db_stat data frame from preparation_stats function
+#' @param df_stats data frame from prepa_stats function
 #' @param threshold threshold to show difference
+#' @param color color of the cells
 #'
 #' @returns heatmap (ggplot)
 #' @export

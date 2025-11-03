@@ -8,6 +8,8 @@ classify_df(df, threhold = 15)
 }
 \arguments{
 \item{df}{A data frame}
+
+\item{threhold}{Maximum number of modalities to classify variable as modal}
 }
 \value{
 a data frame
