@@ -100,7 +100,8 @@ ce type.</strong></p>
 par année ou par pays, comme pour l’enquête SILC), vous pouvez les
 placer dans un même répertoire. Tous les fichiers doivent toutefois
 contenir les mêmes variables que celles indiquées dans le fichier de
-configuration, et être au même format.</p>
+configuration, et être au même format. De plus, aucun autre fichier de
+ce type ne doit être présent dans le répertoire.</p>
 <div class="section level4">
 <h4 id="fichier-de-configuration-de-lenquête">Fichier de configuration de l’enquête<a class="anchor" aria-label="anchor" href="#fichier-de-configuration-de-lenqu%C3%AAte"></a>
 </h4>
@@ -124,12 +125,13 @@ identifier les fichiers) ;</p></li>
 catégorielles ;</p></li>
 <li><p><code>vars_continous</code> : variables à traiter comme continues
 ;</p></li>
-<li><p>var_domain : variable de domaine utilisée pour ventiler les
-calculs (exemple : année) ;</p></li>
-<li><p>var_group : variable de groupe permettant une ventilation
-supplémentaire (exemple : province). Les calculs seront également
-produits sans distinction de groupe ;</p></li>
-<li><p>var_itw : variable d’identifiant des enquêteur·rices.</p></li>
+<li><p><code>var_domain</code> : variable de domaine utilisée pour
+ventiler les calculs (exemple : année) ;</p></li>
+<li><p><code>var_group</code> : variable de groupe permettant une
+ventilation supplémentaire (exemple : province). Les calculs seront
+également produits sans distinction de groupe ;</p></li>
+<li><p><code>var_itw</code> : variable d’identifiant des
+enquêteur·rices.</p></li>
 </ul>
 <p>Le fichier peut être créé manuellement, ou généré automatiquement à
 l’aide de la fonction <code>create_config</code>. Voici l’exemple pour
@@ -211,26 +213,48 @@ profondeur :</p>
 </h3>
 <p>Il est également possible de gérer une arborescence complète
 d’enquêtes, avec plusieurs niveaux hiérarchiques. Voici un exemple de
-structure de fichiers attendue :</p>
+structure de répertoires attendue :</p>
 <pre><code>extdata/
   ├── ESS/
   │   ├── ESS9/
-  │   │   └── global.rds
+  │   │   └── ...
   │   └── ESS10/
-  │       └── global.rds
+  │       └── ...
   └── SILC/
       ├── HFILE/
-      │   └── global.rds
+      │   └── ...
       └── PFILE/
-          └── global.rds</code></pre>
+          └── ...</code></pre>
 <p>Chaque sous-répertoire doit comporter son propre
 <code>config.txt</code>, puis vous pouvez exécuter la préparation
 globale :</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">prepa_surveys</span>(<span class="at">folder_path  =</span> <span class="st">"inst/extdata"</span>,<span class="at">depth_folder =</span> <span class="dv">3</span>)<span class="er">}</span></span></code></pre></div>
-<p>Enfin, l’interface est lancée à la même profondeur :</p>
+<p>Enfin, l’interface est lancée avec la même profondeur :</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"inst/extdata"</span>,depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p>Si les données sont mises à jour, par exemple durant le terrain, il
+suffit d’exécuter une nouvelle fois la fonction
+<code>prepa_surveys</code> pour obtenir une version mise à jour de
+l’objet <code>global.rda</code>, et ainsi une mise à jour complète de
+l’interface interactive.</p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
+</h2>
+<p>La préparation des données constitue une étape essentielle avant
+d’utiliser pleinement {vizsurvey} dans le cadre d’un organisme
+organisant des enquêtes au quotidien. Elle permet d’optimiser la
+fluidité de l’application et de garantir que tous les responsables
+d’enquête analyse les mêmes fichiers mis à jour.</p>
+<p>Une fois les fichiers structurés, configurés et préparés, chaque
+lancement de l’interface devient immédiat : toutes les statistiques
+nécessaires sont déjà calculées et stockées dans le fichier
+<code>global.rda</code>. Cette approche assure une réutilisation
+efficace des données, quel que soit le nombre d’enquêtes ou la
+complexité de leur arborescence. Elle facilite aussi le travail
+collaboratif au sein d’une équipe : chaque membre peut explorer les
+résultats sans devoir maîtriser R.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
