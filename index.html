@@ -59,7 +59,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 <p>vizsurvey is an R package designed to streamline the quality assessment of survey data by providing intuitive visual diagnostics through an interactive dashboard. It takes as input a survey database containing annual or quarterly data, enriched with both interviewer-specific variables and a wide array of survey variables.</p>
-<p>The package outputs a user-friendly dashboard that highlights anomalies—defined as deviations from expected norms—either by year or by interviewer. A central feature of the tool is its heatmap visualization, which allows users to quickly detect patterns of irregularities across interviewers and variables, helping to identify potential data quality issues or interviewer effects.</p>
+<p>The package outputs a user-friendly dashboard that highlights anomalies, defined as deviations from expected norms, either by domain or by interviewer. A central feature of the tool is its heatmap visualization, which allows users to quickly detect patterns of irregularities across interviewers and variables, helping to identify potential data quality issues or interviewer effects.</p>
 <p>vizsurvey is especially useful for institutions or researchers conducting large-scale surveys with multiple interviewers, enabling a fast and systematic overview of data quality over time.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -86,15 +86,16 @@
 <h3 id="from-a-csv-file">From a csv file<a class="anchor" aria-label="anchor" href="#from-a-csv-file"></a>
 </h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="st">"inst/extdata/ESS/ESS9/ESS9.csv"</span></span>
-<span><span class="fu"><a href="reference/runVizsurvey_from_file.html">runVizsurvey_from_file</a></span><span class="op">(</span><span class="va">path</span>,var_itw <span class="op">=</span> <span class="st">"INTNUM1"</span>,var_domain<span class="op">=</span><span class="st">"CNTRY"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="st">"inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"</span></span>
+<span><span class="fu"><a href="reference/runVizsurvey_from_file.html">runVizsurvey_from_file</a></span><span class="op">(</span><span class="va">path</span>,var_itw <span class="op">=</span> <span class="st">"NR_ITW"</span>,var_group <span class="op">=</span> <span class="st">"db040"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="from-a-directory-of-prepared-data">From a directory of prepared data<a class="anchor" aria-label="anchor" href="#from-a-directory-of-prepared-data"></a>
 </h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We assume that config.txt, and prepa_surveys are already done here.</span></span>
-<span><span class="fu"><a href="reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"inst/extdata"</span>,is_double_folder <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># See vignette to learn how to prepare data folders</span></span>
+<span><span class="fu"><a href="reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"inst/extdata"</span>,depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 </div>
