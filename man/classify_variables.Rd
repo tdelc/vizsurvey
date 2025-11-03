@@ -4,7 +4,7 @@
 \alias{classify_variables}
 \title{Classify all variable of a data.frame}
 \usage{
-classify_variables(df)
+classify_variables(df, threhold = 15)
 }
 \arguments{
 \item{df}{A data frame}

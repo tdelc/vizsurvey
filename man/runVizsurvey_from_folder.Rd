@@ -4,18 +4,14 @@
 \alias{runVizsurvey_from_folder}
 \title{Shiny vizsurvey with already prepared data}
 \usage{
-runVizsurvey_from_folder(
-  link,
-  data_rds_pattern = "global",
-  is_double_folder = T
-)
+runVizsurvey_from_folder(link, data_rds_pattern = "global", depth_folder = T)
 }
 \arguments{
 \item{link}{link to directory of data}
 
 \item{data_rds_pattern}{name of the rds file contains all the data}
 
-\item{is_double_folder}{is the directory contains subdirectories of survey}
+\item{depth_folder}{level of depth for the tree structure}
 }
 \value{
 shinyapp
@@ -25,5 +21,5 @@ Shiny vizsurvey with already prepared data
 }
 \examples{
 # We assume that config.txt, and prepa_surveys are already done here.
-\dontrun{runVizsurvey_from_folder("inst/extdata",is_double_folder = T)}
+\dontrun{runVizsurvey_from_folder("inst/extdata",depth_folder = T)}
 }

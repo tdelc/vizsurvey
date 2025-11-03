@@ -4,14 +4,14 @@
 \alias{prepa_survey}
 \title{Preparation of a survey}
 \usage{
-prepa_survey(folder, name_file = NULL, ...)
+prepa_survey(folder_path, ...)
 }
 \arguments{
-\item{folder}{folder of survey}
-
-\item{name_file}{(optional) name to save file (in the same folder)}
+\item{folder_path}{folder of survey}
 
 \item{...}{argument to pass to folder_to_df (example : file_pattern)}
+
+\item{name_file}{(optional) name to save file (in the same folder)}
 }
 \value{
 NULL (creation of rds)

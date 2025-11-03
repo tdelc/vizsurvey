@@ -438,7 +438,7 @@ loop_stats <- function(df, configs, var_calculs) {
 
 #' Preparation of a survey
 #'
-#' @param folder folder of survey
+#' @param folder_path folder of survey
 #' @param name_file (optional) name to save file (in the same folder)
 #' @param ... argument to pass to folder_to_df (example : file_pattern)
 #'
@@ -450,8 +450,10 @@ loop_stats <- function(df, configs, var_calculs) {
 #' prepa_survey("shiny-examples/complete/ESS10")
 #' }
 prepa_survey <- function(folder_path, ...) {
+  cli::cli_alert_info("path {folder_path}")
   list_df <- folder_to_df(folder_path,...)
   if (is.null(list_df)) {
+    cli::cli_alert_danger("no df in path {folder_path}")
     return(NULL)
   }
 
@@ -512,23 +514,33 @@ prepa_survey <- function(folder_path, ...) {
 
 #' Preparation of all surveys from a folder
 #'
-#' @param folder folder of the folders of survey
+#' @param folder_path folder of the folders of survey
+#' @param depth_folder level of depth for the tree structure
+#' @param ... argument to pass to folder_to_df (example : file_pattern)
 #'
 #' @returns NULL (creation of rds)
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' prepa_all_surveys("shiny-examples/complete/data")
+#' prepa_surveys("inst/extdata/SILC/HFILE")
 #' }
-prepa_all_surveys <- function(folder) {
-  list_dirs <- list.dirs(folder, full.names = TRUE, recursive = FALSE)
+prepa_surveys <- function(folder_path,depth_folder=1,...) {
 
-  list_dirs <- list_dirs %>%
-    map(~ {
-      list.dirs(.x, full.names = TRUE, recursive = FALSE)
-    }) %>%
-    unlist()
+  # depth_folder == 1
+  list_dirs <- folder_path
 
-  list_dirs %>% map({prepa_survey(.x,"global")})
+  if (depth_folder >= 2){
+    list_dirs <- list.dirs(list_dirs, full.names = TRUE, recursive = FALSE)
+  }
+
+  if (depth_folder >= 3){
+    list_dirs <- list_dirs %>%
+      map(~ {
+        list.dirs(.x, full.names = TRUE, recursive = FALSE)
+      }) %>%
+      unlist()
+  }
+
+  list_dirs %>% map(~{prepa_survey(.x,...)})
 }

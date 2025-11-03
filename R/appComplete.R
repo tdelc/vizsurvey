@@ -9,11 +9,11 @@
 #'
 #' @examples
 #' # We assume that config.txt, and prepa_surveys are already done here.
-#' \dontrun{runVizsurvey_from_folder("inst/extdata",depth_folder = T)}
+#' \dontrun{runVizsurvey_from_folder("inst/extdata",depth_folder = 3)}
 runVizsurvey_from_folder <- function(
     link,
     data_rds_pattern = "global",
-    depth_folder = T
+    depth_folder = 1
 ) {
 
   appDir <- system.file("shiny-examples", "complete", package = "vizsurvey")

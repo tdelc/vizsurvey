@@ -25,21 +25,23 @@ library(vizsurvey)
 
 # Introduction
 
-Cette vignette se concentre sur la préparation des données pour utiliser {vizsurvey} avec l'appel `runVizsurvey_from_folder`. L'objectif ici est de pouvoir utiliser {vizsurvey} de manière régulière, dans un équipe devant gérer plusieurs enquêtes.
+Cette vignette présente la préparation des données nécessaires à l’utilisation de {vizsurvey} via l’appel `runVizsurvey_from_folder`. L’objectif est de permettre une utilisation régulière et structurée de l’outil au sein d’une équipe gérant plusieurs enquêtes.
 
-Dans cette situation, devoir lancer l'interface pour une seule base de données est une limitation peu pratique. De même, faire les calculs d'écarts sont gourmands en calculs, notamment si on multiplie les domaines et les groupes.
+Dans ce contexte, lancer manuellement l’interface pour chaque base de données devient rapidement fastidieux. De plus, le calcul des écarts, notamment lorsqu’ils sont ventilés par domaine ou par groupe, peut s’avérer coûteux en ressources.
 
-{vizsurvey} contient plusieurs fonctions permettant de préparer les données, et de préparer les données en une seule étape. Cette vignette présente cela pas à pas.
+Pour faciliter ce processus, {vizsurvey} propose plusieurs fonctions de préparation automatisée. Cette vignette en décrit le fonctionnement pas à pas, depuis la structuration des fichiers jusqu’à la génération des objets nécessaires au lancement de l’application.
 
 # Préparer vos données
 
-## Structure simple : 1 seul fichier
+## Structure simple : un seul répertoire
 
-Le fichier de votre base de données doivent pouvoir être lus par la fonction `data.table::fread`. Cette fonction détecte automatiquement le format de vos données pour les formats standards (csv/tsv). Vous devez placer le fichier dans un répertoire où il est le seul fichier du même type.
+Le fichier de votre base de données doit pouvoir être lu par la fonction `data.table::fread`. Cette fonction reconnaît automatiquement les formats standards (CSV, TSV, etc.). Placez votre fichier dans un répertoire dédié, où il sera le **seul fichier de ce type.**
+
+Si votre enquête comporte plusieurs fichiers (par exemple un fichier par année ou par pays, comme pour l’enquête SILC), vous pouvez les placer dans un même répertoire. Tous les fichiers doivent toutefois contenir les mêmes variables que celles indiquées dans le fichier de configuration, et être au même format.
 
 ### Fichier de configuration de l'enquête
 
-{vizsurvey} requiert qu'un fichier de configuration `config.txt` soit placé au même emplacement que votre base de données. Voici les éléments qu'il doit comporter :
+Chaque répertoire de données doit contenir un fichier de configuration nommé `config.txt`. Ce fichier indique à {vizsurvey} comment interpréter et structurer vos données. Il doit comporter les éléments suivants :
 
 ```         
 name_survey = 
@@ -53,21 +55,21 @@ var_group =
 var_itw = 
 ```
 
--   `name_survey` : nom de l'enquête, utile pour distinguer les fichiers
+-   `name_survey` : nom de l'enquête (utile pour identifier les fichiers) ;
 
--   `vars_discretes` : liste des variables dont on veut forcer le format catégoriel
+-   `vars_discretes` : variables à traiter comme catégorielles ;
 
--   `vars_continous` : liste des variables dont on veut forcer le format continus
+-   `vars_continous` : variables à traiter comme continues ;
 
--   var_domain : variable de domaine, pour séparer chaque calcul selon cette variable (exemple : année)
+-   var_domain : variable de domaine utilisée pour ventiler les calculs (exemple : année) ;
 
--   var_group : variable de groupe, pour séparer les calculs également. À savoir que les calculs sont également effectué sans distinction des groupes (exemple : province)
+-   var_group : variable de groupe permettant une ventilation supplémentaire (exemple : province). Les calculs seront également produits sans distinction de groupe ;
 
--   var_itw : variable identifiant l'enquêteur-rice
+-   var_itw : variable d'identifiant des enquêteur-rices.
 
-Vous pouvez créer vous même le fichier, ou faire appel à la fonction dédiée `create_config`. Voici la création du fichier config.txt pour les fichiers ménages de l'enquête SILC, avec l'année comme variable de domaine (`HB010`) et la province comme variable de groupe (`HB020`) :
+Le fichier peut être créé manuellement, ou généré automatiquement à l’aide de la fonction `create_config`. Voici l'exemple pour les fichiers ménages de l’enquête SILC, avec l’année (`HB010`) comme domaine et la province (`HB020`) comme groupe :
 
-```{r}
+```{r, eval=F, warning = F, message = F}
 create_config(
   folder_path = "inst/extdata/SILC/HFILE",
   name_survey = "SILC-H",
@@ -77,7 +79,7 @@ create_config(
 )
 ```
 
-Les variables discrètes et continues ne doivent être forcées que si vous constatez une mauvaise classification de la part de la fonction dédiée `classify_variables` qui préparera ensuite le fichier. Cette fonction détermine le type de variable en fonction du format de la colonne, mais également selon le nombre de modalités. Le nombre de modalités maximal pour classer une variable comme catégorielle est modifiable avec l'argument `threhold` et est fixé par défaut à 15.
+Les variables discrètes et continues ne doivent être précisées que si la fonction `classify_variables` identifie mal leur type. Cette fonction détermine automatiquement le type de chaque variable, à partir du format et du nombre de modalités. Le seuil de classification d’une variable comme catégorielle est fixé par défaut à 15.
 
 ```{r}
 classify_variables(iris)
@@ -85,15 +87,15 @@ classify_variables(iris)
 
 ### Préparation de l'enquête
 
-{vizsurvey} permet de calculer en avancer toutes les statistiques d'écarts de votre enquête. La fonction `prepa_survey` part de votre répertoire contenant le fichier de données et le fichier config.txt pour générer :
+Une fois la configuration en place, {vizsurvey} peut calculer **en amont** toutes les statistiques nécessaires au suivi de l’enquête. La fonction `prepa_survey` utilise le dossier contenant les données et le fichier `config.txt` pour produire :
 
--   Par domaine, Les statistiques de chaque variable ;
+-   Par domaine, Les statistiques descriptives de chaque variable ;
 
 -   Par domaine, pour chaque variable, les écarts de chaque enquêteur·rice avec le reste du domaine
 
 -   Par domaine, par groupe, pour chaque variable, les écarts de chaque enquêteur·rice avec le reste du groupe dans le domaine
 
-La fonction `prepa_survey` peut inclure un pattern pour la base de données. Par défaut, seuls les fichiers csv sont inclus. La fonction génère un fichier global.rda dans le même répertoire que les données. C'est ce fichier qui sera utilisé par l'interface interactive.
+Par défaut, `prepa_survey` recherche les fichiers CSV du répertoire, mais l’argument `file_pattern` permet d’adapter ce comportement. Un fichier `global.rda` est ensuite généré dans le même dossier : c’est lui qui sera utilisé par l’interface interactive.
 
 ```{r, eval=F, warning = F, message = F}
 prepa_survey(
@@ -101,16 +103,29 @@ prepa_survey(
   file_pattern = "*.csv")
 ```
 
-Il suffit d'appeler la fonction runVizsurvey_from_folder avec le nom du répertoire, et l'argument
+L’application peut ensuite être lancée simplement à l’aide de :
 
-```{r}
-runVizsurvey_from_folder("inst/extdata/SILC/HFILE",
-                         is_double_folder = F)
+```{r, eval=F, warning = F, message = F}
+runVizsurvey_from_folder("inst/extdata/SILC/HFILE",depth_folder = 1)
 ```
 
-## 1. Structurer les fichiers d'entrée
+## Structure double : plusieurs répertoires
 
-Les données du package sont stockées avec cette arborescence :
+Si vous gérez plusieurs enquêtes, vous pouvez créer les répertoires côte-à-côte et appeler la fonction `prepa_surveys`. Cette fonction agit comme un wrapper de `prepa_survey` et applique automatiquement la préparation à tous les répertoires enfants du chemin spécifié. Dans ce cas, il faut indiquer `depth_folder = 2`.
+
+```{r, eval=F, warning = F, message = F}
+prepa_surveys(folder_path  = "inst/extdata/SILC",depth_folder = 2)
+```
+
+Vous pouvez ensuite lancer l’interface en précisant le même niveau de profondeur :
+
+```{r, eval=F, warning = F, message = F}
+runVizsurvey_from_folder("inst/extdata/SILC",depth_folder = 2)
+```
+
+## Structure triple : plusieurs niveaux de répertoires
+
+Il est également possible de gérer une arborescence complète d’enquêtes, avec plusieurs niveaux hiérarchiques. Voici un exemple de structure de fichiers attendue :
 
 ```         
 extdata/
@@ -121,177 +136,19 @@ extdata/
   │       └── global.rds
   └── SILC/
       ├── HFILE/
-      │   ├── global.rds
-      │   ├── config.txt
-      │   ├── BE_2012h_EUSILC.csv
-      │   ├── BE_2013h_EUSILC.csv
-      │   ├── RO_2012h_EUSILC.csv
-      │   ├── RO_2013h_EUSILC.csv
-      │   └── BE_2012h_EUSILC.csv
+      │   └── global.rds
       └── PFILE/
-          ├── global.rds
-          ├── config.txt
-          ├── BE_2012p_EUSILC.csv
-          ├── BE_2013p_EUSILC.csv
-          ├── RO_2012p_EUSILC.csv
-          ├── RO_2013p_EUSILC.csv
-          └── BE_2012p_EUSILC.csv
+          └── global.rds
 ```
 
-L'outil `prepa_survey()` attend une arborescence de type :
+Chaque sous-répertoire doit comporter son propre `config.txt`, puis vous pouvez exécuter la préparation globale :
 
-### 2. Créer une configuration à partir d'un gabarit
-
-Vous pouvez générer un gabarit initial avec `create_config()` :
-
-```{r eval=FALSE}
-library(vizsurvey)
-
-template <- create_config(
-  interviewer = "id_enqueteur",
-  id_itw      = "id_interview",
-  vt          = "type_ménage",
-  vg          = "region",
-  weight      = "poids"
-)
-
-# Écrire le gabarit dans un fichier YAML
-config_path <- tempfile(fileext = ".yml")
-writeLines(template, config_path)
-cat(readLines(config_path), sep = "\n")
+```{r, eval=F, warning = F, message = F}
+prepa_surveys(folder_path  = "inst/extdata",depth_folder = 3)}
 ```
 
-Adaptez ensuite les sections `variables` pour décrire les indicateurs que vous souhaitez analyser (numériques, catégoriels ou binaires).
+Enfin, l’interface est lancée à la même profondeur :
 
-### 3. Lancer la préparation
-
-```{r eval=FALSE}
-library(vizsurvey)
-
-input_dir  <- "mon-projet"
-output_dir <- file.path(tempdir(), "prepa")
-
-prepa_survey(
-  input_dir  = input_dir,
-  output_dir = output_dir,
-  config     = "configs/config_enquête1.yml",
-  survey     = "data/enquête1.csv"
-)
+```{r, eval=F, warning = F, message = F}
+runVizsurvey_from_folder("inst/extdata",depth_folder = 3)
 ```
-
-## Traitements par lot
-
-Si vous avez plusieurs enquêtes à traiter dans un répertoire, `prepa_all_surveys()` automatisera la boucle :
-
-```{r eval=FALSE}
-prepa_all_surveys(
-  input_dir  = "mon-projet",
-  output_dir = output_dir,
-  pattern    = "*.csv"
-)
-```
-
-Chaque jeu de données sera préparé avec le fichier YAML du même nom (à l'extension près). Surveillez la console pour connaître l'avancement et les éventuels problèmes rencontrés sur un fichier spécifique.
-
-## Exemple reproductible complet
-
-Le bloc ci-dessous illustre un flux complet à partir d'un jeu de données synthétique :
-
-```{r eval=FALSE}
-library(vizsurvey)
-library(readr)
-library(dplyr)
-library(tidyr)
-
-# 1. Générer un exemple fictif
-tmp_dir <- tempdir()
-set.seed(123)
-
-df <- tibble::tibble(
-  id_interview = 1:200,
-  id_enqueteur = sample(sprintf("E%02d", 1:12), 200, replace = TRUE),
-  type_ménage  = sample(c("Solo", "Couple", "Famille"), 200, replace = TRUE),
-  region       = sample(c("Nord", "Sud", "Est", "Ouest"), 200, replace = TRUE),
-  poids        = runif(200, 0.5, 1.5),
-  satisfaction = rnorm(200, mean = 6, sd = 1.2),
-  mode         = sample(c("Téléphone", "Face-à-face", "Web"), 200, replace = TRUE)
-)
-
-# 2. Sauvegarder les fichiers d'entrée
-input_dir <- file.path(tmp_dir, "demo")
-dir.create(file.path(input_dir, "data"), recursive = TRUE)
-dir.create(file.path(input_dir, "configs"), recursive = TRUE)
-
-readr::write_csv(df, file.path(input_dir, "data", "demo.csv"))
-
-config_yaml <- "id_itw: id_interview\ninterviewer: id_enqueteur\nvt: type_ménage\nvg: region\nweight: poids\nvariables:\n  - name: satisfaction\n    type: numeric\n    label: Score de satisfaction\n  - name: mode\n    type: categorical\n    label: Mode de collecte\n"
-
-writeLines(config_yaml, file.path(input_dir, "configs", "demo.yml"))
-
-# 3. Préparer les données
-output_dir <- file.path(tmp_dir, "demo_prepa")
-prepa_survey(
-  input_dir  = input_dir,
-  output_dir = output_dir,
-  config     = "configs/demo.yml",
-  survey     = "data/demo.csv"
-)
-
-# 4. Lancer l'application (ouvre un onglet navigateur)
-runVizsurvey_from_folder(output_dir)
-```
-
-Cet exemple crée un environnement isolé dans le dossier temporaire de R, traite les données synthétiques et lance l'application. Adaptez les noms de variables aux vôtres pour reproduire le processus sur vos enquêtes réelles.
-
-# Limites et responsabilités
-
--   **vizsurvey** **n'infère** rien : il **organise** l'exploration.
-
--   Les **interprétations** doivent s'appuyer sur le **contexte** (terrain, consignes, scripts, logs).
-
--   Les **données sensibles** (enquêteur·rices, ménages) doivent être traitées conformément aux règles de **confidentialité**.
-
-## Allers-retours analytiques
-
-### `prepa_stats()` : extraire les agrégats
-
-`prepa_stats()` vous renvoie un data.frame compilant les statistiques calculées pendant la préparation. Vous pouvez l'utiliser pour alimenter des rapports ou construire vos propres visualisations.
-
-```{r eval=FALSE}
-stats <- prepa_stats(output_dir)
-head(stats)
-```
-
-### `heat_map_group()` : personnaliser la visualisation
-
-Pour générer une heatmap hors Shiny :
-
-```{r eval=FALSE}
-library(dplyr)
-
-data_group <- stats %>%
-  dplyr::filter(variable == "satisfaction")
-
-heat_map_group(
-  data_group,
-  group_var   = "vg",
-  interviewer = "interviewer",
-  value       = "mean",
-  show_legend = TRUE
-)
-```
-
-Vous pouvez ajuster la palette via l'argument `palette` et contrôler les titres à l'aide de `title` et `subtitle`.
-
-### `score_isoforest()` : détecter les profils atypiques
-
-```{r eval=FALSE}
-library(dplyr)
-
-donnees_num <- df %>% dplyr::select(where(is.numeric))
-iso_scores  <- score_isoforest(donnees_num)
-
-head(iso_scores)
-```
-
-Avant de lancer cette fonction, assurez-vous que les colonnes sélectionnées sont numériques, sans valeurs manquantes excessives. Standardisez ou filtrez les variables constantes pour éviter des avertissements.
