@@ -29,15 +29,15 @@ library(plotly)
 
 Cette vignette présente les fondements méthodologiques et les calculs sous-jacents à l'application {vizsurvey}. Comme expliqué dans la première vignette, {vizsurvey} n'a pas pour objectif de réaliser des tests statistiques ou de produire des résultats interprétés : il s'agit avant tout d'un outil d'exploration et de diagnostic, positionné entre la collecte et l'analyse des données dans le cycle du GSBPM. Autrement dit, {vizsurvey} n'infère rien ; il organise la lecture et met en évidence les points qui méritent une attention particulière.
 
-Les calculs réalisés dans {vizsurvey} reposent sur des mesures simples mais robustes, telles que les distances, les rangs, les écarts types ou les écarts relatifs entre distributions. Ces mesures servent de repères visuels pour identifier d'éventuelles incohérences : variations anormales d'une vague à l'autre, écarts entre enquêteur-rices, changements brusques de distribution ou hausses inattendues du taux de non-réponse. Elles ne visent pas à produire un verdict statistique, mais à guider la réflexion analytique.
+Les calculs réalisés dans {vizsurvey} reposent sur des mesures simples mais robustes, telles que les distances, les rangs, les écarts types ou les écarts relatifs entre distributions. Ces mesures servent de repères visuels pour identifier d'éventuelles incohérences : variations anormales d'une vague à l'autre, écarts entre enquêteur·rices, changements brusques de distribution ou hausses inattendues du taux de non-réponse. Elles ne visent pas à produire un verdict statistique, mais à guider la réflexion analytique.
 
 L'ensemble des fonctions utilisées dans {vizsurvey} a été conçu pour être applicable à tout type de variable, qu'elle soit catégorielle (codes, modalités, réponses à choix) ou numérique (valeurs continues, durées, âges, revenus). L'objectif est de fournir un cadre de calcul générique, reproductible et robuste, permettant d'assurer la comparabilité des résultats entre enquêtes, années ou domaines. La priorité a toujours été donnée à la stabilité des indicateurs et à la simplicité des formules, afin de faciliter leur lecture et leur appropriation par les équipes de terrain comme par les analystes.
 
 Ces choix méthodologiques ne sont pas figés : ils ont été progressivement affinés au sein de Statbel, sur base des premiers résultats produits par l'interface. Les retours d'expérience des responsables d'enquête, les échanges entre services, ainsi que plusieurs références issues de la littérature sur la qualité des enquêtes ont guidé l'évolution des fonctions.
 
-La publication de ce package vise à partager ces choix. En rendant publiques les formules, les fonctions et la logique de calcul, nous souhaitons favoriser la transparence, encourager la réutilisation et stimuler les contributions d'autres équipes confrontées à des problématiques similaires. Notre ambition est de construire, avec d'autres instituts de statistique et organismes de sondage, une base commune d'outils et de pratiques pour le monitoring des enquêtes, en intégrant les retours des enquêteur-rices et des responsables d'enquête et des méthodologues.
+La publication de ce package vise à partager ces choix. En rendant publiques les formules, les fonctions et la logique de calcul, nous souhaitons favoriser la transparence, encourager la réutilisation et stimuler les contributions d'autres équipes confrontées à des problématiques similaires. Notre ambition est de construire, avec d'autres instituts de statistique et organismes de sondage, une base commune d'outils et de pratiques pour le monitoring des enquêtes, en intégrant les retours des enquêteur·rices et des responsables d'enquête et des méthodologues.
 
-Les exemples fournis dans cette vignette se baseront sur la base de données `eusilc` du package {laeken}. Ce fichier ne contient pas d'identifiant d'enquêteur-rice, nous en créons un à partir de la variable de province. Cela permet de simuler la présence de 45 enquêteur-rices.
+Les exemples fournis dans cette vignette se baseront sur la base de données `eusilc` du package {laeken}. Ce fichier ne contient pas d'identifiant d'enquêteur·rice, nous en créons un à partir de la variable de province. Cela permet de simuler la présence de 45 enquêteur·rices.
 
 ```{r}
 library(laeken)
@@ -154,7 +154,7 @@ ggplotly(p, tooltip = "text")
 
 # `score_isoforest()` : détecter les profils atypiques
 
-La fonction `score_isoforest` a pour objectif de détecter des observations atypiques dans un jeu de données multivarié, en s'appuyant sur la méthode d’[Isolation Forest](https://cran.r-project.org/web/packages/isotree/vignettes/An_Introduction_to_Isolation_Forests.html). Il s'agit d'un algorithme d'apprentissage non supervisé, particulièrement utile pour repérer des individus ou des enregistrements dont le profil diffère fortement du reste de la population. Cette fonction est pensée pour être appliquée sur un ensemble de variables numériques décrivant un même type d'unité statistique (par exemple, ici des enquêteur-rices), et renvoie un score d'isolation pour chaque observation.
+La fonction `score_isoforest` a pour objectif de détecter des observations atypiques dans un jeu de données multivarié, en s'appuyant sur la méthode d’[Isolation Forest](https://cran.r-project.org/web/packages/isotree/vignettes/An_Introduction_to_Isolation_Forests.html). Il s'agit d'un algorithme d'apprentissage non supervisé, particulièrement utile pour repérer des individus ou des enregistrements dont le profil diffère fortement du reste de la population. Cette fonction est pensée pour être appliquée sur un ensemble de variables numériques décrivant un même type d'unité statistique (par exemple, ici des enquêteur·rices), et renvoie un score d'isolation pour chaque observation.
 
 Nous proposons d'appliquer la méthode aux indicateurs calculés pour chaque variable par la fonction `prepa_stats`. Pour l'instant, nous conservons les valeurs standardiser des χ² pour les variables catégorielles et des médianes pour les variables continues. La fonction `score_isoforest` requiert un fichier large, donc nous pivotons les indicateurs avant de l'appliquer.
 
@@ -173,7 +173,7 @@ head(sort(score_isoforest(df_prepa),decreasing = T))
 hist(score_isoforest(df_prepa))
 ```
 
-On retrouve les enquêteur-rices de la province de Vienne qui ressortent en priorité. Cela permet ainsi de guider l'analyse des données. Il semblerait qu'un seuil de 0.5 est acceptable pour déterminer qu'un score révèle une anomalie d'après [cet article](https://scispace.com/pdf/an-in-depth-study-and-improvement-of-isolation-forest-204k9g39.pdf). A nouveau, {vizsurvey} ne vise pas à propose un seuil unique, mais plutôt un classement pour orienter les recherches.
+On retrouve les enquêteur·rices de la province de Vienne qui ressortent en priorité. Cela permet ainsi de guider l'analyse des données. Il semblerait qu'un seuil de 0.5 est acceptable pour déterminer qu'un score révèle une anomalie d'après [cet article](https://scispace.com/pdf/an-in-depth-study-and-improvement-of-isolation-forest-204k9g39.pdf). A nouveau, {vizsurvey} ne vise pas à propose un seuil unique, mais plutôt un classement pour orienter les recherches.
 
 # Conclusion
 

@@ -63,7 +63,7 @@ var_itw =
 
 -   var_group : variable de groupe permettant une ventilation supplémentaire (exemple : province). Les calculs seront également produits sans distinction de groupe ;
 
--   var_itw : variable d'identifiant des enquêteur-rices.
+-   var_itw : variable d'identifiant des enquêteur·rices.
 
 Le fichier peut être créé manuellement, ou généré automatiquement à l’aide de la fonction `create_config`. Voici l'exemple pour les fichiers ménages de l’enquête SILC, avec l’année (`HB010`) comme domaine et la province (`HB020`) comme groupe :
 
