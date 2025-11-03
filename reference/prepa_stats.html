@@ -19,7 +19,8 @@
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data-preparation.html">data-preparation</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data-preparation.html">Monitorer vos données d'enquête avec vizsurvey</a></li>
+    <li><a class="dropdown-item" href="../articles/methods.html">Monitorer vos données d'enquête avec vizsurvey</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -43,27 +44,27 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">prepa_stats</span><span class="op">(</span><span class="va">db</span>, <span class="va">vars_vd</span>, <span class="va">vars_vc</span>, <span class="va">var_group</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">prepa_stats</span><span class="op">(</span><span class="va">df</span>, <span class="va">var_group</span>, vars_vd <span class="op">=</span> <span class="cn">NULL</span>, vars_vc <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
+<dl><dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
 <dd><p>data frame for the summary</p></dd>
-
-
-<dt id="arg-vars-vd">vars_vd<a class="anchor" aria-label="anchor" href="#arg-vars-vd"></a></dt>
-<dd><p>Vector of discrete variables</p></dd>
-
-
-<dt id="arg-vars-vc">vars_vc<a class="anchor" aria-label="anchor" href="#arg-vars-vc"></a></dt>
-<dd><p>Vector of continuous variables</p></dd>
 
 
 <dt id="arg-var-group">var_group<a class="anchor" aria-label="anchor" href="#arg-var-group"></a></dt>
 <dd><p>Name of group variable</p></dd>
+
+
+<dt id="arg-vars-vd">vars_vd<a class="anchor" aria-label="anchor" href="#arg-vars-vd"></a></dt>
+<dd><p>(optional) Vector of discrete variables</p></dd>
+
+
+<dt id="arg-vars-vc">vars_vc<a class="anchor" aria-label="anchor" href="#arg-vars-vc"></a></dt>
+<dd><p>(optional) Vector of continuous variables</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -76,10 +77,15 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">laeken</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">info_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="classify_variables.html">classify_variables</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">info_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="classify_df.html">classify_df</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">vars_vd</span> <span class="op">&lt;-</span> <span class="va">info_vars</span><span class="op">[</span><span class="va">info_vars</span><span class="op">$</span><span class="va">type</span> <span class="op">==</span> <span class="st">"Modal"</span>, <span class="op">]</span><span class="op">$</span><span class="va">variable</span></span></span>
 <span class="r-in"><span><span class="va">vars_vc</span> <span class="op">&lt;-</span> <span class="va">info_vars</span><span class="op">[</span><span class="va">info_vars</span><span class="op">$</span><span class="va">type</span> <span class="op">==</span> <span class="st">"Continuous"</span>, <span class="op">]</span><span class="op">$</span><span class="va">variable</span></span></span>
-<span class="r-in"><span><span class="fu">prepa_stats</span><span class="op">(</span><span class="va">eusilc</span>, <span class="va">vars_vd</span>, <span class="va">vars_vc</span>, <span class="st">"db040"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">prepa_stats</span><span class="op">(</span><span class="va">eusilc</span>, <span class="st">"db040"</span>, <span class="va">vars_vd</span>, <span class="va">vars_vc</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>There was 1 warning in `summarise()`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> In argument: `across(...)`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> In group 1: `db040 = "Burgenland"`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by warning in `stats::chisq.test()`:</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Chi-squared approximation may be incorrect</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 972 × 9</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    db040      variable  Nrow  Nval type  stat      value value_ref standard</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
