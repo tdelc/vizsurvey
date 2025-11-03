@@ -6,7 +6,7 @@
 \usage{
 runVizsurvey_from_file(
   path,
-  var_itw,
+  var_itw = NULL,
   vars_discretes = NULL,
   vars_continous = NULL,
   var_domain = NULL,
@@ -16,7 +16,7 @@ runVizsurvey_from_file(
 \arguments{
 \item{path}{path of a data.frame (can be readed by fread)}
 
-\item{var_itw}{name of interviewer variable}
+\item{var_itw}{(optional) name of interviewer variable}
 
 \item{vars_discretes}{(optional) preset of discretes variables}
 
@@ -33,6 +33,6 @@ shinyapp
 Shiny vizsurvey from a csv/tsv
 }
 \examples{
-path <- "inst/extdata/ESS/ESS9/ESS9.csv"
-\dontrun{runVizsurvey_from_file(path,var_itw = "INTNUM1",var_domain="CNTRY")}
+path <- "inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"
+\dontrun{runVizsurvey_from_file(path,var_itw = "NR_ITW",var_group = "db040")}
 }

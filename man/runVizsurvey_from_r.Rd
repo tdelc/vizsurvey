@@ -16,7 +16,7 @@ runVizsurvey_from_r(
 \arguments{
 \item{df}{data.frame}
 
-\item{var_itw}{name of interviewer variable}
+\item{var_itw}{(optional) name of interviewer variable}
 
 \item{vars_discretes}{(optional) preset of discretes variables}
 

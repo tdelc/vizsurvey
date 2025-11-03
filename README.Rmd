@@ -49,13 +49,14 @@ runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")
 ### From a csv file
 
 ```{r example2, eval=FALSE}
-path <- "inst/extdata/ESS/ESS9/ESS9.csv"
-runVizsurvey_from_file(path,var_itw = "INTNUM1",var_domain="CNTRY")
+path <- "inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"
+runVizsurvey_from_file(path,var_itw = "NR_ITW",var_group = "db040")
 ```
 
 ### From a directory of prepared data
 
 ```{r example3, eval=FALSE}
 # We assume that config.txt, and prepa_surveys are already done here.
-runVizsurvey_from_folder("inst/extdata",is_double_folder = T)
+# See vignette to learn how to prepare data folders
+runVizsurvey_from_folder("inst/extdata",depth_folder = 3)
 ```

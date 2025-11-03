@@ -32,7 +32,7 @@ runVizsurvey_from_folder <- function(
 #' Shiny vizsurvey from a R data.frame
 #'
 #' @param df data.frame
-#' @param var_itw name of interviewer variable
+#' @param var_itw (optional) name of interviewer variable
 #' @param vars_discretes (optional) preset of discretes variables
 #' @param vars_continous (optional) preset of continous variables
 #' @param var_domain (optional) name of domain variable
@@ -99,7 +99,7 @@ runVizsurvey_from_r <- function(
 #' Shiny vizsurvey from a csv/tsv
 #'
 #' @param path path of a data.frame (can be readed by fread)
-#' @param var_itw name of interviewer variable
+#' @param var_itw (optional) name of interviewer variable
 #' @param vars_discretes (optional) preset of discretes variables
 #' @param vars_continous (optional) preset of continous variables
 #' @param var_domain (optional) name of domain variable
@@ -109,11 +109,11 @@ runVizsurvey_from_r <- function(
 #' @export
 #'
 #' @examples
-#' path <- "inst/extdata/ESS/ESS9/ESS9.csv"
-#' \dontrun{runVizsurvey_from_file(path,var_itw = "INTNUM1",var_domain="CNTRY")}
+#' path <- "inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"
+#' \dontrun{runVizsurvey_from_file(path,var_itw = "NR_ITW",var_group = "db040")}
 runVizsurvey_from_file <- function(
     path,
-    var_itw,
+    var_itw        = NULL,
     vars_discretes = NULL,
     vars_continous = NULL,
     var_domain     = NULL,
@@ -122,9 +122,6 @@ runVizsurvey_from_file <- function(
 
   if (is.null(path)) {
     stop("path not found.", call. = FALSE)
-  }
-  if (missing(var_itw) || is.null(var_itw) || !nzchar(as.character(var_itw))) {
-    stop("`var_itw` is mandatory (name of interviewer variable).", call. = FALSE)
   }
 
   appDir <- system.file("shiny-examples", "complete", package = "vizsurvey")
@@ -137,12 +134,10 @@ runVizsurvey_from_file <- function(
   unlink(file.path(temporary_dir, "DATA"),recursive = T)
   dir.create(file.path(temporary_dir, "DATA"))
   link_folder <- file.path(temporary_dir, "DATA")
-  dir.create(file.path(temporary_dir, "DATA",basename(path)))
-  link_data_folder <- file.path(temporary_dir, "DATA",basename(path))
-  file.copy(path,link_data_folder)
+  file.copy(path,link_folder)
 
   create_config(
-    folder_path    = link_data_folder,
+    folder_path    = link_folder,
     file_name      = "config.txt",
     name_survey    = NULL,
     vars_discretes = vars_discretes,
@@ -152,7 +147,7 @@ runVizsurvey_from_file <- function(
     var_itw        = var_itw
   )
 
-  prepa_survey(link_data_folder, "global")
+  prepa_survey(link_folder)
 
   shiny::shinyOptions(link_data_folder = link_folder)
   shiny::shinyOptions(data_rds_pattern = "global")
