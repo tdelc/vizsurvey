@@ -12,8 +12,8 @@ interactive dashboard. It takes as input a survey database containing
 annual or quarterly data, enriched with both interviewer-specific
 variables and a wide array of survey variables.
 
-The package outputs a user-friendly dashboard that highlights
-anomalies—defined as deviations from expected norms—either by year or by
+The package outputs a user-friendly dashboard that highlights anomalies,
+defined as deviations from expected norms, either by domain or by
 interviewer. A central feature of the tool is its heatmap visualization,
 which allows users to quickly detect patterns of irregularities across
 interviewers and variables, helping to identify potential data quality
@@ -47,13 +47,14 @@ runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")
 ### From a csv file
 
 ``` r
-path <- "inst/extdata/ESS/ESS9/ESS9.csv"
-runVizsurvey_from_file(path,var_itw = "INTNUM1",var_domain="CNTRY")
+path <- "inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"
+runVizsurvey_from_file(path,var_itw = "NR_ITW",var_group = "db040")
 ```
 
 ### From a directory of prepared data
 
 ``` r
 # We assume that config.txt, and prepa_surveys are already done here.
-runVizsurvey_from_folder("inst/extdata",is_double_folder = T)
+# See vignette to learn how to prepare data folders
+runVizsurvey_from_folder("inst/extdata",depth_folder = 3)
 ```
