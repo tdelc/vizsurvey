@@ -123,30 +123,24 @@ Il est aussi possible de zoomer sur la carte de chaleur, à nouveau en filtrant 
 ```{r}
 threshold <- 3
 
-library(patchwork)
-
-p1 <- df_stats_eusilc %>%
+df_stats_eusilc %>%
   group_by(NR_ITW) %>%
   filter(max(abs(standard),na.rm=TRUE)>threshold) %>%
   ungroup() %>% 
   heatmap_group(threshold) +
   ggtitle("Zoom sur les lignes")
-
-p2 <- df_stats_eusilc %>%
+df_stats_eusilc %>%
   group_by(variable) %>%
   filter(max(abs(standard),na.rm=TRUE)>threshold) %>%
   ungroup() %>% 
   heatmap_group(threshold) +
   ggtitle("Zoom sur les colonnes")
-
-p3 <- df_stats_eusilc %>%
+df_stats_eusilc %>%
   group_by(NR_ITW,variable) %>%
   filter(max(abs(standard),na.rm=TRUE)>threshold) %>%
   ungroup() %>% 
   heatmap_group(threshold) +
   ggtitle("Zoom sur les cellules")
-
-p1 + p2 + p3
 ```
 
 L'objet ggplot issu de `heatmap_group` intègre des infos bulles pouvant être activées par {plotly}.
