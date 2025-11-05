@@ -33,12 +33,20 @@ You can install the development version of vizsurvey like so:
 
 ## Example
 
-This is tree options to lauch the dashboard:
+This is the easier way to lauch the dashboard:
+
+```{r, eval=FALSE}
+library(vizsurvey)
+runVizsurvey()
+```
+
+The dashboard will be launch empty, then you can load you own dataset.
+
+This is tree other options to lauch the dashboard:
 
 ### From a R object
 
 ```{r example1, eval=FALSE}
-library(vizsurvey)
 library(laeken)
 data(eusilc)
 set.seed(123)

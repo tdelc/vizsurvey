@@ -2,13 +2,7 @@ source("functions.R")
 
 link_data_folder <- getShinyOption("link_data_folder", "data")
 data_rds_pattern <- getShinyOption("data_rds_pattern", "global")
-depth_folder <- getShinyOption("depth_folder", 1)
-
-if (depth_folder == 3){
-  vec_path_folder <- list.files(link_data_folder)
-}else{
-  vec_path_folder <- basename(link_data_folder)
-}
+depth_folder     <- getShinyOption("depth_folder", 1)
 
 library(DT)
 library(summarytools)
@@ -16,30 +10,103 @@ library(corrplot)
 
 server <- function(input, output, session) {
 
-  values_ini <- reactiveValues(vec_path_folder = vec_path_folder)
+  values_ini <- reactiveValues(
+    link_data_folder = link_data_folder,
+    data_rds_pattern = data_rds_pattern,
+    depth_folder = depth_folder
+    )
   values_dis <- reactiveValues()
   values_itw <- reactiveValues()
 
+
   #### Database Loading ####
 
-  observeEvent(values_ini$vec_path_folder,{
-    path_folder <- values_ini$vec_path_folder
+  observeEvent(input$load_df, {
+    file <- input$load_df
+    ext <- tools::file_ext(file$datapath)
+    req(file)
+    values_ini$df_user <- tibble::as_tibble(data.table::fread(file$datapath))
+
+    vec_vars <- classify_df(values_ini$df_user)$variable
+
+    showModal(modalDialog(
+      title = paste("Import of data.frame",basename(file$datapath)),
+      size = "l",easyClose = FALSE,
+      footer = tagList(
+        modalButton("Cancel"),
+        actionButton("load_df_fi",label="Prepare survey")
+      ),
+      h3(paste0("Choose of survey parameters")),
+      selectInput("load_df_var_domain",label = "Domain Variable", choices = c("No",vec_vars)),
+      selectInput("load_df_var_group",label = "Group Variable", choices = c("No",vec_vars)),
+      selectInput("load_df_var_itw",label = "Interviewer Variable", choices = c("No",vec_vars))
+    ))
+  })
+
+  observeEvent(input$load_df_fi,{
+    # Survey preparation
+    temporary_dir <- tempdir()
+    unlink(file.path(temporary_dir, "DATA"),recursive = T)
+    dir.create(file.path(temporary_dir, "DATA"))
+    link_folder <- file.path(temporary_dir, "DATA")
+    readr::write_csv(values_ini$df_user,
+                     file=file.path(link_folder,"data_from_r.csv"),
+                     col_names = T)
+
+    vars <- classify_df(values_ini$df_user)
+
+    if (input$load_df_var_domain == "No") var_domain <- NULL
+    else var_domain <- input$load_df_var_domain
+
+    if (input$load_df_var_group == "No") var_group <- NULL
+    else var_group <- input$load_df_var_group
+
+    if (input$load_df_var_itw == "No") var_itw <- NULL
+    else var_itw <- input$load_df_var_itw
+
+    create_config(
+      folder_path    = link_folder,
+      file_name      = "config.txt",
+      var_domain     = var_domain,
+      var_group      = var_group,
+      var_itw        = var_itw
+    )
+
+    prepa_survey(link_folder)
+
+    values_ini$link_data_folder <- link_folder
+    values_ini$data_rds_pattern <- "global"
+    values_ini$depth_folder <- 1
+
+    removeModal()
+  })
+
+  vec_path_folder <- reactive({
+    if (values_ini$depth_folder == 3){
+      list.files(values_ini$link_data_folder)
+    }else{
+      basename(values_ini$link_data_folder)
+    }
+  })
+
+  observeEvent(vec_path_folder(),{
+    path_folder <- vec_path_folder()
     updateRadioButtons(session,"path_folder",inline=T,choices = path_folder)
   })
 
   observeEvent(input$path_folder, {
 
     if (depth_folder == 1){
-      vec_path_survey <- values_ini$vec_path_folder
+      vec_path_survey <- vec_path_folder()
     }
 
     if (depth_folder == 2){
-      vec_path_survey <- list.dirs(link_data_folder,
+      vec_path_survey <- list.dirs(values_ini$link_data_folder,
                                full.names = TRUE,recursive = FALSE)
     }
 
     if (depth_folder == 3){
-      path_folder <- file.path(link_data_folder,input$path_folder)
+      path_folder <- file.path(values_ini$link_data_folder,input$path_folder)
       vec_path_survey <- list.dirs(path_folder,full.names = T,recursive = F)
       values_ini$path_folder <- input$path_folder
     }
@@ -53,14 +120,14 @@ server <- function(input, output, session) {
 
   observeEvent(input$path_survey, {
     if (depth_folder == 1){
-      values_ini$path_survey <- link_data_folder
+      values_ini$path_survey <- values_ini$link_data_folder
     }
     if (depth_folder == 2){
-      values_ini$path_survey <- file.path(link_data_folder,
+      values_ini$path_survey <- file.path(values_ini$link_data_folder,
                                           input$path_survey)
     }
     if (depth_folder == 3){
-      values_ini$path_survey <- file.path(link_data_folder,
+      values_ini$path_survey <- file.path(values_ini$link_data_folder,
                                           input$path_folder,
                                           input$path_survey)
     }

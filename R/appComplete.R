@@ -1,3 +1,25 @@
+#' Shiny vizsurvey
+#'
+#' @returns shinyapp
+#' @export
+#'
+#' @examples
+#' \dontrun{runVizsurvey()}
+runVizsurvey <- function() {
+
+  appDir <- system.file("shiny-examples", "complete", package = "vizsurvey")
+  if (appDir == "") {
+    stop("Could not find example directory. Try re-installing `vizsurvey`.", call. = FALSE)
+  }
+
+  shiny::shinyOptions(link_data_folder = NULL)
+  shiny::shinyOptions(data_rds_pattern = NULL)
+  shiny::shinyOptions(depth_folder = NULL)
+  shiny::runApp(appDir, display.mode = "normal")
+
+  invisible(TRUE)
+}
+
 #' Shiny vizsurvey with already prepared data
 #'
 #' @param link link to directory of data
@@ -83,8 +105,6 @@ runVizsurvey_from_r <- function(
     var_group      = var_group,
     var_itw        = var_itw
   )
-
-  # prepa_survey("C:/Users/thomas.delclite/AppData/Local/Temp/RtmpCShE5t/DATA")
 
   prepa_survey(link_folder)
 

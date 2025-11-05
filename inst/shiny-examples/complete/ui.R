@@ -20,12 +20,17 @@ ui <- dashboardPage(
     fluidRow(
       box(width = 5,title="Database loading",
           status = "primary", solidHeader = TRUE,
-          radioButtons(
-            inputId = "path_folder",label = "List of directories",
-            choices = "Loading..."),
-          radioButtons(
-            inputId = "path_survey",label = "List of databases",
-            choices = "Loading...")
+          column(width = 8,
+            radioButtons(
+              inputId = "path_folder",label = "List of directories",
+              choices = "Loading..."),
+            radioButtons(
+              inputId = "path_survey",label = "List of databases",
+              choices = "Loading...")
+          ),
+          column(width = 4,
+            fileInput('load_df','Load a dataset (csv)',accept='.csv')
+          )
       ),
       box(width = 7,title = "Database filtering",
           status = "primary",solidHeader = TRUE,

@@ -29,6 +29,7 @@ Imports:
     dplyr,
     DT,
     ggplot2,
+    gt,
     laeken,
     lubridate,
     magrittr,

@@ -5,7 +5,7 @@ output:
     toc: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{Explorer et contrôler vos données avec vizsurvey}
+  %\VignetteIndexEntry{Guide pas à pas pour fouiller et détecter les anomalies}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
