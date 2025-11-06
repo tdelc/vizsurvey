@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">vizsurvey</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,27 +96,26 @@ méthodes de travail différentes, des biais involontaires, des erreurs
 récurrentes ou, plus rarement, à de la fraude.</p>
 <p>Sur ce sujet, {vizsurvey} permet de :</p>
 <ul>
-<li><p>Comparer les distributions de réponses d’un·e enquêteur·rice à
-tous les autres ;</p></li>
-<li><p>Classer les personnes selon plusieurs indicateurs de distance
-;</p></li>
-<li><p>Focaliser l’examen sur les combinaisons enquêteur·rice × variable
-les plus atypiques.</p></li>
+<li>Comparer les distributions de réponses d’un·e enquêteur·rice à tous
+les autres ;</li>
+<li>Classer les personnes selon plusieurs indicateurs de distance ;</li>
+<li>Focaliser l’examen sur les combinaisons enquêteur·rice × variable
+les plus atypiques.</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="cohérence-par-domaine">Cohérence par domaine<a class="anchor" aria-label="anchor" href="#coh%C3%A9rence-par-domaine"></a>
+<h3 id="cohérence-par-vague-denquête">Cohérence par vague d’enquête<a class="anchor" aria-label="anchor" href="#coh%C3%A9rence-par-vague-denqu%C3%AAte"></a>
 </h3>
 <p>D’une année à l’autre, les questionnaires évoluent (libellés,
 routing, filtres), mais les variables cibles doivent rester comparables.
-{vizsurvey} permet de définir une variable de domaine (ici par exemple
+{vizsurvey} permet de définir une variable de vague (ici par exemple
 l’année de l’enquête), permettant de mettre en évidence :</p>
 <ul>
-<li><p>les écarts de distributions ou de niveaux (proportions, moyennes)
-;</p></li>
-<li><p>les variables présentant des ruptures qui méritent une relecture
+<li>les écarts de distributions ou de niveaux (proportions, moyennes)
+;</li>
+<li>les variables présentant des ruptures qui méritent une relecture
 (mise en œuvre du routing, recodage, version du questionnaire,
-changement de collecte, etc.).</p></li>
+changement de collecte, etc.).</li>
 </ul>
 </div>
 <div class="section level3">
@@ -134,8 +133,8 @@ variés : la politique, la confiance dans les institutions, le bien-être,
 la religion, le travail, la santé, etc. L’ESS est une enquête en face à
 face avec un protocole commun à travers les pays participants pour
 garantir la comparabilité internationale. Les données sont rendues
-publiques et servent à la recherche en sciences sociales. Nous
-fournissons deux vagues d’enquêtes : <a href="https://ess.sikt.no/en/study/bdc7c350-1029-4cb3-9d5e-53f668b8fa74/" class="external-link">ESS9</a>
+publiques et servent à la recherche en sciences sociales. Nous proposons
+deux enquêtes pour l’exemple : <a href="https://ess.sikt.no/en/study/bdc7c350-1029-4cb3-9d5e-53f668b8fa74/" class="external-link">ESS9</a>
 et <a href="https://ess.sikt.no/en/study/172ac431-2a06-41df-9dab-c1fd8f3877e7/" class="external-link">ESS10</a>.</p>
 <p>L’<a href="https://ec.europa.eu/eurostat/web/microdata/european-union-statistics-on-income-and-living-conditions" class="external-link">EU-SILC</a>
 est une enquête annuelle coordonnée par Eurostat. Elle sert à mesurer
@@ -158,7 +157,7 @@ un numéro fictif a été créé pour les exemples ici.</p>
 <p>Il y a trois manières de lancer {vizsurvey} : à partir d’une base de
 données en R (<code>runVizsurvey_from_r</code>), à partir d’un fichier
 csv (<code>runVizsurvey_from_file</code>), ou en préparant une structure
-de fichier pour analyser en simultané plusieurs enquêtes
+de fichiers pour analyser en simultané plusieurs enquêtes
 (<code>runVizsurvey_from_folder</code>).</p>
 <div class="section level3">
 <h3 id="à-partir-dun-objet-r">À partir d’un objet R<a class="anchor" aria-label="anchor" href="#%C3%A0-partir-dun-objet-r"></a>
@@ -173,14 +172,15 @@ fonction <code>runVizsurvey_from_r</code> avec le nom de l’objet.</p>
 <p>Si vous avez lancé les packages nécessaires, une interface {shiny} se
 lance dans votre navigateur. Cette interface est pratiquement vide, car
 vous n’avez renseigné aucun argument, comme une variable identifiant les
-enquêteur·rices, ou une pour identifier les domaines ou les sous groupes
-de ventilation. Voici la commande pour intégrer ces paramètres.</p>
+groupes d’analyse (ici les enquêteur·rices), ou une pour identifier les
+vagues d’enquête ou la zone géographique. Voici la commande pour
+intégrer ces paramètres.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Not Work</span></span>
 <span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">df</span>,</span>
-<span>                    var_itw    <span class="op">=</span> <span class="st">"NR_ITW"</span>,</span>
-<span>                    var_domain <span class="op">=</span> <span class="st">"ID_DOMAIN"</span>,</span>
-<span>                    var_group  <span class="op">=</span> <span class="st">"ID_GROUP"</span><span class="op">)</span></span></code></pre></div>
+<span>                    var_group <span class="op">=</span> <span class="st">"NR_ITW"</span>,</span>
+<span>                    var_wave  <span class="op">=</span> <span class="st">"YEAR"</span>,</span>
+<span>                    var_zone  <span class="op">=</span> <span class="st">"REGIO"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="à-partir-dune-base-de-données-brute">À partir d’une base de données brute<a class="anchor" aria-label="anchor" href="#%C3%A0-partir-dune-base-de-donn%C3%A9es-brute"></a>
@@ -192,9 +192,9 @@ package {data.table}. La commande est similaire à celle pour un objet R
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Not Work</span></span>
 <span><span class="fu"><a href="../reference/runVizsurvey_from_file.html">runVizsurvey_from_file</a></span><span class="op">(</span><span class="va">path</span>,</span>
-<span>                       var_itw    <span class="op">=</span> <span class="st">"NR_ITW"</span>,</span>
-<span>                       var_domain <span class="op">=</span> <span class="st">"ID_DOMAIN"</span>,</span>
-<span>                       var_group  <span class="op">=</span> <span class="st">"ID_GROUP"</span><span class="op">)</span></span></code></pre></div>
+<span>                       var_group <span class="op">=</span> <span class="st">"NR_ITW"</span>,</span>
+<span>                       var_wave  <span class="op">=</span> <span class="st">"YEAR"</span>,</span>
+<span>                       var_zone  <span class="op">=</span> <span class="st">"REGIO"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="à-partir-dun-répertoire-de-bases-de-données">À partir d’un répertoire de bases de données<a class="anchor" aria-label="anchor" href="#%C3%A0-partir-dun-r%C3%A9pertoire-de-bases-de-donn%C3%A9es"></a>
@@ -223,24 +223,24 @@ ESS9, ESS10 pour ESS ; HFILE et PFILE pour SILC.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="analyse-de-la-cohérence-par-enquêteurrice">Analyse de la cohérence par enquêteur·rice<a class="anchor" aria-label="anchor" href="#analyse-de-la-coh%C3%A9rence-par-enqu%C3%AAteurrice"></a>
+<h2 id="analyse-de-la-cohérence-par-groupe">Analyse de la cohérence par groupe<a class="anchor" aria-label="anchor" href="#analyse-de-la-coh%C3%A9rence-par-groupe"></a>
 </h2>
-<p>L’analyse de la cohérence par enquêteur vise à évaluer la qualité et
-la régularité des données collectées selon la personne ayant mené les
-entretiens. Dans une enquête, chaque enquêteur·rice constitue une source
-potentielle de variabilité non due à l’échantillonnage mais à des effets
-d’enquête : différences d’interprétation du questionnaire, stratégies de
-réponse, ou biais de saisie.</p>
-<p>Cette étape permet donc d’identifier d’éventuelles anomalies de
-collecte (valeurs atypiques, proportions incohérentes, taux anormal de
-données manquantes), mais aussi de détecter des profils de collecte
-homogènes suggérant une bonne application du protocole.</p>
-<p>L’objectif n’est pas de sanctionner, mais de documenter la fiabilité
-du processus de terrain, d’orienter les actions de formation et de
-calibrage, et d’améliorer la qualité globale des enquêtes futures.</p>
-<p>L’analyse repose sur une comparaison systématique entre les
-enquêteur·rices pour un ensemble d’indicateurs clés (valeurs manquantes,
-distributions des réponses).</p>
+<p>L’analyse de la cohérence par groupe permet d’identifier
+d’éventuelles anomalies de collecte en comparant systématiquement un
+groupe à la population complète pour un ensemble d’indicateurs clés
+(valeurs manquantes ou atypiques, distributions des réponses).</p>
+<p>Ici, un groupe peut être un·e enquêteur·rice. Cela permet d’évaluer
+la qualité et la régularité des données collectées selon la personne
+ayant mené les entretiens. Dans une enquête, chaque enquêteur·rice
+constitue une source potentielle de variabilité non due à
+l’échantillonnage mais à des effets d’enquête : différences
+d’interprétation du questionnaire, stratégies de réponse, ou biais de
+saisie. Mais aussi de détecter des profils de collecte homogènes
+suggérant une bonne application du protocole.</p>
+<p>Ces comparaisons de groupe peuvent être étudiées par zone, souvent
+pour se limiter à des zones géographiques où les profils d’enquêté·es
+sont proches. Lorsqu’une variable de zone est indiqué, l’analyse de la
+cohérence par groupe se fait au niveau global et dans chaque zone.</p>
 <div class="section level3">
 <h3 id="données-dexemples">Données d’exemples<a class="anchor" aria-label="anchor" href="#donn%C3%A9es-dexemples"></a>
 </h3>
@@ -249,18 +249,18 @@ Nous pouvons prendre ce fichier comme exemple, et venir créer un faux
 numéro d’enquêteur·rice à partir de la variable de province
 <code>DB040</code>. Nous exécutons la fonction
 <code>runVizsurvey_from_r</code> avec comme argument supplémentaire
-<code>var_group = "DB040"</code> afin de prévoir des subdivisions de
-l’analyse par province.</p>
+<code>var_zone = "DB040"</code> afin de prévoir l’analyse par
+province.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/knitr/man/opts_chunk.html" class="external-link">opts_chunk</a></span><span class="op">$</span><span class="fu">set</span><span class="op">(</span>warning <span class="op">=</span> <span class="cn">FALSE</span>, message <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span> </span>
 <span><span class="va">eusilc</span><span class="op">$</span><span class="va">NR_ITW</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">$</span><span class="va">db040</span>,<span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span>,replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,sep<span class="op">=</span><span class="st">"-"</span><span class="op">)</span> </span>
-<span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">eusilc</span>,var_itw <span class="op">=</span> <span class="st">"NR_ITW"</span>,var_group <span class="op">=</span> <span class="st">"db040"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">eusilc</span>,var_group <span class="op">=</span> <span class="st">"NR_ITW"</span>,var_zone <span class="op">=</span> <span class="st">"db040"</span><span class="op">)</span></span></code></pre></div>
 <p>Le premier onglet de {vizsurvey} permet de naviguer de manière
 interactive à travers les situations détectées comme anormales
 concernant les enquêteur·rices.</p>
-<p><img src="images/clipboard-3454725579.png"></p>
+<p><img src="images/clipboard-1230028052.png"></p>
 </div>
 <div class="section level3">
 <h3 id="analyse-de-la-carte-de-chaleur">Analyse de la carte de chaleur<a class="anchor" aria-label="anchor" href="#analyse-de-la-carte-de-chaleur"></a>
@@ -304,15 +304,15 @@ par tâtonnement par l’équipe en charge de la coordination de l’enquête.
 Il est également possible de modifier le nombre de lignes minimum (donc
 d’enquêtes) pour afficher la ligne, ou le nombre de valeurs non
 manquantes nécessaires pour l’affichage d’une cellule.</p>
-<p><img src="images/clipboard-1081520372.png"> Enfin, il est possible
+<p><img src="images/clipboard-1081520372.png">Enfin, il est possible
 de zoomer dans la carte de chaleur, sur les lignes, les colonnes, ou sur
 les cellules à risque. Cela permet, lorsque la carte de chaleur est trop
 vaste, de cibler plus efficacement les situations à analyser. Voici par
 exemple la même carte de chaleur pour une sensibilité de deux écart-type
 avec un zoom sur les cellules à risque. On voit que d’autres cellules
-apparaissent suite à la hausse de sensibilité, mais que certaines
-provinces ont disparu, car n’affichant aucune cellule rouge.</p>
-<p><img src="images/clipboard-902632245.png"></p>
+apparaissent suite à la hausse de sensibilité, mais que certain·es
+enquêteur·rices ont disparu, car n’affichant aucune cellule rouge.</p>
+<p><img src="images/clipboard-25179100.png"></p>
 </div>
 <div class="section level3">
 <h3 id="analyse-dune-variable-catégorielle">Analyse d’une variable catégorielle<a class="anchor" aria-label="anchor" href="#analyse-dune-variable-cat%C3%A9gorielle"></a>
@@ -353,7 +353,7 @@ Dès lors, la carte de chaleur se limite aux données de Vienne, et
 n’affiche que les écarts des enquêteur·rices par rapport à cette
 province. Et ainsi, il n’y a plus aucune cellule s’affichant en
 rouge.</p>
-<p><img src="images/clipboard-1042724936.png"></p>
+<p><img src="images/clipboard-3251825829.png"></p>
 </div>
 <div class="section level3">
 <h3 id="analyse-dune-variable-continue">Analyse d’une variable continue<a class="anchor" aria-label="anchor" href="#analyse-dune-variable-continue"></a>
@@ -395,7 +395,7 @@ On retrouve enquêteur·rices de province de Vienne, mais aussi d’autres
 de la province de la basse et la haute Autriche. Pour ces deux derniers
 cas, il n’y a pas d’écarts au dessus du seuil de sensibilité, mais
 l’isolation se fait rapidement.</p>
-<p><img src="images/clipboard-3867511669.png"></p>
+<p><img src="images/clipboard-362235895.png"></p>
 <p>En cliquant sur un·e enquêteur·rice, on obtient un deuxième tableau à
 droite avec la liste des variables. Voici l’illustration en cliquant sur
 l’enquêtrice Vienna-4. Cela permet d’orienter l’analyse en commençant
@@ -409,12 +409,12 @@ chaleur.</p>
 </h3>
 <ol style="list-style-type: decimal">
 <li>
-<strong>Sélectionner</strong> l’enquête et la période.</li>
+<strong>Sélectionner</strong> l’enquête.</li>
 <li>
 <strong>Choisir</strong> l’onglet <em>Enquêteurs</em>.</li>
 <li>
-<strong>Filtrer</strong> la base de données selon une zone en
-particulier, et ajuster les paramètres d’affichage.</li>
+<strong>Filtrer</strong> la base de données selon une vague et une
+zone en particulier, et ajuster les paramètres d’affichage.</li>
 <li>
 <strong>Parcourir la heatmap</strong> pour repérer les zones les
 plus rouges.</li>
@@ -431,29 +431,34 @@ plusieurs variables ou dans le temps).</li>
 </div>
 </div>
 <div class="section level2">
-<h2 id="analyse-de-la-cohérence-par-domaine">Analyse de la cohérence par domaine<a class="anchor" aria-label="anchor" href="#analyse-de-la-coh%C3%A9rence-par-domaine"></a>
+<h2 id="analyse-de-la-cohérence-par-vague-denquête">Analyse de la cohérence par vague d’enquête<a class="anchor" aria-label="anchor" href="#analyse-de-la-coh%C3%A9rence-par-vague-denqu%C3%AAte"></a>
 </h2>
-<p>L’analyse de la cohérence par domaine vise à vérifier la stabilité
-des indicateurs clés dans le temps et à détecter d’éventuelles ruptures
-liées à des changements de collecte, de pondération ou de comportement
-des unités répondantes. Toutes les variables sont examinées d’un domaine
-à un autre (souvent d’une année sur l’autre) afin d’identifier les
-variations anormalement fortes qui ne s’expliqueraient pas par
-l’évolution réelle du phénomène observé. Cette approche permet de
-distinguer les fluctuations statistiques attendues (échantillonnage,
+<p>L’analyse de la cohérence par vague d’enquête vise à vérifier la
+stabilité des indicateurs clés dans le temps et à détecter d’éventuelles
+ruptures liées à des changements de collecte, de pondération ou de
+comportement des unités répondantes. Toutes les variables sont examinées
+d’une vague à une autre (souvent d’une année sur l’autre) afin
+d’identifier les variations anormalement fortes qui ne s’expliqueraient
+pas par l’évolution réelle du phénomène observé. Cette approche permet
+de distinguer les fluctuations statistiques attendues (échantillonnage,
 conjoncture, etc.) des sauts incohérents suggérant une erreur de codage
 ou de définition. L’objectif est de garantir la continuité temporelle
 des séries.</p>
+<p>Ces variations entre vague peuvent être étudiées par zone, souvent
+pour se concentrer sur des zones géographiques, ou par exemple des
+trimestres d’enquête. Lorsqu’une variable de zone est indiquée,
+l’analyse de la cohérence par vague d’enquête se fait au niveau global
+et dans chaque zone.</p>
 <div class="section level3">
 <h3 id="données-dexemples-1">Données d’exemples<a class="anchor" aria-label="anchor" href="#donn%C3%A9es-dexemples-1"></a>
 </h3>
-<p>Nous pouvons repartir du fichier <code>eusilc</code> du package
-{laeken}, et venir créer un faux domaine d’analyse. Nous allons créer
-une variable d’année aléatoire entre 2010 et 2020, et provoquer quelques
-erreurs à détecter pour l’année 2020 : la variable <code>pb220a</code>
-sera manquante, la modalité 4 de la variable <code>hsize</code>
-n’existera pas, et la variable de revenu équivalent moyen
-<code>eqIncome</code> sera à la mauvaise échelle.</p>
+<p>Nous repartons du fichier <code>eusilc</code> du package {laeken}, et
+créons une fausse vague d’enquête. Nous allons créer une variable
+d’année aléatoire entre 2010 et 2020, et provoquer quelques erreurs à
+détecter pour l’année 2020 : la variable <code>pb220a</code> sera
+manquante, la modalité 4 de la variable <code>hsize</code> n’existera
+pas, et la variable de revenu équivalent moyen <code>eqIncome</code>
+sera à la mauvaise échelle.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span></span>
 <span></span>
@@ -469,18 +474,18 @@ n’existera pas, et la variable de revenu équivalent moyen
 <span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">eusilc</span>,var_domain <span class="op">=</span> <span class="st">"YEAR"</span>,var_group <span class="op">=</span> <span class="st">"db040"</span><span class="op">)</span></span></code></pre></div>
 <p>Le deuxième onglet de {vizsurvey} permet de naviguer de manière
 interactive à travers les situations détectées comme anormales
-concernant les domaines.</p>
+concernant les vagues.</p>
 </div>
 <div class="section level3">
 <h3 id="analyse-des-changements-sur-les-variables">Analyse des changements sur les variables<a class="anchor" aria-label="anchor" href="#analyse-des-changements-sur-les-variables"></a>
 </h3>
 <p>Le tableau de droite indique les variables ayant apparu ou disparu
-entre les domaines. On retrouve ici la variable <code>pb220a</code> que
+entre les vagues. On retrouve ici la variable <code>pb220a</code> que
 nous avons supprimé pour l’année 2020.</p>
 <p><img src="images/clipboard-1381589877.png"></p>
 <p>Le tableau de gauche indique les variables ayant connu une variation
 notable. Chaque ligne est une variable ayant connu un changement entre
-deux modalités du domaine. Par défaut, le domaine de référence est la
+deux modalités de la vague. Par défaut, la vague de référence est la
 dernière modalité de la variable (ici 2020 pour l’année), et la
 comparaison se fait avec l’avant dernière modalité (ici 2019). Vous
 pouvez changer de modalité de référence, ou ajouter des modalités de
@@ -505,9 +510,9 @@ l’analyse.</p>
 </h3>
 <p>Pour chaque variable détectée dans cet onglet, des graphiques sont
 accessibles dans l’onglet <em>Graphics</em> pour mieux comprendre les
-écarts entre domaine. Le graphique de gauche illustre la distribution de
-la variable pour le domaine de référence. Le graphique de droite
-illustre la comparaison entre les domaines sélectionnés.</p>
+écarts entre vagues. Le graphique de gauche illustre la distribution de
+la variable pour le vague de référence. Le graphique de droite illustre
+la comparaison entre les vagues sélectionnés.</p>
 <p>Voici l’exemple pour la variable catégorielle <code>HSIZE</code> On
 détecte automatiquement la part de données manquantes importante en
 2020.</p>
@@ -524,7 +529,7 @@ distributions.</p>
 <li>
 <strong>Sélectionner</strong> l’enquête et la période.</li>
 <li>
-<strong>Choisir</strong> l’onglet <em>Domain</em>.</li>
+<strong>Choisir</strong> l’onglet <em>Wave</em>.</li>
 <li>
 <strong>Filtrer</strong> la base de données selon une zone en
 particulier, et ajuster les paramètres d’affichage.</li>
@@ -546,22 +551,31 @@ modalité, distribution très différente, etc.).</li>
 <div class="section level2">
 <h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
-<p>L’analyse de la cohérence par enquêteur·rice constitue une étape
-essentielle du contrôle qualité d’une enquête, mais elle ne vise pas à
-produire des jugements automatiques. L’outil {vizsurvey} n’infère rien :
-il organise l’exploration et met en évidence les régularités, écarts ou
-incohérences susceptibles d’attirer l’attention du service de
-coordination du terrain. L’interprétation des résultats doit toujours
-s’appuyer sur le contexte opérationnel : les consignes données aux
-enquêteur·rices, les conditions de collecte, etc. Ces éléments seuls
-permettent de distinguer une vraie anomalie d’un simple effet de
-structure ou de calendrier.</p>
+<p>L’analyse de la cohérence par groupe ou par vague d’enquête constitue
+une étape essentielle du contrôle qualité d’une enquête, mais elle ne
+vise pas à produire des jugements automatiques. L’outil {vizsurvey}
+n’infère rien : il organise l’exploration et met en évidence les
+régularités, écarts ou incohérences susceptibles d’attirer l’attention
+du service de coordination du terrain. L’interprétation des résultats
+doit toujours s’appuyer sur le contexte opérationnel : les consignes
+données aux enquêteur·rices, les conditions de collecte, etc. Ces
+éléments seuls permettent de distinguer une vraie anomalie d’un simple
+effet de structure.</p>
 <p>De plus, les informations mobilisées concernent parfois des données
 sensibles, tant sur les enquêteur·rices que sur les ménages interrogés ;
 elles doivent donc être traitées dans le strict respect des règles de
-confidentialité et de protection des données personnelles en
-vigueur.</p>
-<p>En résumé, {vizsurvey} est un outil d’aide à l’analyse, pas un outil
+confidentialité et de protection des données personnelles en vigueur.
+Quiconque utilise {vizsurvey} doit, de notre point de vue, être soumis
+aux mêmes règles de confidentialité que celles s’appliquant aux fichiers
+de données sources. En effet, l’anonymisation n’est en aucun cas
+garantie dans l’interface : les croisements, filtres ou visualisations
+proposés peuvent révéler indirectement des informations individuelles ou
+des identifiants d’enquêteur·rices. L’accès à {vizsurvey} doit donc être
+réservé aux personnes autorisées à consulter les données détaillées,
+dans un cadre sécurisé et conforme aux politiques internes de gestion
+des données.</p>
+<p>En résumé, {vizsurvey} est un outil d’aide à l’analyse en complément
+de ceux actuellement utilisés par les équipes d’enquête, et non un outil
 de diagnostic automatique. Il permet de rendre visibles les
 comportements de collecte et d’outiller les équipes d’enquête, mais les
 conclusions finales relèvent toujours du jugement éclairé de ces

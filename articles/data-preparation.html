@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">vizsurvey</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@ utilisation régulière et structurée de l’outil au sein d’une équipe
 gérant plusieurs enquêtes.</p>
 <p>Dans ce contexte, lancer manuellement l’interface pour chaque base de
 données devient rapidement fastidieux. De plus, le calcul des écarts,
-notamment lorsqu’ils sont ventilés par domaine ou par groupe, peut
+notamment lorsqu’ils sont ventilés par vague d’enquête ou de zone, peut
 s’avérer coûteux en ressources.</p>
 <p>Pour faciliter ce processus, {vizsurvey} propose plusieurs fonctions
 de préparation automatisée. Cette vignette en décrit le fonctionnement
@@ -95,9 +95,9 @@ des objets nécessaires au lancement de l’application.</p>
 fonction <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">data.table::fread</a></code>. Cette fonction reconnaît
 automatiquement les formats standards (CSV, TSV, etc.). Placez votre
 fichier dans un répertoire dédié, où il sera le <strong>seul fichier de
-ce type.</strong></p>
+ce format</strong></p>
 <p>Si votre enquête comporte plusieurs fichiers (par exemple un fichier
-par année ou par pays, comme pour l’enquête SILC), vous pouvez les
+par année ou par pays, comme pour l’enquête EU-SILC), vous pouvez les
 placer dans un même répertoire. Tous les fichiers doivent toutefois
 contenir les mêmes variables que celles indiquées dans le fichier de
 configuration, et être au même format. De plus, aucun autre fichier de
@@ -114,10 +114,10 @@ comporter les éléments suivants :</p>
 vars_discretes =
 vars_continous =
 
-var_domain = 
-var_group = 
+var_wave = 
+var_zone = 
 
-var_itw = </code></pre>
+var_group = </code></pre>
 <ul>
 <li><p><code>name_survey</code> : nom de l’enquête (utile pour
 identifier les fichiers) ;</p></li>
@@ -125,26 +125,26 @@ identifier les fichiers) ;</p></li>
 catégorielles ;</p></li>
 <li><p><code>vars_continous</code> : variables à traiter comme continues
 ;</p></li>
-<li><p><code>var_domain</code> : variable de domaine utilisée pour
+<li><p><code>var_wave</code> : variable de vague d’enquête utilisée pour
 ventiler les calculs (exemple : année) ;</p></li>
-<li><p><code>var_group</code> : variable de groupe permettant une
+<li><p><code>var_zone</code> : variable de zone permettant une
 ventilation supplémentaire (exemple : province). Les calculs seront
-également produits sans distinction de groupe ;</p></li>
-<li><p><code>var_itw</code> : variable d’identifiant des
-enquêteur·rices.</p></li>
+également produits sans distinction de zone ;</p></li>
+<li><p><code>var_group</code> : variable d’identifiant du groupe (par
+exemple enquêteur·rice).</p></li>
 </ul>
 <p>Le fichier peut être créé manuellement, ou généré automatiquement à
 l’aide de la fonction <code>create_config</code>. Voici l’exemple pour
 les fichiers ménages de l’enquête SILC, avec l’année
-(<code>HB010</code>) comme domaine et la province (<code>HB020</code>)
-comme groupe :</p>
+(<code>HB010</code>) comme vague d’enquête et la province
+(<code>HB020</code>) comme zone :</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_config.html">create_config</a></span><span class="op">(</span></span>
 <span>  folder_path <span class="op">=</span> <span class="st">"inst/extdata/SILC/HFILE"</span>,</span>
 <span>  name_survey <span class="op">=</span> <span class="st">"SILC-H"</span>,</span>
-<span>  var_domain  <span class="op">=</span> <span class="st">"HB010"</span>,</span>
-<span>  var_group   <span class="op">=</span> <span class="st">"HB020"</span>,</span>
-<span>  var_itw     <span class="op">=</span> <span class="st">"NR_ITW"</span></span>
+<span>  var_wave    <span class="op">=</span> <span class="st">"HB010"</span>,</span>
+<span>  var_zone    <span class="op">=</span> <span class="st">"HB020"</span>,</span>
+<span>  var_group   <span class="op">=</span> <span class="st">"NR_ITW"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Les variables discrètes et continues ne doivent être précisées que si
 la fonction <code>classify_df</code> identifie mal leur type. Cette
@@ -171,12 +171,12 @@ de l’enquête. La fonction <code>prepa_survey</code> utilise le dossier
 contenant les données et le fichier <code>config.txt</code> pour
 produire :</p>
 <ul>
-<li><p>Par domaine, Les statistiques descriptives de chaque variable
+<li><p>Par vague, Les statistiques descriptives de chaque variable
 ;</p></li>
-<li><p>Par domaine, pour chaque variable, les écarts de chaque
-enquêteur·rice avec le reste du domaine</p></li>
-<li><p>Par domaine, par groupe, pour chaque variable, les écarts de
-chaque enquêteur·rice avec le reste du groupe dans le domaine</p></li>
+<li><p>Par vague, pour chaque variable, les écarts de chaque groupe avec
+la population (dans la vague) ;</p></li>
+<li><p>Par vague et par zone, pour chaque variable, les écarts de chaque
+groupe avec la population (dans la zone et la vague).</p></li>
 </ul>
 <p>Par défaut, <code>prepa_survey</code> recherche les fichiers CSV du
 répertoire, mais l’argument <code>file_pattern</code> permet d’adapter
@@ -228,7 +228,8 @@ structure de répertoires attendue :</p>
 <p>Chaque sous-répertoire doit comporter son propre
 <code>config.txt</code>, puis vous pouvez exécuter la préparation
 globale :</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">prepa_surveys</span>(<span class="at">folder_path  =</span> <span class="st">"inst/extdata"</span>,<span class="at">depth_folder =</span> <span class="dv">3</span>)<span class="er">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/prepa_surveys.html">prepa_surveys</a></span><span class="op">(</span>folder_path  <span class="op">=</span> <span class="st">"inst/extdata"</span>,depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p>Enfin, l’interface est lancée avec la même profondeur :</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"inst/extdata"</span>,depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
