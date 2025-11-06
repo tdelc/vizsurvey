@@ -3,7 +3,7 @@ name_survey = SILC-H
 vars_discretes = 
 vars_continous = 
 
-var_domain = HB010
-var_group = HB020
+var_wave = HB010
+var_zone = HB020
 
-var_itw = NR_ITW
+var_group = NR_ITW

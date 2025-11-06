@@ -55,7 +55,7 @@ heatmap_group <- function(df_stats, threshold = 5, color = "red2") {
     theme_minimal() +
     labs(x = "") +
     theme(
-      panel.background = element_rect(fill = "grey80"),
+      panel.background = element_rect(fill = "white"),
       legend.position = "none",
       axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
       panel.grid = element_blank()

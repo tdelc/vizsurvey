@@ -6,7 +6,7 @@
 \alias{vizsurvey-package}
 \title{vizsurvey: Visualisation And Analysis During a Survey Field}
 \description{
-vizsurvey is an R package designed to streamline the quality assessment of survey data by providing intuitive visual diagnostics through an interactive dashboard. It takes as input a survey database containing annual or quarterly data, enriched with both interviewer-specific variables and a wide array of survey variables.
+vizsurvey is an R package designed to streamline the quality assessment of survey data by providing intuitive visual diagnostics through an interactive dashboard. vizsurvey is especially useful for institutions or researchers conducting large-scale surveys with multiple interviewers, enabling a fast and systematic overview of data quality over time.
 }
 \seealso{
 Useful links:
@@ -19,11 +19,6 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Thomas Delclite \email{thomas.delclite@economie.fgov.be}
-
-Authors:
-\itemize{
-  \item Adrien Mierop \email{adrien.mierop@economie.fgov.be}
-}
 
 }
 \keyword{internal}

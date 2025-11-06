@@ -10,9 +10,9 @@ create_config(
   name_survey = NULL,
   vars_discretes = NULL,
   vars_continous = NULL,
-  var_domain = NULL,
-  var_group = NULL,
-  var_itw = NULL
+  var_wave = NULL,
+  var_zone = NULL,
+  var_group = NULL
 )
 }
 \arguments{
@@ -26,11 +26,11 @@ create_config(
 
 \item{vars_continous}{(optional) preset continous variables name (VAR1,VAR2,...)}
 
-\item{var_domain}{(optional) variable name of domain}
+\item{var_wave}{(optional) variable name of wave}
 
-\item{var_group}{(optional) variable name of group}
+\item{var_zone}{(optional) variable name of zone}
 
-\item{var_itw}{variable name of interviewer}
+\item{var_group}{variable name of group}
 }
 \description{
 Create a template of configuration file

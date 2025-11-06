@@ -6,23 +6,23 @@
 \usage{
 runVizsurvey_from_file(
   path,
-  var_itw = NULL,
   vars_discretes = NULL,
   vars_continous = NULL,
-  var_domain = NULL,
+  var_wave = NULL,
+  var_zone = NULL,
   var_group = NULL
 )
 }
 \arguments{
 \item{path}{path of a data.frame (can be readed by fread)}
 
-\item{var_itw}{(optional) name of interviewer variable}
-
 \item{vars_discretes}{(optional) preset of discretes variables}
 
 \item{vars_continous}{(optional) preset of continous variables}
 
-\item{var_domain}{(optional) name of domain variable}
+\item{var_wave}{(optional) name of wave variable}
+
+\item{var_zone}{(optional) name of zone variable}
 
 \item{var_group}{(optional) name of group variable}
 }
@@ -34,5 +34,5 @@ Shiny vizsurvey from a csv/tsv
 }
 \examples{
 path <- "inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"
-\dontrun{runVizsurvey_from_file(path,var_itw = "NR_ITW",var_group = "db040")}
+\dontrun{runVizsurvey_from_file(path,var_itw = "NR_ITW",var_zone = "db040")}
 }

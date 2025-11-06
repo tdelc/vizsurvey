@@ -25,7 +25,7 @@ library(vizsurvey)
 
 Cette vignette présente la préparation des données nécessaires à l'utilisation de {vizsurvey} via l'appel `runVizsurvey_from_folder`. L'objectif est de permettre une utilisation régulière et structurée de l'outil au sein d'une équipe gérant plusieurs enquêtes.
 
-Dans ce contexte, lancer manuellement l'interface pour chaque base de données devient rapidement fastidieux. De plus, le calcul des écarts, notamment lorsqu'ils sont ventilés par domaine ou par groupe, peut s'avérer coûteux en ressources.
+Dans ce contexte, lancer manuellement l'interface pour chaque base de données devient rapidement fastidieux. De plus, le calcul des écarts, notamment lorsqu'ils sont ventilés par vague d'enquête ou de zone, peut s'avérer coûteux en ressources.
 
 Pour faciliter ce processus, {vizsurvey} propose plusieurs fonctions de préparation automatisée. Cette vignette en décrit le fonctionnement pas à pas, depuis la structuration des fichiers jusqu'à la génération des objets nécessaires au lancement de l'application.
 
@@ -33,9 +33,9 @@ Pour faciliter ce processus, {vizsurvey} propose plusieurs fonctions de prépara
 
 ## Structure simple : un seul répertoire
 
-Le fichier de votre base de données doit pouvoir être lu par la fonction `data.table::fread`. Cette fonction reconnaît automatiquement les formats standards (CSV, TSV, etc.). Placez votre fichier dans un répertoire dédié, où il sera le **seul fichier de ce type.**
+Le fichier de votre base de données doit pouvoir être lu par la fonction `data.table::fread`. Cette fonction reconnaît automatiquement les formats standards (CSV, TSV, etc.). Placez votre fichier dans un répertoire dédié, où il sera le **seul fichier de ce format**
 
-Si votre enquête comporte plusieurs fichiers (par exemple un fichier par année ou par pays, comme pour l'enquête SILC), vous pouvez les placer dans un même répertoire. Tous les fichiers doivent toutefois contenir les mêmes variables que celles indiquées dans le fichier de configuration, et être au même format. De plus, aucun autre fichier de ce type ne doit être présent dans le répertoire.
+Si votre enquête comporte plusieurs fichiers (par exemple un fichier par année ou par pays, comme pour l'enquête EU-SILC), vous pouvez les placer dans un même répertoire. Tous les fichiers doivent toutefois contenir les mêmes variables que celles indiquées dans le fichier de configuration, et être au même format. De plus, aucun autre fichier de ce type ne doit être présent dans le répertoire.
 
 ### Fichier de configuration de l'enquête
 
@@ -47,10 +47,10 @@ name_survey =
 vars_discretes =
 vars_continous =
 
-var_domain = 
-var_group = 
+var_wave = 
+var_zone = 
 
-var_itw = 
+var_group = 
 ```
 
 -   `name_survey` : nom de l'enquête (utile pour identifier les fichiers) ;
@@ -59,21 +59,21 @@ var_itw =
 
 -   `vars_continous` : variables à traiter comme continues ;
 
--   `var_domain` : variable de domaine utilisée pour ventiler les calculs (exemple : année) ;
+-   `var_wave` : variable de vague d'enquête utilisée pour ventiler les calculs (exemple : année) ;
 
--   `var_group` : variable de groupe permettant une ventilation supplémentaire (exemple : province). Les calculs seront également produits sans distinction de groupe ;
+-   `var_zone` : variable de zone permettant une ventilation supplémentaire (exemple : province). Les calculs seront également produits sans distinction de zone ;
 
--   `var_itw` : variable d'identifiant des enquêteur·rices.
+-   `var_group` : variable d'identifiant du groupe (par exemple enquêteur·rice).
 
-Le fichier peut être créé manuellement, ou généré automatiquement à l'aide de la fonction `create_config`. Voici l'exemple pour les fichiers ménages de l'enquête SILC, avec l'année (`HB010`) comme domaine et la province (`HB020`) comme groupe :
+Le fichier peut être créé manuellement, ou généré automatiquement à l'aide de la fonction `create_config`. Voici l'exemple pour les fichiers ménages de l'enquête SILC, avec l'année (`HB010`) comme vague d'enquête et la province (`HB020`) comme zone :
 
 ```{r, eval=F, warning = F, message = F}
 create_config(
   folder_path = "inst/extdata/SILC/HFILE",
   name_survey = "SILC-H",
-  var_domain  = "HB010",
-  var_group   = "HB020",
-  var_itw     = "NR_ITW"
+  var_wave    = "HB010",
+  var_zone    = "HB020",
+  var_group   = "NR_ITW"
 )
 ```
 
@@ -87,11 +87,11 @@ classify_df(iris)
 
 Une fois la configuration en place, {vizsurvey} peut calculer **en amont** toutes les statistiques nécessaires au suivi de l'enquête. La fonction `prepa_survey` utilise le dossier contenant les données et le fichier `config.txt` pour produire :
 
--   Par domaine, Les statistiques descriptives de chaque variable ;
+-   Par vague, Les statistiques descriptives de chaque variable ;
 
--   Par domaine, pour chaque variable, les écarts de chaque enquêteur·rice avec le reste du domaine
+-   Par vague, pour chaque variable, les écarts de chaque groupe avec la population (dans la vague) ;
 
--   Par domaine, par groupe, pour chaque variable, les écarts de chaque enquêteur·rice avec le reste du groupe dans le domaine
+-   Par vague et par zone, pour chaque variable, les écarts de chaque groupe avec la population (dans la zone et la vague).
 
 Par défaut, `prepa_survey` recherche les fichiers CSV du répertoire, mais l'argument `file_pattern` permet d'adapter ce comportement. Un fichier `global.rda` est ensuite généré dans le même dossier : c'est lui qui sera utilisé par l'interface interactive.
 
@@ -142,7 +142,7 @@ extdata/
 Chaque sous-répertoire doit comporter son propre `config.txt`, puis vous pouvez exécuter la préparation globale :
 
 ```{r, eval=F, warning = F, message = F}
-prepa_surveys(folder_path  = "inst/extdata",depth_folder = 3)}
+prepa_surveys(folder_path  = "inst/extdata",depth_folder = 3)
 ```
 
 Enfin, l'interface est lancée avec la même profondeur :

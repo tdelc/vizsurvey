@@ -135,9 +135,9 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
 #' @param folder_path folder where create the file
 #' @param file_name Name of the config file (config.txt by default)
 #' @param name_survey Name of the survey (not used)
-#' @param var_itw variable name of interviewer
-#' @param var_domain (optional) variable name of domain
-#' @param var_group (optional) variable name of group
+#' @param var_group variable name of group
+#' @param var_wave (optional) variable name of wave
+#' @param var_zone (optional) variable name of zone
 #' @param vars_discretes (optional) preset discretes variables name (VAR1,VAR2,...)
 #' @param vars_continous (optional) preset continous variables name (VAR1,VAR2,...)
 #'
@@ -150,9 +150,9 @@ create_config <- function(folder_path, file_name = "config.txt",
                           name_survey = NULL,
                           vars_discretes = NULL,
                           vars_continous = NULL,
-                          var_domain = NULL,
-                          var_group = NULL,
-                          var_itw = NULL) {
+                          var_wave = NULL,
+                          var_zone = NULL,
+                          var_group = NULL) {
   if (!dir.exists(folder_path)) {
     stop("folder_path does not exists")
   }
@@ -167,10 +167,10 @@ create_config <- function(folder_path, file_name = "config.txt",
     paste("vars_discretes =", vars_discretes),
     paste("vars_continous =", vars_continous),
     "",
-    paste("var_domain =", var_domain),
-    paste("var_group =", var_group),
+    paste("var_wave =", var_wave),
+    paste("var_zone =", var_zone),
     "",
-    paste("var_itw =", var_itw)
+    paste("var_group =", var_group)
   )
 
   writeLines(content, file_path)
@@ -287,10 +287,10 @@ folder_to_df <- function(folder,
   configs <- list()
   configs$vd <- intersect(config %>% extract_config("vars_discretes"), names(df))
   configs$vc <- intersect(config %>% extract_config("vars_continous"), names(df))
-  configs$id_itw <- intersect(config %>% extract_config("var_itw"), names(df))
   configs$path <- folder
-  configs$vt <- config %>% extract_config("var_domain")
-  configs$vg <- config %>% extract_config("var_group")
+  configs$vg <- intersect(config %>% extract_config("var_group"), names(df))
+  configs$vw <- config %>% extract_config("var_wave")
+  configs$vz <- config %>% extract_config("var_zone")
   configs$enq <- config %>% extract_config("name_survey")
 
   # add automatic classification
@@ -321,12 +321,12 @@ folder_to_df <- function(folder,
       across(any_of(configs$vd), as.factor)
     )
 
-  if (!is.na(configs$vt)){
-    df <- df %>% mutate(across(any_of(configs$vt), as.character))
+  if (!is.na(configs$vw)){
+    df <- df %>% mutate(across(any_of(configs$vw), as.character))
   }
 
-  if (!is.na(configs$vg)){
-    df <- df %>% mutate(across(any_of(configs$vg), as.character))
+  if (!is.na(configs$vz)){
+    df <- df %>% mutate(across(any_of(configs$vz), as.character))
   }
 
   return(list(df = df, configs = configs))
@@ -338,16 +338,16 @@ folder_to_df <- function(folder,
 #' @param df_ database
 #' @param configs configs
 #' @param var_calculs variable to create stats
-#' @param filter_group (optional) group modality to filter data
+#' @param zone_filter (optional) zone modality to filter data
 #'
 #' @returns df
 create_df_stats <- function(df_, configs,
                             var_calculs,
-                            filter_group = NULL) {
+                            zone_filter = NULL) {
   df <- df_
 
-  if (!is.null(filter_group)) {
-    df <- df %>% filter(!!sym(configs$vg) %in% filter_group)
+  if (!is.null(zone_filter)) {
+    df <- df %>% filter(!!sym(configs$vz) %in% zone_filter)
   }
 
   variables <- list()
@@ -356,15 +356,15 @@ create_df_stats <- function(df_, configs,
 
   df_stats <- df %>% prepa_stats(var_calculs, configs$vd, configs$vc)
 
-  if (!is.null(filter_group)) {
-    df_stats <- df_stats %>% mutate(group = filter_group)
+  if (!is.null(zone_filter)) {
+    df_stats <- df_stats %>% mutate(zone = zone_filter)
   } else {
-    df_stats <- df_stats %>% mutate(group = "All")
+    df_stats <- df_stats %>% mutate(zone = "All")
   }
   df_stats
 }
 
-#' Loop of stats creation by group
+#' Loop of stats creation by zone
 #'
 #' @param df database
 #' @param configs configs
@@ -375,17 +375,17 @@ loop_stats <- function(df, configs, var_calculs) {
   cli::cli_progress_step("df_stats for {var_calculs}", spinner = TRUE)
   df_stats <- create_df_stats(df, configs, var_calculs)
 
-  if (length(pull(unique(df[, configs$vg]))) > 1) {
-    vec_group <- pull(unique(df[, configs$vg]))
+  if (length(pull(unique(df[, configs$vz]))) > 1) {
+    vec_zone <- pull(unique(df[, configs$vz]))
 
-    cli::cli_alert_info("create_df_stats for group {configs$vg}")
-    df_stats_group <- vec_group %>% map_df(~ {
-      cli::cli_progress_step("{configs$vg} = {.x}", spinner = TRUE)
-      create_df_stats(df, configs, var_calculs, filter_group = .x)
+    cli::cli_alert_info("create_df_stats for zone {configs$vz}")
+    df_stats_zone <- vec_zone %>% map_df(~ {
+      cli::cli_progress_step("{configs$vz} = {.x}", spinner = TRUE)
+      create_df_stats(df, configs, var_calculs, zone_filter = .x)
     })
 
     df_stats <- df_stats %>%
-      dplyr::add_row(df_stats_group)
+      dplyr::add_row(df_stats_zone)
   }
   return(df_stats)
 }
@@ -414,10 +414,15 @@ prepa_survey <- function(folder_path, ...) {
 
   df <- list_df$df
 
-  # Create a fake all domain or group or id_itw if null
-  if (length(configs$vt) == 0 || is.na(configs$vt)){
-    df <- df %>% mutate(domain = "All")
-    configs$vt <- "domain"
+  # Create a fake all wave or zone or group if null
+  if (length(configs$vw) == 0 || is.na(configs$vw)){
+    df <- df %>% mutate(wave = "All")
+    configs$vw <- "wave"
+  }
+
+  if (length(configs$vz) == 0 || is.na(configs$vz)){
+    df <- df %>% mutate(zone = "All")
+    configs$vz <- "zone"
   }
 
   if (length(configs$vg) == 0 || is.na(configs$vg)){
@@ -425,36 +430,31 @@ prepa_survey <- function(folder_path, ...) {
     configs$vg <- "group"
   }
 
-  if (length(configs$id_itw) == 0 || is.na(configs$id_itw)){
-    df <- df %>% mutate(id_itw = "All")
-    configs$id_itw <- "id_itw"
-  }
-
-  # Domain variation
-  if (length(pull(unique(df[, configs$vt]))) > 1) {
-    df_stats <- loop_stats(df, configs, configs$vt)
+  # Wave variation
+  if (length(pull(unique(df[, configs$vw]))) > 1) {
+    df_stats <- loop_stats(df, configs, configs$vw)
   } else {
     df_stats <- NULL
   }
 
   # Interviewer variation
-  if (length(pull(unique(df[, configs$id_itw]))) > 1) {
-    df_stats_itw <- pull(unique(df[, configs$vt])) %>% map_df(~ {
-      cli::cli_progress_step("df_stats_itw for domain {.x}",spinner = TRUE)
+  if (length(pull(unique(df[, configs$vg]))) > 1) {
+    df_stats_group <- pull(unique(df[, configs$vw])) %>% map_df(~ {
+      cli::cli_progress_step("df_stats_group for wave {.x}",spinner = TRUE)
       sub_df <- df %>%
-        filter(!!sym(configs$vt) == .x) %>%
-        loop_stats(configs, configs$id_itw) %>%
-        mutate(!!sym(configs$vt) := .x)
+        filter(!!sym(configs$vw) == .x) %>%
+        loop_stats(configs, configs$vg) %>%
+        mutate(!!sym(configs$vw) := .x)
     })
   } else {
-    df_stats_itw <- NULL
+    df_stats_group <- NULL
   }
 
   global <- list(
     configs = configs,
     df = df,
     df_stats = df_stats,
-    df_stats_itw = df_stats_itw
+    df_stats_group = df_stats_group
   )
 
   readr::write_rds(global, file.path(folder_path,"global.rds"),compress = "gz")
@@ -480,7 +480,6 @@ prepa_survey <- function(folder_path, ...) {
 #' }
 prepa_surveys <- function(folder_path,depth_folder=1,...) {
 
-  # depth_folder == 1
   list_dirs <- folder_path
 
   if (depth_folder >= 2){

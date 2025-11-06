@@ -32,30 +32,27 @@ Le rôle des enquêteur·rices est central : compréhension fine du questionnair
 Sur ce sujet, {vizsurvey} permet de :
 
 -   Comparer les distributions de réponses d'un·e enquêteur·rice à tous les autres ;
-
 -   Classer les personnes selon plusieurs indicateurs de distance ;
-
 -   Focaliser l'examen sur les combinaisons enquêteur·rice × variable les plus atypiques.
 
-## Cohérence par domaine
+## Cohérence par vague d'enquête
 
-D'une année à l'autre, les questionnaires évoluent (libellés, routing, filtres), mais les variables cibles doivent rester comparables. {vizsurvey} permet de définir une variable de domaine (ici par exemple l'année de l'enquête), permettant de mettre en évidence :
+D'une année à l'autre, les questionnaires évoluent (libellés, routing, filtres), mais les variables cibles doivent rester comparables. {vizsurvey} permet de définir une variable de vague (ici par exemple l'année de l'enquête), permettant de mettre en évidence :
 
 -   les écarts de distributions ou de niveaux (proportions, moyennes) ;
-
 -   les variables présentant des ruptures qui méritent une relecture (mise en œuvre du routing, recodage, version du questionnaire, changement de collecte, etc.).
 
 ## Base de données d'exemples
 
 Afin d'illustrer les fonctionnalités du package {vizsurvey}, nous proposons des fichiers d'enquête issue de deux grandes enquêtes européenne : ESS (European Social Survey) et SILC (Survey on Income and Living Conditions).
 
-L'[ESS](https://ess.sikt.no/en/series/321b06ad-1b98-4b7d-93ad-ca8a24e8788a) est une enquête européenne menée tous les deux ans depuis 2002. Elle vise à comprendre les attitudes, les valeurs et les comportements des habitants des pays européens. Les questions portent sur des thèmes variés : la politique, la confiance dans les institutions, le bien-être, la religion, le travail, la santé, etc. L'ESS est une enquête en face à face avec un protocole commun à travers les pays participants pour garantir la comparabilité internationale. Les données sont rendues publiques et servent à la recherche en sciences sociales. Nous fournissons deux vagues d'enquêtes : [ESS9](https://ess.sikt.no/en/study/bdc7c350-1029-4cb3-9d5e-53f668b8fa74/) et [ESS10](https://ess.sikt.no/en/study/172ac431-2a06-41df-9dab-c1fd8f3877e7/).
+L'[ESS](https://ess.sikt.no/en/series/321b06ad-1b98-4b7d-93ad-ca8a24e8788a) est une enquête européenne menée tous les deux ans depuis 2002. Elle vise à comprendre les attitudes, les valeurs et les comportements des habitants des pays européens. Les questions portent sur des thèmes variés : la politique, la confiance dans les institutions, le bien-être, la religion, le travail, la santé, etc. L'ESS est une enquête en face à face avec un protocole commun à travers les pays participants pour garantir la comparabilité internationale. Les données sont rendues publiques et servent à la recherche en sciences sociales. Nous proposons deux enquêtes pour l'exemple : [ESS9](https://ess.sikt.no/en/study/bdc7c350-1029-4cb3-9d5e-53f668b8fa74/) et [ESS10](https://ess.sikt.no/en/study/172ac431-2a06-41df-9dab-c1fd8f3877e7/).
 
 L'[EU-SILC](https://ec.europa.eu/eurostat/web/microdata/european-union-statistics-on-income-and-living-conditions) est une enquête annuelle coordonnée par Eurostat. Elle sert à mesurer les revenus, la pauvreté, les inégalités et les conditions de vie dans les pays européens. SILC permet notamment de calculer des indicateurs clés comme le taux de pauvreté le celui de privation matérielle et sociale. C'est une enquête auprès des ménages, menée par les instituts nationaux de statistique (comme Statbel en Belgique). Eurostat fournit publiquement des Public Use Files, des fichiers utilisables publiquement pour des tests. Les fichiers sont anonymisés et ne reproduisent pas nécessairement les résultats officiels. Nous fournissons deux fichiers : P-FILE (fichier des individus) et H-FILE (fichier des ménages). Il n'y a pas de numéro d'enquêteur indiqué dans ces fichiers initialement, donc un numéro fictif a été créé pour les exemples ici.
 
 # Lancement de vizsurvey
 
-Il y a trois manières de lancer {vizsurvey} : à partir d'une base de données en R (`runVizsurvey_from_r`), à partir d'un fichier csv (`runVizsurvey_from_file`), ou en préparant une structure de fichier pour analyser en simultané plusieurs enquêtes (`runVizsurvey_from_folder`).
+Il y a trois manières de lancer {vizsurvey} : à partir d'une base de données en R (`runVizsurvey_from_r`), à partir d'un fichier csv (`runVizsurvey_from_file`), ou en préparant une structure de fichiers pour analyser en simultané plusieurs enquêtes (`runVizsurvey_from_folder`).
 
 ## À partir d'un objet R
 
@@ -68,14 +65,14 @@ library(vizsurvey)
 runVizsurvey_from_r(df)
 ```
 
-Si vous avez lancé les packages nécessaires, une interface {shiny} se lance dans votre navigateur. Cette interface est pratiquement vide, car vous n'avez renseigné aucun argument, comme une variable identifiant les enquêteur·rices, ou une pour identifier les domaines ou les sous groupes de ventilation. Voici la commande pour intégrer ces paramètres.
+Si vous avez lancé les packages nécessaires, une interface {shiny} se lance dans votre navigateur. Cette interface est pratiquement vide, car vous n'avez renseigné aucun argument, comme une variable identifiant les groupes d'analyse (ici les enquêteur·rices), ou une pour identifier les vagues d'enquête ou la zone géographique. Voici la commande pour intégrer ces paramètres.
 
 ```{r, eval=F, warning = F, message = F}
 # Not Work
 runVizsurvey_from_r(df,
-                    var_itw    = "NR_ITW",
-                    var_domain = "ID_DOMAIN",
-                    var_group  = "ID_GROUP")
+                    var_group = "NR_ITW",
+                    var_wave  = "YEAR",
+                    var_zone  = "REGIO")
 ```
 
 ## À partir d'une base de données brute
@@ -85,9 +82,9 @@ runVizsurvey_from_r(df,
 ```{r, eval=F, warning = F, message = F}
 # Not Work
 runVizsurvey_from_file(path,
-                       var_itw    = "NR_ITW",
-                       var_domain = "ID_DOMAIN",
-                       var_group  = "ID_GROUP")
+                       var_group = "NR_ITW",
+                       var_wave  = "YEAR",
+                       var_zone  = "REGIO")
 ```
 
 ## À partir d'un répertoire de bases de données
@@ -102,31 +99,29 @@ Chaque enquête (et donc chaque dossier de base de données) doit contenir un fi
 runVizsurvey_from_folder("inst/extdata",depth_folder = 3)
 ```
 
-# Analyse de la cohérence par enquêteur·rice
+# Analyse de la cohérence par groupe
 
-L'analyse de la cohérence par enquêteur vise à évaluer la qualité et la régularité des données collectées selon la personne ayant mené les entretiens. Dans une enquête, chaque enquêteur·rice constitue une source potentielle de variabilité non due à l'échantillonnage mais à des effets d'enquête : différences d'interprétation du questionnaire, stratégies de réponse, ou biais de saisie.
+L'analyse de la cohérence par groupe permet d'identifier d'éventuelles anomalies de collecte en comparant systématiquement un groupe à la population complète pour un ensemble d'indicateurs clés (valeurs manquantes ou atypiques, distributions des réponses).
 
-Cette étape permet donc d'identifier d'éventuelles anomalies de collecte (valeurs atypiques, proportions incohérentes, taux anormal de données manquantes), mais aussi de détecter des profils de collecte homogènes suggérant une bonne application du protocole.
+Ici, un groupe peut être un·e enquêteur·rice. Cela permet d'évaluer la qualité et la régularité des données collectées selon la personne ayant mené les entretiens. Dans une enquête, chaque enquêteur·rice constitue une source potentielle de variabilité non due à l'échantillonnage mais à des effets d'enquête : différences d'interprétation du questionnaire, stratégies de réponse, ou biais de saisie. Mais aussi de détecter des profils de collecte homogènes suggérant une bonne application du protocole.
 
-L'objectif n'est pas de sanctionner, mais de documenter la fiabilité du processus de terrain, d'orienter les actions de formation et de calibrage, et d'améliorer la qualité globale des enquêtes futures.
-
-L'analyse repose sur une comparaison systématique entre les enquêteur·rices pour un ensemble d'indicateurs clés (valeurs manquantes, distributions des réponses).
+Ces comparaisons de groupe peuvent être étudiées par zone, souvent pour se limiter à des zones géographiques où les profils d'enquêté·es sont proches. Lorsqu'une variable de zone est indiqué, l'analyse de la cohérence par groupe se fait au niveau global et dans chaque zone.
 
 ## Données d'exemples
 
-Le package {laeken} fournit un fichier d'exemple de l'enquête SILC. Nous pouvons prendre ce fichier comme exemple, et venir créer un faux numéro d'enquêteur·rice à partir de la variable de province `DB040`. Nous exécutons la fonction `runVizsurvey_from_r` avec comme argument supplémentaire `var_group = "DB040"` afin de prévoir des subdivisions de l'analyse par province.
+Le package {laeken} fournit un fichier d'exemple de l'enquête SILC. Nous pouvons prendre ce fichier comme exemple, et venir créer un faux numéro d'enquêteur·rice à partir de la variable de province `DB040`. Nous exécutons la fonction `runVizsurvey_from_r` avec comme argument supplémentaire `var_zone = "DB040"` afin de prévoir l'analyse par province.
 
 ```{r, eval=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 data(eusilc) 
 set.seed(123) 
 eusilc$NR_ITW <- paste(eusilc$db040,sample(1:5,nrow(eusilc),replace = T),sep="-") 
-runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")
+runVizsurvey_from_r(eusilc,var_group = "NR_ITW",var_zone = "db040")
 ```
 
 Le premier onglet de {vizsurvey} permet de naviguer de manière interactive à travers les situations détectées comme anormales concernant les enquêteur·rices.
 
-![](images/clipboard-3454725579.png)
+![](images/clipboard-1230028052.png)
 
 ## Analyse de la carte de chaleur
 
@@ -144,10 +139,9 @@ En survolant les cellules, toutes les informations sont affichées, de sorte à 
 
 Par défaut, la carte de chaleur affiche une cellule en rouge lorsque l'un des écarts dépasse 5 écart-type de la variable. Dans notre situation, cela conduit à afficher 7 cellules, toutes pour Vienne. En réduisant le seuil de sensibilité dans les paramètres, on affiche bien plus de cellules. Il n'y a pas de seuil prédéterminée, ou statistiquement valide, pour une telle analyse. Cela doit être déterminé par tâtonnement par l'équipe en charge de la coordination de l'enquête. Il est également possible de modifier le nombre de lignes minimum (donc d'enquêtes) pour afficher la ligne, ou le nombre de valeurs non manquantes nécessaires pour l'affichage d'une cellule.
 
-![](images/clipboard-1081520372.png)
-Enfin, il est possible de zoomer dans la carte de chaleur, sur les lignes, les colonnes, ou sur les cellules à risque. Cela permet, lorsque la carte de chaleur est trop vaste, de cibler plus efficacement les situations à analyser. Voici par exemple la même carte de chaleur pour une sensibilité de deux écart-type avec un zoom sur les cellules à risque. On voit que d'autres cellules apparaissent suite à la hausse de sensibilité, mais que certaines provinces ont disparu, car n'affichant aucune cellule rouge.
+![](images/clipboard-1081520372.png)Enfin, il est possible de zoomer dans la carte de chaleur, sur les lignes, les colonnes, ou sur les cellules à risque. Cela permet, lorsque la carte de chaleur est trop vaste, de cibler plus efficacement les situations à analyser. Voici par exemple la même carte de chaleur pour une sensibilité de deux écart-type avec un zoom sur les cellules à risque. On voit que d'autres cellules apparaissent suite à la hausse de sensibilité, mais que certain·es enquêteur·rices ont disparu, car n'affichant aucune cellule rouge.
 
-![](images/clipboard-902632245.png)
+![](images/clipboard-25179100.png)
 
 ## Analyse d'une variable catégorielle
 
@@ -155,8 +149,7 @@ Dans notre exemple, avec une sensibilité de 5 écart-type, sept cellules s'allu
 
 On découvre ainsi que les modalités 3 et 4 de la variable HHSIZE sont bien moins présentes chez l'enquêteur Vienne-1 que chez les autres.
 
-![](images/clipboard-4063476803.png)
-Pour essayer de comprendre ces différences, nous avons inclus un algorithme qui calcule les dix corrélations les plus hautes dans la base de données, pour ensuite projeter les corrélations effectives pour l'enquêteur·rice et celles du reste de la base de données. Il s'agit uniquement de corrélations de pearson en transformant au préalable les variables catégorielles en facteur.
+![](images/clipboard-4063476803.png) Pour essayer de comprendre ces différences, nous avons inclus un algorithme qui calcule les dix corrélations les plus hautes dans la base de données, pour ensuite projeter les corrélations effectives pour l'enquêteur·rice et celles du reste de la base de données. Il s'agit uniquement de corrélations de pearson en transformant au préalable les variables catégorielles en facteur.
 
 > **Principe directeur** : aucun test statistique n'est effectué. {vizsurvey} calcule des distances, des scores, des rangs et des corrélations destinés à **prioriser** la revue. Les conclusions analytiques restent du ressort de l'équipe méthodologique.
 
@@ -166,7 +159,7 @@ Pour notre enquêteur Vienne-1 et son résultat surprenant pour la variable HHSI
 
 Pour revenir sur la carte de chaleur, on remarque que les cinq cellules de Vienne sont allumées en rouge pour la variable HHSIZE, preuve d'un effet de zone plutôt qu'un effet d'enquêteur·rice. Pour s'en convaincre, on peut sélectionner DB040 = Vienne en haut de l'interface. Dès lors, la carte de chaleur se limite aux données de Vienne, et n'affiche que les écarts des enquêteur·rices par rapport à cette province. Et ainsi, il n'y a plus aucune cellule s'affichant en rouge.
 
-![](images/clipboard-1042724936.png)
+![](images/clipboard-3251825829.png)
 
 ## Analyse d'une variable continue
 
@@ -184,7 +177,7 @@ La méthode [Isolation Forest](https://cran.r-project.org/web/packages/isotree/v
 
 Voici le classement des enquêteur·rices issue de la carte de chaleur. On retrouve enquêteur·rices de province de Vienne, mais aussi d'autres de la province de la basse et la haute Autriche. Pour ces deux derniers cas, il n'y a pas d'écarts au dessus du seuil de sensibilité, mais l'isolation se fait rapidement.
 
-![](images/clipboard-3867511669.png)
+![](images/clipboard-362235895.png)
 
 En cliquant sur un·e enquêteur·rice, on obtient un deuxième tableau à droite avec la liste des variables. Voici l'illustration en cliquant sur l'enquêtrice Vienna-4. Cela permet d'orienter l'analyse en commençant par les variables les plus marquantes. En cliquant sur une variable, on obtient en dessous les graphiques d'analyse comme durant la carte de chaleur.
 
@@ -192,21 +185,23 @@ En cliquant sur un·e enquêteur·rice, on obtient un deuxième tableau à droit
 
 ## Résumé : analyse pas à pas
 
-1.  **Sélectionner** l'enquête et la période.
+1.  **Sélectionner** l'enquête.
 2.  **Choisir** l'onglet *Enquêteurs*.
-3.  **Filtrer** la base de données selon une zone en particulier, et ajuster les paramètres d'affichage.
+3.  **Filtrer** la base de données selon une vague et une zone en particulier, et ajuster les paramètres d'affichage.
 4.  **Parcourir la heatmap** pour repérer les zones les plus rouges.
 5.  **Cliquer** sur une cellule pour ouvrir les détails (distribution, corrélation).
 6.  **Comparer** à la référence et regarder la cohérence intra-variable (modalités) et inter-variables (corrélations).
 7.  **Consigner** les cas récurrents (mêmes écarts sur plusieurs variables ou dans le temps).
 
-# Analyse de la cohérence par domaine
+# Analyse de la cohérence par vague d'enquête
 
-L'analyse de la cohérence par domaine vise à vérifier la stabilité des indicateurs clés dans le temps et à détecter d'éventuelles ruptures liées à des changements de collecte, de pondération ou de comportement des unités répondantes. Toutes les variables sont examinées d'un domaine à un autre (souvent d'une année sur l'autre) afin d'identifier les variations anormalement fortes qui ne s'expliqueraient pas par l'évolution réelle du phénomène observé. Cette approche permet de distinguer les fluctuations statistiques attendues (échantillonnage, conjoncture, etc.) des sauts incohérents suggérant une erreur de codage ou de définition. L'objectif est de garantir la continuité temporelle des séries.
+L'analyse de la cohérence par vague d'enquête vise à vérifier la stabilité des indicateurs clés dans le temps et à détecter d'éventuelles ruptures liées à des changements de collecte, de pondération ou de comportement des unités répondantes. Toutes les variables sont examinées d'une vague à une autre (souvent d'une année sur l'autre) afin d'identifier les variations anormalement fortes qui ne s'expliqueraient pas par l'évolution réelle du phénomène observé. Cette approche permet de distinguer les fluctuations statistiques attendues (échantillonnage, conjoncture, etc.) des sauts incohérents suggérant une erreur de codage ou de définition. L'objectif est de garantir la continuité temporelle des séries.
+
+Ces variations entre vague peuvent être étudiées par zone, souvent pour se concentrer sur des zones géographiques, ou par exemple des trimestres d'enquête. Lorsqu'une variable de zone est indiquée, l'analyse de la cohérence par vague d'enquête se fait au niveau global et dans chaque zone.
 
 ## Données d'exemples
 
-Nous pouvons repartir du fichier `eusilc` du package {laeken}, et venir créer un faux domaine d'analyse. Nous allons créer une variable d'année aléatoire entre 2010 et 2020, et provoquer quelques erreurs à détecter pour l'année 2020 : la variable `pb220a` sera manquante, la modalité 4 de la variable `hsize` n'existera pas, et la variable de revenu équivalent moyen `eqIncome` sera à la mauvaise échelle.
+Nous repartons du fichier `eusilc` du package {laeken}, et créons une fausse vague d'enquête. Nous allons créer une variable d'année aléatoire entre 2010 et 2020, et provoquer quelques erreurs à détecter pour l'année 2020 : la variable `pb220a` sera manquante, la modalité 4 de la variable `hsize` n'existera pas, et la variable de revenu équivalent moyen `eqIncome` sera à la mauvaise échelle.
 
 ```{r, eval=F, warning = F, message = F}
 data(eusilc)
@@ -223,15 +218,15 @@ eusilc[eusilc$YEAR == 2020,"eqIncome"] <- eusilc[eusilc$YEAR == 2020,"eqIncome"]
 runVizsurvey_from_r(eusilc,var_domain = "YEAR",var_group = "db040")
 ```
 
-Le deuxième onglet de {vizsurvey} permet de naviguer de manière interactive à travers les situations détectées comme anormales concernant les domaines.
+Le deuxième onglet de {vizsurvey} permet de naviguer de manière interactive à travers les situations détectées comme anormales concernant les vagues.
 
 ## Analyse des changements sur les variables
 
-Le tableau de droite indique les variables ayant apparu ou disparu entre les domaines. On retrouve ici la variable `pb220a` que nous avons supprimé pour l'année 2020.
+Le tableau de droite indique les variables ayant apparu ou disparu entre les vagues. On retrouve ici la variable `pb220a` que nous avons supprimé pour l'année 2020.
 
 ![](images/clipboard-1381589877.png)
 
-Le tableau de gauche indique les variables ayant connu une variation notable. Chaque ligne est une variable ayant connu un changement entre deux modalités du domaine. Par défaut, le domaine de référence est la dernière modalité de la variable (ici 2020 pour l'année), et la comparaison se fait avec l'avant dernière modalité (ici 2019). Vous pouvez changer de modalité de référence, ou ajouter des modalités de comparaison. Attention, la lecture du tableau est peu lisible au delà de deux modalités de comparaison. Les cellules sont colorées lorsque l'écart est suffisamment élevé.
+Le tableau de gauche indique les variables ayant connu une variation notable. Chaque ligne est une variable ayant connu un changement entre deux modalités de la vague. Par défaut, la vague de référence est la dernière modalité de la variable (ici 2020 pour l'année), et la comparaison se fait avec l'avant dernière modalité (ici 2019). Vous pouvez changer de modalité de référence, ou ajouter des modalités de comparaison. Attention, la lecture du tableau est peu lisible au delà de deux modalités de comparaison. Les cellules sont colorées lorsque l'écart est suffisamment élevé.
 
 ![](images/clipboard-1694810607.png)
 
@@ -241,7 +236,7 @@ Ce seuil de sensibilité peut être modifié, affichant plus ou moins de variabl
 
 ## Analyse graphique
 
-Pour chaque variable détectée dans cet onglet, des graphiques sont accessibles dans l'onglet *Graphics* pour mieux comprendre les écarts entre domaine. Le graphique de gauche illustre la distribution de la variable pour le domaine de référence. Le graphique de droite illustre la comparaison entre les domaines sélectionnés.
+Pour chaque variable détectée dans cet onglet, des graphiques sont accessibles dans l'onglet *Graphics* pour mieux comprendre les écarts entre vagues. Le graphique de gauche illustre la distribution de la variable pour le vague de référence. Le graphique de droite illustre la comparaison entre les vagues sélectionnés.
 
 Voici l'exemple pour la variable catégorielle `HSIZE` On détecte automatiquement la part de données manquantes importante en 2020.
 
@@ -254,7 +249,7 @@ Voici l'exemple pour la variable continue `EQINCOME` On détecte automatiquement
 ## Résumé : analyse pas à pas
 
 1.  **Sélectionner** l'enquête et la période.
-2.  **Choisir** l'onglet *Domain*.
+2.  **Choisir** l'onglet *Wave*.
 3.  **Filtrer** la base de données selon une zone en particulier, et ajuster les paramètres d'affichage.
 4.  **Lister** les variables ayant apparu et disparu et vérifier si cela est justifiable.
 5.  **Parcourir** les variables ayant changé, pour vérifier chaque écart en rouge.
@@ -263,8 +258,8 @@ Voici l'exemple pour la variable continue `EQINCOME` On détecte automatiquement
 
 # Conclusion
 
-L'analyse de la cohérence par enquêteur·rice constitue une étape essentielle du contrôle qualité d'une enquête, mais elle ne vise pas à produire des jugements automatiques. L'outil {vizsurvey} n'infère rien : il organise l'exploration et met en évidence les régularités, écarts ou incohérences susceptibles d'attirer l'attention du service de coordination du terrain. L'interprétation des résultats doit toujours s'appuyer sur le contexte opérationnel : les consignes données aux enquêteur·rices, les conditions de collecte, etc. Ces éléments seuls permettent de distinguer une vraie anomalie d'un simple effet de structure ou de calendrier.
+L'analyse de la cohérence par groupe ou par vague d'enquête constitue une étape essentielle du contrôle qualité d'une enquête, mais elle ne vise pas à produire des jugements automatiques. L'outil {vizsurvey} n'infère rien : il organise l'exploration et met en évidence les régularités, écarts ou incohérences susceptibles d'attirer l'attention du service de coordination du terrain. L'interprétation des résultats doit toujours s'appuyer sur le contexte opérationnel : les consignes données aux enquêteur·rices, les conditions de collecte, etc. Ces éléments seuls permettent de distinguer une vraie anomalie d'un simple effet de structure.
 
-De plus, les informations mobilisées concernent parfois des données sensibles, tant sur les enquêteur·rices que sur les ménages interrogés ; elles doivent donc être traitées dans le strict respect des règles de confidentialité et de protection des données personnelles en vigueur.
+De plus, les informations mobilisées concernent parfois des données sensibles, tant sur les enquêteur·rices que sur les ménages interrogés ; elles doivent donc être traitées dans le strict respect des règles de confidentialité et de protection des données personnelles en vigueur. Quiconque utilise {vizsurvey} doit, de notre point de vue, être soumis aux mêmes règles de confidentialité que celles s’appliquant aux fichiers de données sources. En effet, l’anonymisation n’est en aucun cas garantie dans l’interface : les croisements, filtres ou visualisations proposés peuvent révéler indirectement des informations individuelles ou des identifiants d’enquêteur·rices. L’accès à {vizsurvey} doit donc être réservé aux personnes autorisées à consulter les données détaillées, dans un cadre sécurisé et conforme aux politiques internes de gestion des données.
 
-En résumé, {vizsurvey} est un outil d'aide à l'analyse, pas un outil de diagnostic automatique. Il permet de rendre visibles les comportements de collecte et d'outiller les équipes d'enquête, mais les conclusions finales relèvent toujours du jugement éclairé de ces équipes.
+En résumé, {vizsurvey} est un outil d'aide à l'analyse en complément de ceux actuellement utilisés par les équipes d'enquête, et non un outil de diagnostic automatique. Il permet de rendre visibles les comportements de collecte et d'outiller les équipes d'enquête, mais les conclusions finales relèvent toujours du jugement éclairé de ces équipes.

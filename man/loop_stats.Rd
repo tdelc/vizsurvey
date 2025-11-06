@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepa.R
 \name{loop_stats}
 \alias{loop_stats}
-\title{Loop of stats creation by group}
+\title{Loop of stats creation by zone}
 \usage{
 loop_stats(df, configs, var_calculs)
 }
@@ -17,5 +17,5 @@ loop_stats(df, configs, var_calculs)
 df
 }
 \description{
-Loop of stats creation by group
+Loop of stats creation by zone
 }

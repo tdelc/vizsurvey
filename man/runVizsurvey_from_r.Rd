@@ -6,23 +6,23 @@
 \usage{
 runVizsurvey_from_r(
   df,
-  var_itw = NULL,
   vars_discretes = NULL,
   vars_continous = NULL,
-  var_domain = NULL,
+  var_wave = NULL,
+  var_zone = NULL,
   var_group = NULL
 )
 }
 \arguments{
 \item{df}{data.frame}
 
-\item{var_itw}{(optional) name of interviewer variable}
-
 \item{vars_discretes}{(optional) preset of discretes variables}
 
 \item{vars_continous}{(optional) preset of continous variables}
 
-\item{var_domain}{(optional) name of domain variable}
+\item{var_wave}{(optional) name of wave variable}
+
+\item{var_zone}{(optional) name of zone variable}
 
 \item{var_group}{(optional) name of group variable}
 }
@@ -37,5 +37,5 @@ library(laeken)
 data(eusilc)
 set.seed(123)
 eusilc$NR_ITW <- paste(eusilc$db040,sample(1:5,nrow(eusilc),replace = TRUE),sep="-")
-\dontrun{runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")}
+\dontrun{runVizsurvey_from_r(eusilc,var_group = "NR_ITW",var_zone = "db040")}
 }

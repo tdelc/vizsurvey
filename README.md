@@ -20,8 +20,7 @@ over time.
 ## Key features
 
 - Interactive Shiny dashboard for real-time data exploration
-- Automated computation of summary statistics by domain, group, or
-  interviewer
+- Automated computation of summary statistics by wave, zone, or group
 - Heatmap visualization for anomaly detection
 - Tools for preparing and managing multiple survey datasets
 
@@ -45,16 +44,16 @@ A CRAN release is planned once version 1.0.0 is reached.
 ## What is `vizsurvey` ?
 
 `vizsurvey` provides a comprehensive set of R functions designed to
-automate key statistical computations on survey data by *domain* or
-*interviewer*. These functions ensure that summary indicators,
-distributions, and consistency checks can be produced efficiently and
-reproducibly across multiple survey waves. At the core of these analyses
-lies the heatmap module, a graphical function (in `ggplot` and `plotly`)
-that visualizes deviations and irregularities at a glance, making it
-easier to detect outliers or recurring anomalies. Together, the
-computational tools, visualization features, and interactive Shiny
-dashboard make `vizsurvey` a complete environment for the monitoring,
-exploration, and quality assessment of survey data.
+automate key statistical computations on survey data by *wave* or
+*group*. These functions ensure that summary indicators, distributions,
+and consistency checks can be produced efficiently and reproducibly
+across multiple survey waves. At the core of these analyses lies the
+heatmap module, a graphical function (in `ggplot` and `plotly`) that
+visualizes deviations and irregularities at a glance, making it easier
+to detect outliers or recurring anomalies. Together, the computational
+tools, visualization features, and interactive Shiny dashboard make
+`vizsurvey` a complete environment for the monitoring, exploration, and
+quality assessment of survey data.
 
 ## How to use `vizsurvey` ?
 
@@ -69,27 +68,26 @@ reproducible reports.
 
 Alternatively, users can simply launch the interactive dashboard, which
 provides an intuitive graphical interface for exploring survey data,
-filtering by domain or interviewer, and visualizing anomalies in real
-time. The function `runVizsurvey` is the easier way to launch the
-dashboard. It will be empty, you will then need to load your own
-dataset.
+filtering by wave or group, and visualizing anomalies in real time. The
+function `runVizsurvey` is the easier way to launch the dashboard. It
+will be empty, you will then need to load your own dataset.
 
 ``` r
 library(vizsurvey)
 runVizsurvey()
 ```
 
-Considering the interviewer effect, anomalies are displayed in a heatmap
-by interviewer ID and by variable. Each cell can be clicked to display
-detailed plots showing the distribution of responses and the comparison
-between the interviewer and the rest of the population.
+Considering the group effect (for example an interviewer effect),
+anomalies are displayed in a heatmap by group and by variable. Each cell
+can be clicked to display detailed plots showing the distribution of
+responses and the comparison between the group and the rest of the
+population.
 
-![](images/clipboard-358599880.png)
-![](images/clipboard-479834452.png)![](images/clipboard-1525333393.png)
+![](images/clipboard-4202437278.png)![](images/clipboard-479834452.png)![](images/clipboard-1525333393.png)
 
-For the domain effect, a list of detected anomalies is provided,
-together with a set of dedicated figures that help users understand the
-nature and potential source of each issue.
+For the wave effect, a list of detected anomalies is provided, together
+with a set of dedicated figures that help users understand the nature
+and potential source of each issue.
 
 ![](images/clipboard-699643965.png) ![](images/clipboard-79293162.png)
 
@@ -110,7 +108,7 @@ set.seed(123)
 eusilc$NR_ITW <- paste(eusilc$NR_ITW,sample(1:5,nrow(eusilc),replace = T),sep="-")
 
 # Vizsurve
-runVizsurvey_from_r(eusilc,var_itw = "NR_ITW",var_group = "db040")
+runVizsurvey_from_r(eusilc,var_group = "NR_ITW",var_zone = "db040")
 ```
 
 We can also launch the dashboard directly with a CSV file. We provide
@@ -120,7 +118,7 @@ for EU-SILC from Eurostat.
 
 ``` r
 path <- "inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"
-runVizsurvey_from_file(path,var_itw = "NR_ITW",var_group = "db040")
+runVizsurvey_from_file(path,var_group = "NR_ITW",var_zone = "db040")
 ```
 
 [A dedicated
@@ -145,7 +143,7 @@ runVizsurvey_from_folder("inst/extdata",depth_folder = 3)
 
 ## Development Notes
 
-Current Version : 0.1.0
+Current Version : 0.2.0
 
 The names of the functions and arguments in `vizsurvey` are still under
 evaluation and may evolve based on early user feedback. As the package
