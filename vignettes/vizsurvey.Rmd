@@ -42,14 +42,6 @@ D'une année à l'autre, les questionnaires évoluent (libellés, routing, filtr
 -   les écarts de distributions ou de niveaux (proportions, moyennes) ;
 -   les variables présentant des ruptures qui méritent une relecture (mise en œuvre du routing, recodage, version du questionnaire, changement de collecte, etc.).
 
-## Base de données d'exemples
-
-Afin d'illustrer les fonctionnalités du package {vizsurvey}, nous proposons des fichiers d'enquête issue de deux grandes enquêtes européenne : ESS (European Social Survey) et SILC (Survey on Income and Living Conditions).
-
-L'[ESS](https://ess.sikt.no/en/series/321b06ad-1b98-4b7d-93ad-ca8a24e8788a) est une enquête européenne menée tous les deux ans depuis 2002. Elle vise à comprendre les attitudes, les valeurs et les comportements des habitants des pays européens. Les questions portent sur des thèmes variés : la politique, la confiance dans les institutions, le bien-être, la religion, le travail, la santé, etc. L'ESS est une enquête en face à face avec un protocole commun à travers les pays participants pour garantir la comparabilité internationale. Les données sont rendues publiques et servent à la recherche en sciences sociales. Nous proposons deux enquêtes pour l'exemple : [ESS9](https://ess.sikt.no/en/study/bdc7c350-1029-4cb3-9d5e-53f668b8fa74/) et [ESS10](https://ess.sikt.no/en/study/172ac431-2a06-41df-9dab-c1fd8f3877e7/).
-
-L'[EU-SILC](https://ec.europa.eu/eurostat/web/microdata/european-union-statistics-on-income-and-living-conditions) est une enquête annuelle coordonnée par Eurostat. Elle sert à mesurer les revenus, la pauvreté, les inégalités et les conditions de vie dans les pays européens. SILC permet notamment de calculer des indicateurs clés comme le taux de pauvreté le celui de privation matérielle et sociale. C'est une enquête auprès des ménages, menée par les instituts nationaux de statistique (comme Statbel en Belgique). Eurostat fournit publiquement des Public Use Files, des fichiers utilisables publiquement pour des tests. Les fichiers sont anonymisés et ne reproduisent pas nécessairement les résultats officiels. Nous fournissons deux fichiers : P-FILE (fichier des individus) et H-FILE (fichier des ménages). Il n'y a pas de numéro d'enquêteur indiqué dans ces fichiers initialement, donc un numéro fictif a été créé pour les exemples ici.
-
 # Lancement de vizsurvey
 
 Il y a trois manières de lancer {vizsurvey} : à partir d'une base de données en R (`runVizsurvey_from_r`), à partir d'un fichier csv (`runVizsurvey_from_file`), ou en préparant une structure de fichiers pour analyser en simultané plusieurs enquêtes (`runVizsurvey_from_folder`).
@@ -91,12 +83,10 @@ runVizsurvey_from_file(path,
 
 Le package {vizsurvey} peut gérer plusieurs répertoires contenant différentes enquêtes. Dans ce type de configuration, on part du principe que plusieurs utilisateur·rices exploitent {vizsurvey} à différents moments. Or, la génération des statistiques à chaque lancement de l'application peut s'avérer trop longue. Il est donc préférable de préparer les fichiers en amont, afin de rendre l'ouverture de l'interface plus fluide.
 
-Cette vignette se concentre uniquement sur la visualisation des données à l'aide de {vizsurvey}. La procédure de préparation et de création des fichiers est détaillée dans une autre vignette dédiée.
-
-Chaque enquête (et donc chaque dossier de base de données) doit contenir un fichier global de configuration au format .rds. Pour lancer l'interface, il suffit ensuite d'indiquer le répertoire source des données, et le nombre de sous répertoires présents (1 si le répertoire contient une enquête, 2 si plusieurs répertoires sont présents, 3 si plusieurs répertoires contiennent eux mêmes plusieurs répertoires d'enquête). Voici par exemple la commande pour une structure comportant deux répertoires ESS et SILC, avec leurs sous-répertoires d'enquêtes : ESS9, ESS10 pour ESS ; HFILE et PFILE pour SILC.
+Chaque enquête (et donc chaque dossier de base de données) doit contenir un fichier global de configuration au format .rds. Pour lancer l'interface, il suffit ensuite d'indiquer le répertoire source des données, et le nombre de sous répertoires présents (1 si le répertoire contient une enquête, 2 si plusieurs répertoires sont présents, 3 si plusieurs répertoires contiennent eux mêmes plusieurs répertoires d'enquête). La [vignette](https://tdelc.github.io/vizsurvey/articles/data-preparation.html) sur la préparation des données vous explique tout cela en détail. Voici par exemple la commande pour une structure comportant 2 niveaux de répertoire et 1 niveau pour les fichiers.
 
 ```{r, eval=F, warning = F, message = F}
-runVizsurvey_from_folder("inst/extdata",depth_folder = 3)
+runVizsurvey_from_folder("data",depth_folder = 3)
 ```
 
 # Analyse de la cohérence par groupe

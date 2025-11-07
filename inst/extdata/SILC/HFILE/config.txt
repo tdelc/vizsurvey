@@ -4,6 +4,6 @@ vars_discretes =
 vars_continous = 
 
 var_wave = HB010
-var_zone = HB020
+var_zone = DB040
 
 var_group = NR_ITW
