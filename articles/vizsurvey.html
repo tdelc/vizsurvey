@@ -118,38 +118,6 @@ l’année de l’enquête), permettant de mettre en évidence :</p>
 changement de collecte, etc.).</li>
 </ul>
 </div>
-<div class="section level3">
-<h3 id="base-de-données-dexemples">Base de données d’exemples<a class="anchor" aria-label="anchor" href="#base-de-donn%C3%A9es-dexemples"></a>
-</h3>
-<p>Afin d’illustrer les fonctionnalités du package {vizsurvey}, nous
-proposons des fichiers d’enquête issue de deux grandes enquêtes
-européenne : ESS (European Social Survey) et SILC (Survey on Income and
-Living Conditions).</p>
-<p>L’<a href="https://ess.sikt.no/en/series/321b06ad-1b98-4b7d-93ad-ca8a24e8788a" class="external-link">ESS</a>
-est une enquête européenne menée tous les deux ans depuis 2002. Elle
-vise à comprendre les attitudes, les valeurs et les comportements des
-habitants des pays européens. Les questions portent sur des thèmes
-variés : la politique, la confiance dans les institutions, le bien-être,
-la religion, le travail, la santé, etc. L’ESS est une enquête en face à
-face avec un protocole commun à travers les pays participants pour
-garantir la comparabilité internationale. Les données sont rendues
-publiques et servent à la recherche en sciences sociales. Nous proposons
-deux enquêtes pour l’exemple : <a href="https://ess.sikt.no/en/study/bdc7c350-1029-4cb3-9d5e-53f668b8fa74/" class="external-link">ESS9</a>
-et <a href="https://ess.sikt.no/en/study/172ac431-2a06-41df-9dab-c1fd8f3877e7/" class="external-link">ESS10</a>.</p>
-<p>L’<a href="https://ec.europa.eu/eurostat/web/microdata/european-union-statistics-on-income-and-living-conditions" class="external-link">EU-SILC</a>
-est une enquête annuelle coordonnée par Eurostat. Elle sert à mesurer
-les revenus, la pauvreté, les inégalités et les conditions de vie dans
-les pays européens. SILC permet notamment de calculer des indicateurs
-clés comme le taux de pauvreté le celui de privation matérielle et
-sociale. C’est une enquête auprès des ménages, menée par les instituts
-nationaux de statistique (comme Statbel en Belgique). Eurostat fournit
-publiquement des Public Use Files, des fichiers utilisables publiquement
-pour des tests. Les fichiers sont anonymisés et ne reproduisent pas
-nécessairement les résultats officiels. Nous fournissons deux fichiers :
-P-FILE (fichier des individus) et H-FILE (fichier des ménages). Il n’y a
-pas de numéro d’enquêteur indiqué dans ces fichiers initialement, donc
-un numéro fictif a été créé pour les exemples ici.</p>
-</div>
 </div>
 <div class="section level2">
 <h2 id="lancement-de-vizsurvey">Lancement de vizsurvey<a class="anchor" aria-label="anchor" href="#lancement-de-vizsurvey"></a>
@@ -206,20 +174,18 @@ moments. Or, la génération des statistiques à chaque lancement de
 l’application peut s’avérer trop longue. Il est donc préférable de
 préparer les fichiers en amont, afin de rendre l’ouverture de
 l’interface plus fluide.</p>
-<p>Cette vignette se concentre uniquement sur la visualisation des
-données à l’aide de {vizsurvey}. La procédure de préparation et de
-création des fichiers est détaillée dans une autre vignette dédiée.</p>
 <p>Chaque enquête (et donc chaque dossier de base de données) doit
 contenir un fichier global de configuration au format .rds. Pour lancer
 l’interface, il suffit ensuite d’indiquer le répertoire source des
 données, et le nombre de sous répertoires présents (1 si le répertoire
 contient une enquête, 2 si plusieurs répertoires sont présents, 3 si
 plusieurs répertoires contiennent eux mêmes plusieurs répertoires
-d’enquête). Voici par exemple la commande pour une structure comportant
-deux répertoires ESS et SILC, avec leurs sous-répertoires d’enquêtes :
-ESS9, ESS10 pour ESS ; HFILE et PFILE pour SILC.</p>
+d’enquête). La <a href="https://tdelc.github.io/vizsurvey/articles/data-preparation.html">vignette</a>
+sur la préparation des données vous explique tout cela en détail. Voici
+par exemple la commande pour une structure comportant 2 niveaux de
+répertoire et 1 niveau pour les fichiers.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"inst/extdata"</span>,depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>,depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
