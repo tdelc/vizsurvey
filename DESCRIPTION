@@ -7,6 +7,11 @@ Authors@R: c(
       "Thomas", "Delclite",
       email = "thomas.delclite@economie.fgov.be",
       role = c("aut", "cre")
+    ),
+    person(
+      "Adrien", "Mierop",
+      email = "adrien.mierop@economie.fgov.be",
+      role = c("aut", "cre")
     )
   )
 Description: vizsurvey is an R package designed to streamline the quality 
