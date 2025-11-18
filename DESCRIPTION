@@ -30,6 +30,7 @@ Imports:
     DT,
     ggplot2,
     gt,
+    isotree,
     laeken,
     lubridate,
     magrittr,
