@@ -169,10 +169,13 @@ architecture:
   `ggplot2`, `corrplot`, `DT`, `gt`, `plotly`, `shiny`,
   `shinydashboard`, `summarytools`
 
-## Author
+## Authors
 
-**Thomas Delclite** is statistical methodologist and work à Statbel, the
-Belgian Statistical Office.
+**Thomas Delclite** is statistical methodologist and works à Statbel,
+the Belgian Statistical Office.
+
+**Adrien Mierop** is data analyst and works à Statbel, the Belgian
+Statistical Office.
 
 Feedback and contributions are welcome.
 
