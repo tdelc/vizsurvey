@@ -18,7 +18,7 @@ group_main_corr <- function(M, variable) {
     labs(x = NULL, y = NULL, fill = "corr") +
     theme_minimal(base_size = 12) +
     theme(
-      axis.text.x = element_text(angle = 45, hjust = -0.1),
+      axis.text.x = element_text(angle = 45, hjust = 1),
       axis.text.y = element_blank(),
       axis.ticks = element_blank(),
       legend.position = "none",

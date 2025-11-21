@@ -34,5 +34,5 @@ Shiny vizsurvey from a csv/tsv
 }
 \examples{
 path <- "inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"
-\dontrun{runVizsurvey_from_file(path,var_itw = "NR_ITW",var_zone = "db040")}
+\dontrun{runVizsurvey_from_file(path,var_group = "NR_ITW",var_zone = "db040")}
 }

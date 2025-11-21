@@ -2,6 +2,7 @@
 
 export(classify_df)
 export(create_config)
+export(create_eusilc_sim)
 export(create_fake_silc)
 export(empty_as_na)
 export(folder_to_df)

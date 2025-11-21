@@ -9,11 +9,11 @@ prepa_stats(df, var_group, vars_vd = NULL, vars_vc = NULL)
 \arguments{
 \item{df}{data frame for the summary}
 
+\item{var_group}{Name of group variable}
+
 \item{vars_vd}{(optional) Vector of discrete variables}
 
 \item{vars_vc}{(optional) Vector of continuous variables}
-
-\item{var_zone}{Name of zone variable}
 }
 \value{
 data frame

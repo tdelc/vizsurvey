@@ -52,3 +52,44 @@ create_fake_silc <- function(
   })
   return(NULL)
 }
+
+
+#' Simulate EU-SILC dataset with injected errors
+#'
+#' @returns data.frame from laeken::eusilc with ids and errors
+#' @export
+#'
+#' @examples
+#' # create_eusilc_sim()
+create_eusilc_sim <- function() {
+
+  # Charger les données
+  data("eusilc", package = "laeken")
+
+  # Create interview variable
+  set.seed(123)
+  eusilc_sim <- eusilc %>%
+    mutate(
+      nr_itw = paste(db040,
+                     sample(1:5, n(), replace = TRUE),
+                     sep = "-")
+    )
+
+  # Create year wave
+  set.seed(123)
+  eusilc_sim <- eusilc_sim %>%
+    dplyr::mutate(year = sample(2018:2020, n(), replace = TRUE))
+
+  # Generate errors
+  eusilc_sim <- eusilc_sim %>%
+    dplyr::mutate(
+      age = dplyr::if_else(nr_itw == "Vienna-2",age/10,age),
+      eqIncome = dplyr::if_else(nr_itw == "Vienna-2",eqIncome / 100,eqIncome),
+      pl030 = replace(pl030,nr_itw == "Vienna-2" & pl030 == "5",NA),
+      pb220a = replace(pb220a,year == 2020,NA),
+      hsize = replace(hsize,year == 2020 & hsize == 4,NA),
+      eqIncome = dplyr::if_else(year == 2020,eqIncome / 100,eqIncome)
+    )
+
+  return(eusilc_sim)
+}

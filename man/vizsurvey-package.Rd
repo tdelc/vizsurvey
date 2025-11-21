@@ -20,5 +20,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Thomas Delclite \email{thomas.delclite@economie.fgov.be}
 
+Authors:
+\itemize{
+  \item Adrien Mierop \email{adrien.mierop@economie.fgov.be}
+}
+
 }
 \keyword{internal}
