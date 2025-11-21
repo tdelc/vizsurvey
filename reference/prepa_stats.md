@@ -14,6 +14,10 @@ prepa_stats(df, var_group, vars_vd = NULL, vars_vc = NULL)
 
   data frame for the summary
 
+- var_group:
+
+  Name of group variable
+
 - vars_vd:
 
   (optional) Vector of discrete variables
@@ -21,10 +25,6 @@ prepa_stats(df, var_group, vars_vd = NULL, vars_vc = NULL)
 - vars_vc:
 
   (optional) Vector of continuous variables
-
-- var_zone:
-
-  Name of zone variable
 
 ## Value
 

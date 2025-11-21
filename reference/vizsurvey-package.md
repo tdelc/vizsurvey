@@ -20,3 +20,7 @@ Useful links:
 ## Author
 
 **Maintainer**: Thomas Delclite <thomas.delclite@economie.fgov.be>
+
+Authors:
+
+- Adrien Mierop <adrien.mierop@economie.fgov.be>

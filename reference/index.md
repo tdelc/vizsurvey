@@ -10,6 +10,8 @@
   : Create a template of configuration file
 - [`create_df_stats()`](https://tdelc.github.io/vizsurvey/reference/create_df_stats.md)
   : Create statistics from database
+- [`create_eusilc_sim()`](https://tdelc.github.io/vizsurvey/reference/create_eusilc_sim.md)
+  : Simulate EU-SILC dataset with injected errors
 - [`create_fake_silc()`](https://tdelc.github.io/vizsurvey/reference/create_fake_silc.md)
   : Use PUF files for SILC example
 - [`empty_as_na()`](https://tdelc.github.io/vizsurvey/reference/empty_as_na.md)

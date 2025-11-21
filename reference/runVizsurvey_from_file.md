@@ -49,5 +49,5 @@ shinyapp
 
 ``` r
 path <- "inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"
-if (FALSE) runVizsurvey_from_file(path,var_itw = "NR_ITW",var_zone = "db040") # \dontrun{}
+if (FALSE) runVizsurvey_from_file(path,var_group = "NR_ITW",var_zone = "db040") # \dontrun{}
 ```
