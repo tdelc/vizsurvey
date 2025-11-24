@@ -211,7 +211,8 @@ load_config <- function(file_path) {
 #' @returns list
 correct_list_df <- function(list_df) {
   list_DB_FORMAT <- lapply(list_df, function(df) {
-    tibble(variable = names(df), format = sapply(df, class))
+    tibble(variable = names(df), format = sapply(
+      df, function(x) class(x)[[1]]))
   })
 
   variables_correction <- dplyr::bind_rows(list_DB_FORMAT, .id = "df") %>%
@@ -261,7 +262,6 @@ folder_to_df <- function(folder,
                          file_pattern = "*.csv",
                          file_config = "config.txt") {
   path_df <- list.files(folder, full.names = TRUE, pattern = file_pattern)
-
   list_df <- lapply(path_df, function(link) {
     df <- tidyr::as_tibble(data.table::fread(link, encoding = "UTF-8"))
     colnames(df) <- toupper(colnames(df))
@@ -393,7 +393,8 @@ loop_stats <- function(df, configs, var_calculs) {
 #' Preparation of a survey
 #'
 #' @param folder_path folder of survey
-#' @param ... argument to pass to folder_to_df (example : file_pattern)
+#' @param file_config name of the configuration file (config.txt by default)
+#' @param file_pattern pattern of the databases (*.csv by default)
 #'
 #' @returns NULL (creation of rds)
 #' @export
@@ -402,9 +403,11 @@ loop_stats <- function(df, configs, var_calculs) {
 #' \dontrun{
 #' prepa_survey("shiny-examples/complete/ESS10")
 #' }
-prepa_survey <- function(folder_path, ...) {
+prepa_survey <- function(folder_path,
+                         file_pattern = "*.csv",
+                         file_config = "config.txt") {
   cli::cli_alert_info("path {folder_path}")
-  list_df <- folder_to_df(folder_path,...)
+  list_df <- folder_to_df(folder_path, file_pattern, file_config)
   if (is.null(list_df)) {
     cli::cli_alert_danger("no df in path {folder_path}")
     return(NULL)
@@ -469,7 +472,8 @@ prepa_survey <- function(folder_path, ...) {
 #'
 #' @param folder_path folder of the folders of survey
 #' @param depth_folder level of depth for the tree structure
-#' @param ... argument to pass to folder_to_df (example : file_pattern)
+#' @param file_config name of the configuration file (config.txt by default)
+#' @param file_pattern pattern of the databases (*.csv by default)
 #'
 #' @returns NULL (creation of rds)
 #' @export
@@ -478,7 +482,10 @@ prepa_survey <- function(folder_path, ...) {
 #' \dontrun{
 #' prepa_surveys("inst/extdata/SILC/HFILE")
 #' }
-prepa_surveys <- function(folder_path,depth_folder=1,...) {
+prepa_surveys <- function(folder_path,
+                          depth_folder=1,
+                          file_pattern = "*.csv",
+                          file_config = "config.txt") {
 
   list_dirs <- folder_path
 
@@ -494,5 +501,5 @@ prepa_surveys <- function(folder_path,depth_folder=1,...) {
       unlist()
   }
 
-  list_dirs %>% map(~{prepa_survey(.x,...)})
+  list_dirs %>% map(~{prepa_survey(.x,file_pattern, file_config)})
 }

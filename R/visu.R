@@ -33,7 +33,7 @@ heatmap_group <- function(df_stats, threshold = 5, color = "red2") {
     mutate(
       info = paste0(
         "Variable : ", variable, " (", type, ")\n",
-        "Group : ", var_group, "\n",
+        "Group : ", !!sym(var_group), "\n",
         "Number of rows : ", Nrow, "\n",
         "Number of valid row : ", Nval, "\n",
         stat_standard
