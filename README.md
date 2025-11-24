@@ -39,6 +39,17 @@ library(devtools)
 devtools::install_github("tdelc/vizsurvey")
 ```
 
+Or also from the R-universe:
+
+``` r
+options(repos = c(
+    tdelc = 'https://tdelc.r-universe.dev',
+    CRAN = 'https://cloud.r-project.org'))
+
+# Install some packages
+install.packages('vizsurvey')
+```
+
 A CRAN release is planned once version 1.0.0 is reached.
 
 ## What is `vizsurvey` ?
