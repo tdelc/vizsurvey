@@ -80,6 +80,14 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"tdelc/vizsurvey"</span><span class="op">)</span></span></code></pre></div>
+<p>Or also from the R-universe:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    tdelc <span class="op">=</span> <span class="st">'https://tdelc.r-universe.dev'</span>,</span>
+<span>    CRAN <span class="op">=</span> <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Install some packages</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'vizsurvey'</span><span class="op">)</span></span></code></pre></div>
 <p>A CRAN release is planned once version 1.0.0 is reached.</p>
 </div>
 <div class="section level2">
@@ -92,7 +100,7 @@
 </h2>
 <p><code>vizsurvey</code> can be used in two complementary ways. First, users can call its core R functions directly to generate summary statistics or to produce the heatmap visualizations programmatically. These functions are fully documented and illustrated in a <a href="https://tdelc.github.io/vizsurvey/articles/methods.html">dedicated vignette</a> (currently available in French, with an English version forthcoming). This approach is ideal for integration into automated workflows or reproducible reports.</p>
 <p>Alternatively, users can simply launch the interactive dashboard, which provides an intuitive graphical interface for exploring survey data, filtering by wave or group, and visualizing anomalies in real time. The function <code>runVizsurvey</code> is the easier way to launch the dashboard. It will be empty, you will then need to load your own dataset.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tdelc/vizsurvey" class="external-link">vizsurvey</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/runVizsurvey.html">runVizsurvey</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Considering the group effect (for example an interviewer effect), anomalies are displayed in a heatmap by group and by variable. Each cell can be clicked to display detailed plots showing the distribution of responses and the comparison between the group and the rest of the population.</p>
@@ -101,7 +109,7 @@
 <p><img src="images/clipboard-699643965.png"><img src="images/clipboard-79293162.png"></p>
 <p>All the use of the interactive dashboard is documented in a <a href="https://tdelc.github.io/vizsurvey/articles/vizsurvey.html">vignette</a>.</p>
 <p>We can also launch the dashboard with a specific dataset. Here is an example with a R dataset. We use the <code>eusilc</code> dataset from <code>laeken</code> and add a fake interviewer id.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># EU-SILC data</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">laeken</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span></span>
@@ -113,11 +121,11 @@
 <span><span class="co"># Vizsurve</span></span>
 <span><span class="fu"><a href="reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">eusilc</span>,var_group <span class="op">=</span> <span class="st">"NR_ITW"</span>,var_zone <span class="op">=</span> <span class="st">"db040"</span><span class="op">)</span></span></code></pre></div>
 <p>We can also launch the dashboard directly with a CSV file. We provide some <a href="https://ec.europa.eu/eurostat/web/microdata/public-microdata/statistics-on-income-and-living-conditions" class="external-link">Public Use Files</a> for EU-SILC from Eurostat.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="st">"inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"</span></span>
 <span><span class="fu"><a href="reference/runVizsurvey_from_file.html">runVizsurvey_from_file</a></span><span class="op">(</span><span class="va">path</span>,var_group <span class="op">=</span> <span class="st">"NR_ITW"</span>,var_zone <span class="op">=</span> <span class="st">"db040"</span><span class="op">)</span></span></code></pre></div>
 <p><a href="https://tdelc.github.io/vizsurvey/articles/data-preparation.html">A dedicated vignette</a> also describes how to prepare the data required to use the dashboard from <code>vizsurvey</code> through the function <code>runVizsurvey_from_folder</code>. This functionality is specifically designed for institutions managing multiple surveys on a regular basis, often involving several team members in the process. In such contexts, launching the dashboard manually for each dataset can quickly become inefficient, and computing differences by domain or group may require substantial resources. To address this, <code>vizsurvey</code> provides a set of automated data preparation functions, allowing teams to structure their files consistently and generate all necessary objects for the application to run smoothly and systematically across multiple surveys.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We assume that config.txt, and prepa_surveys are already done here.</span></span>
 <span><span class="co"># See vignette to learn how to prepare data folders</span></span>
 <span><span class="fu"><a href="reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"inst/extdata"</span>,depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
