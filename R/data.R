@@ -78,7 +78,7 @@ create_eusilc_sim <- function() {
   # Create year wave
   set.seed(123)
   eusilc_sim <- eusilc_sim %>%
-    dplyr::mutate(year = sample(2018:2020, n(), replace = TRUE))
+    dplyr::mutate(db010 = sample(2018:2020, n(), replace = TRUE))
 
   # Generate errors
   eusilc_sim <- eusilc_sim %>%
@@ -86,9 +86,9 @@ create_eusilc_sim <- function() {
       age = dplyr::if_else(nr_itw == "Vienna-2",age/10,age),
       eqIncome = dplyr::if_else(nr_itw == "Vienna-2",eqIncome / 100,eqIncome),
       pl030 = replace(pl030,nr_itw == "Vienna-2" & pl030 == "5",NA),
-      pb220a = replace(pb220a,year == 2020,NA),
-      hsize = replace(hsize,year == 2020 & hsize == 4,NA),
-      eqIncome = dplyr::if_else(year == 2020,eqIncome / 100,eqIncome)
+      pb220a = replace(pb220a,db010 == 2020,NA),
+      hsize = replace(hsize,db010 == 2020 & hsize == 4,NA),
+      eqIncome = dplyr::if_else(db010 == 2020,eqIncome / 100,eqIncome)
     )
 
   return(eusilc_sim)
