@@ -1,0 +1,9 @@
+vizsurvey v0.2.1
+==============
+
+Changes:
+
+* Add a lot of tests. To escape warning, chi.test is changed (no
+  change, because chi.test is not used to perform p value)
+
+Starts of news
