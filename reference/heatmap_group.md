@@ -33,10 +33,5 @@ library(laeken)
 data(eusilc)
 
 df_stats <- prepa_stats(eusilc, "db040")
-#> Warning: There was 1 warning in `summarise()`.
-#> ℹ In argument: `across(...)`.
-#> ℹ In group 1: `db040 = "Burgenland"`.
-#> Caused by warning in `stats::chisq.test()`:
-#> ! Chi-squared approximation may be incorrect
 heatmap_group(df_stats, 5)
 ```

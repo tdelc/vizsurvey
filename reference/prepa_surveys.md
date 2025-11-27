@@ -5,7 +5,12 @@ Preparation of all surveys from a folder
 ## Usage
 
 ``` r
-prepa_surveys(folder_path, depth_folder = 1, ...)
+prepa_surveys(
+  folder_path,
+  depth_folder = 1,
+  file_pattern = "*.csv",
+  file_config = "config.txt"
+)
 ```
 
 ## Arguments
@@ -18,9 +23,13 @@ prepa_surveys(folder_path, depth_folder = 1, ...)
 
   level of depth for the tree structure
 
-- ...:
+- file_pattern:
 
-  argument to pass to folder_to_df (example : file_pattern)
+  pattern of the databases (\*.csv by default)
+
+- file_config:
+
+  name of the configuration file (config.txt by default)
 
 ## Value
 

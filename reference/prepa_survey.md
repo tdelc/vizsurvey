@@ -5,7 +5,7 @@ Preparation of a survey
 ## Usage
 
 ``` r
-prepa_survey(folder_path, ...)
+prepa_survey(folder_path, file_pattern = "*.csv", file_config = "config.txt")
 ```
 
 ## Arguments
@@ -14,9 +14,13 @@ prepa_survey(folder_path, ...)
 
   folder of survey
 
-- ...:
+- file_pattern:
 
-  argument to pass to folder_to_df (example : file_pattern)
+  pattern of the databases (\*.csv by default)
+
+- file_config:
+
+  name of the configuration file (config.txt by default)
 
 ## Value
 

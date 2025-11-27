@@ -40,11 +40,6 @@ info_vars <- classify_df(eusilc)
 vars_vd <- info_vars[info_vars$type == "Modal", ]$variable
 vars_vc <- info_vars[info_vars$type == "Continuous", ]$variable
 prepa_stats(eusilc, "db040", vars_vd, vars_vc)
-#> Warning: There was 1 warning in `summarise()`.
-#> ℹ In argument: `across(...)`.
-#> ℹ In group 1: `db040 = "Burgenland"`.
-#> Caused by warning in `stats::chisq.test()`:
-#> ! Chi-squared approximation may be incorrect
 #> # A tibble: 972 × 9
 #>    db040      variable  Nrow  Nval type  stat      value value_ref standard
 #>    <chr>      <chr>    <int> <dbl> <chr> <chr>     <dbl>     <dbl>    <dbl>

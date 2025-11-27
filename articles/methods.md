@@ -219,13 +219,6 @@ un écart trop important n’invisible pas les autres écarts.
 
 ``` r
 df_stats_eusilc <- prepa_stats(eusilc, "NR_ITW")
-#> Warning: There were 98 warnings in `summarise()`.
-#> The first warning was:
-#> ℹ In argument: `across(...)`.
-#> ℹ In group 1: `NR_ITW = "Burgenland-1"`.
-#> Caused by warning in `stats::chisq.test()`:
-#> ! Chi-squared approximation may be incorrect
-#> ℹ Run `dplyr::last_dplyr_warnings()` to see the 97 remaining warnings.
 
 heatmap_group(df_stats_eusilc, threshold = 1, color = "green2") +
   ggtitle("Carte de chaleur de eusilc")
