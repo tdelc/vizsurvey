@@ -1,13 +1,17 @@
 var_group <- "cyl"
 
+db_stats <- prepa_stats(mtcars,  var_group)
+colnames_expected <- c(
+  var_group, "variable", "Nrow", "Nval", "type",
+  "stat", "value", "value_ref", "standard"
+)
+mod_type <- c("cha", "num")
+mod_stat <- c("missing", "Nmod", "presence", "chi2", "median", "mean")
+
 test_that("prepa_stats works", {
-  db_stats <- prepa_stats(mtcars,  var_group)
-  colnames_expected <- c(
-    var_group, "variable", "Nrow", "Nval", "type",
-    "stat", "value", "value_ref", "standard"
-  )
-  mod_type <- c("cha", "num")
-  mod_stat <- c("missing", "Nmod", "presence", "chi2", "median", "mean")
+
+  # Bug
+  expect_equal(dim(prepa_stats(mtcars,  NULL)),c(0,0))
 
   # Format
   expect_equal(dim(db_stats), c(120, 9))

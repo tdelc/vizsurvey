@@ -4,4 +4,7 @@ my_chisq <- my_chisq_test(sub_mtcars$cyl,"cyl",ldist)
 
 test_that("my_chisq_test works", {
   expect_lt(abs(my_chisq-12.00371), 0.0001)
+  expect_equal(my_chisq_test(NA,"cyl",ldist),NA_real_)
 })
+
+NA_real_

@@ -104,7 +104,7 @@ my_chisq_test <- function(x, varname, ldist) {
 
   out <- tryCatch(
     {
-      t_chi <- stats::chisq.test(obs, p = exp_prop)
+      t_chi <- stats::chisq.test(obs, p = exp_prop, simulate.p.value = T)
       t_chi$statistic
     },
     error = function(e) {

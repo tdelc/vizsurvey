@@ -4,12 +4,14 @@
 \alias{prepa_survey}
 \title{Preparation of a survey}
 \usage{
-prepa_survey(folder_path, ...)
+prepa_survey(folder_path, file_pattern = "*.csv", file_config = "config.txt")
 }
 \arguments{
 \item{folder_path}{folder of survey}
 
-\item{...}{argument to pass to folder_to_df (example : file_pattern)}
+\item{file_pattern}{pattern of the databases (*.csv by default)}
+
+\item{file_config}{name of the configuration file (config.txt by default)}
 }
 \value{
 NULL (creation of rds)

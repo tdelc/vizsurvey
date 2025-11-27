@@ -4,14 +4,21 @@
 \alias{prepa_surveys}
 \title{Preparation of all surveys from a folder}
 \usage{
-prepa_surveys(folder_path, depth_folder = 1, ...)
+prepa_surveys(
+  folder_path,
+  depth_folder = 1,
+  file_pattern = "*.csv",
+  file_config = "config.txt"
+)
 }
 \arguments{
 \item{folder_path}{folder of the folders of survey}
 
 \item{depth_folder}{level of depth for the tree structure}
 
-\item{...}{argument to pass to folder_to_df (example : file_pattern)}
+\item{file_pattern}{pattern of the databases (*.csv by default)}
+
+\item{file_config}{name of the configuration file (config.txt by default)}
 }
 \value{
 NULL (creation of rds)
