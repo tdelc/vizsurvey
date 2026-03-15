@@ -9,25 +9,27 @@
 #' @examples
 #' classify_df(iris)
 classify_df <- function(df, threhold = 15) {
-  df %>%
-    summarise(across(everything(), ~ {
-      if (n_distinct(.) == 1) {
-        return("Solo")
-      } else if (n_distinct(.) <= 15) {
-        return("Modal")
+  # Use vapply for speed on large data frames
+  types <- vapply(df, function(x) {
+    n <- dplyr::n_distinct(x)
+    if (n == 1) {
+      return("Solo")
+    } else if (n <= 15) {
+      return("Modal")
+    } else {
+      if (is.numeric(x)) {
+        return("Continuous")
       } else {
-        if (is.numeric(.)) {
-          return("Continuous")
-        } else {
-          return("Text")
-        }
+        return("Text")
       }
-    })) %>%
-    pivot_longer(
-      cols = everything(),
-      names_to = "variable", values_to = "type"
-    ) %>%
-    arrange(variable)
+    }
+  }, character(1))
+
+  tibble::tibble(
+    variable = names(types),
+    type = unname(types)
+  ) %>%
+    dplyr::arrange(variable)
 }
 
 #' Create a summarise of all the difference
@@ -69,7 +71,6 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
     mutate(
       across(any_of(vars_vc), as.numeric),
       across(any_of(vars_vd), as.factor),
-      across(any_of(vars_vd), as.numeric),
       across(any_of(var_group), as.character)
     )
 
