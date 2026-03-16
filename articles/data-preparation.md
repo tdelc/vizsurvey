@@ -42,7 +42,7 @@ en téléchargement.
 ## Configuration d’une enquête
 
 Le fichier de votre base de données doit pouvoir être lu par la fonction
-[`data.table::fread`](https://rdatatable.gitlab.io/data.table/reference/fread.html).
+[`data.table::fread`](https://rdrr.io/pkg/data.table/man/fread.html).
 Cette fonction reconnaît automatiquement les formats standards (CSV,
 TSV, etc.). Placez votre fichier dans un répertoire dédié, où il sera le
 **seul fichier de ce format**
