@@ -104,7 +104,9 @@ my_chisq_test <- function(x, varname, ldist) {
 
   out <- tryCatch(
     {
-      t_chi <- stats::chisq.test(obs, p = exp_prop, simulate.p.value = T)
+      # Optimization: Set simulate.p.value = FALSE since we only need the test statistic ($statistic).
+      # This avoids 2000 unnecessary Monte Carlo simulations, significantly improving performance.
+      t_chi <- stats::chisq.test(obs, p = exp_prop, simulate.p.value = FALSE)
       t_chi$statistic
     },
     error = function(e) {
