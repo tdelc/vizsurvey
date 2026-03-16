@@ -1,6 +1,6 @@
 source("functions.R")
 
-link_data_folder <- getShinyOption("link_data_folder", "inst/shiny-examples/extdata")
+link_data_folder <- getShinyOption("link_data_folder", "../../extdata")
 data_rds_pattern <- getShinyOption("data_rds_pattern", "global")
 depth_folder     <- getShinyOption("depth_folder", 3)
 
