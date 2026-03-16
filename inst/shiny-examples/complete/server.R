@@ -1,8 +1,8 @@
 source("functions.R")
 
-link_data_folder <- getShinyOption("link_data_folder", "data")
+link_data_folder <- getShinyOption("link_data_folder", "../../extdata")
 data_rds_pattern <- getShinyOption("data_rds_pattern", "global")
-depth_folder     <- getShinyOption("depth_folder", 1)
+depth_folder     <- getShinyOption("depth_folder", 3)
 
 library(DT)
 library(summarytools)
