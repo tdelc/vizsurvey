@@ -7,7 +7,8 @@ depth_folder     <- getShinyOption("depth_folder", 3)
 library(DT)
 library(summarytools)
 library(corrplot)
-library(tidyverse)
+library(devtools)
+load_all()
 
 server <- function(input, output, session) {
 
