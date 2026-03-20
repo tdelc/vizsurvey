@@ -9,3 +9,6 @@
 docs
 vizsurvey.Rproj
 inst/doc
+R_libs/
+benchmark_*.R
+debug_*.R
