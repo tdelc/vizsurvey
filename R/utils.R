@@ -54,16 +54,25 @@ scale_IQR <- function(x) {
 #'
 #' @examples
 #' list_dist(mtcars,c("cyl","vs","gear"))
-list_dist <- function(df,vars_vd){
-  list_dist <- vars_vd %>% map(~{
-    expected_prop <- prop.table(table(df[[.x]], useNA = "ifany"))
-    names(expected_prop)[which(is.na(names(expected_prop)))] <- "NA_"
-    expected_prop <- tibble(category = names(expected_prop), prop = expected_prop) %>%
-      mutate(category = ifelse(prop < 0.01, "OTH_", category)) %>%
-      group_by(category) %>%
-      summarise(prop = sum(prop)) %>%
-      ungroup()
-    setNames(expected_prop$prop, expected_prop$category)
+list_dist <- function(df, vars_vd) {
+  list_dist <- vars_vd %>% map(~ {
+    # Optimization: Refactored from a dplyr pipeline to efficient base R.
+    # Avoiding tibble creation and dplyr verbs inside the loop improves performance.
+    prop <- prop.table(table(df[[.x]], useNA = "ifany"))
+    nms <- names(prop)
+    nms[is.na(nms)] <- "NA_"
+
+    # Group rare categories (< 1%) into "OTH_"
+    categories <- nms
+    categories[prop < 0.01] <- "OTH_"
+
+    # Fast aggregation using tapply
+    res_prop <- tapply(prop, categories, sum)
+
+    # Return as a named vector to match original behavior
+    out <- as.vector(res_prop)
+    names(out) <- names(res_prop)
+    out
   })
   names(list_dist) <- vars_vd
   return(list_dist)
