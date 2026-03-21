@@ -9,25 +9,26 @@
 #' @examples
 #' classify_df(iris)
 classify_df <- function(df, threhold = 15) {
-  df %>%
-    summarise(across(everything(), ~ {
-      if (n_distinct(.) == 1) {
-        return("Solo")
-      } else if (n_distinct(.) <= 15) {
-        return("Modal")
+  # Performance Optimization: Use vapply for column-wise classification.
+  # This approach is significantly faster than dplyr's summarise(across(...))
+  # followed by pivot_longer, especially for datasets with many columns.
+  types <- vapply(df, function(x) {
+    nd <- n_distinct(x)
+    if (nd == 1) {
+      return("Solo")
+    } else if (nd <= threhold) {
+      return("Modal")
+    } else {
+      if (is.numeric(x)) {
+        return("Continuous")
       } else {
-        if (is.numeric(.)) {
-          return("Continuous")
-        } else {
-          return("Text")
-        }
+        return("Text")
       }
-    })) %>%
-    pivot_longer(
-      cols = everything(),
-      names_to = "variable", values_to = "type"
-    ) %>%
-    arrange(variable)
+    }
+  }, character(1))
+
+  tibble::tibble(variable = names(types), type = unname(types)) %>%
+    dplyr::arrange(variable)
 }
 
 #' Create a summarise of all the difference
