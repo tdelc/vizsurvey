@@ -35,12 +35,17 @@ is.integer64 <- function(x) {
 #' @examples
 #' head(scale_IQR(iris$Sepal.Length))
 scale_IQR <- function(x) {
-  IQR <- quantile(x, probs = 0.75, na.rm = TRUE) - quantile(x, probs = 0.25, na.rm = TRUE)
-  if (is.na(IQR) | IQR == 0) {
-    scale(x)[, 1]
+  # Optimization: Use a single quantile call for 0.25, 0.5, and 0.75 probabilities.
+  # This reduces multiple sorting/scanning passes over the data.
+  qs <- stats::quantile(x, probs = c(0.25, 0.5, 0.75), na.rm = TRUE, names = FALSE)
+  IQR_val <- qs[3] - qs[1]
+  med <- qs[2]
+
+  if (is.na(IQR_val) || IQR_val == 0) {
+    as.vector(base::scale(x))
   } else {
-    if (!all(x < 1, na.rm = TRUE)) IQR <- max(IQR, 1)
-    (x - median(x, na.rm = TRUE)) / IQR
+    if (IQR_val < 1 && any(x >= 1, na.rm = TRUE)) IQR_val <- 1
+    (x - med) / IQR_val
   }
 }
 
