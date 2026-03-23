@@ -17,3 +17,7 @@
 ## 2025-05-16 - [Optimization of empty_as_na]
 **Learning:** In the `vizsurvey` package, `empty_as_na` was using `ifelse(vec == "", NA_character_, vec)`. While concise, `ifelse` is slow in R due to its handling of arguments and construction of the result vector. Vectorized assignment (`vec[vec == ""] <- NA_character_`) is significantly faster.
 **Action:** Replace `ifelse` with vectorized assignment for simple value replacement in vectors. This optimization provided a ~5-6x performance gain for character vectors with 1 million elements.
+
+## 2025-05-17 - [Optimization of prepa_stats]
+**Learning:** The `prepa_stats` function had several performance bottlenecks: redundant `mutate(across())` calls, inefficient `group_by %>% mutate` pattern to spread a single statistic across long data, and use of `ifelse` for large vector replacements. Combining transformations and using `left_join` for statistic distribution is more efficient in `dplyr`.
+**Action:** Minimize the number of `across()` passes in `mutate()`. Use `left_join()` to distribute group-level statistics to long-format data instead of re-grouping. Prefer `replace()` over `ifelse()` for simple vector substitutions.
