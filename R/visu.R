@@ -23,13 +23,15 @@ heatmap_group <- function(df_stats, threshold = 5, color = "red2") {
   df_stats <- df_stats %>%
     tidyr::complete(!!sym(var_group), variable,
                     fill=list(Nrow=0,Nval=0,standard=0,type ="missing")) %>%
-    mutate(stat_standard = paste(stat, round(standard, 2), sep = " : ")) %>%
+    # Optimization: sprintf() is faster than paste() and round() for formatting strings.
+    mutate(stat_standard = sprintf("%s : %.2f", stat, standard)) %>%
     group_by(!!sym(var_group), variable, Nrow, Nval, type) %>%
+    # Optimization: Use .groups = "drop" to avoid the overhead of handling group attributes.
     summarise(
       standard = max(abs(standard)),
-      stat_standard = paste(stat_standard, collapse = "\n")
+      stat_standard = paste(stat_standard, collapse = "\n"),
+      .groups = "drop"
     ) %>%
-    ungroup() %>%
     mutate(
       info = paste0(
         "Variable : ", variable, " (", type, ")\n",
@@ -39,7 +41,8 @@ heatmap_group <- function(df_stats, threshold = 5, color = "red2") {
         stat_standard
       )
     ) %>%
-    mutate(standard = ifelse(standard == 0,NA,standard))
+    # Optimization: dplyr::na_if is more efficient than ifelse for simple value replacement.
+    mutate(standard = dplyr::na_if(standard, 0))
 
   threshold <- max(threshold, 0.01)
   tmax <- max(threshold * 2, 2)
