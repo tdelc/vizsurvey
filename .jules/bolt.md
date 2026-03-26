@@ -18,6 +18,14 @@
 **Learning:** In the `vizsurvey` package, `empty_as_na` was using `ifelse(vec == "", NA_character_, vec)`. While concise, `ifelse` is slow in R due to its handling of arguments and construction of the result vector. Vectorized assignment (`vec[vec == ""] <- NA_character_`) is significantly faster.
 **Action:** Replace `ifelse` with vectorized assignment for simple value replacement in vectors. This optimization provided a ~5-6x performance gain for character vectors with 1 million elements.
 
+## 2026-03-25 - [Optimization of heatmap_group string formatting]
+**Learning:** In , using  is approximately 2x faster than the combined overhead of  and . Vectorized C-level formatting is much more efficient for large datasets.
+**Action:** Prefer  over  +  for formatting numeric values in tooltips or labels within the  package.
+
+## 2025-05-16 - [Optimization of heatmap_group string formatting]
+**Learning:** In `heatmap_group`, using `sprintf("%s : %.2f", stat, standard)` is approximately 2x faster than the combined overhead of `round(standard, 2)` and `paste(stat, ..., sep = " : ")`. Vectorized C-level formatting is much more efficient for large datasets.
+**Action:** Prefer `sprintf()` over `paste()` + `round()` for formatting numeric values in tooltips or labels within the `vizsurvey` package.
+
 ## 2025-05-17 - [Optimization of prepa_stats]
 **Learning:** The `prepa_stats` function had several performance bottlenecks: redundant `mutate(across())` calls, inefficient `group_by %>% mutate` pattern to spread a single statistic across long data, and use of `ifelse` for large vector replacements. Combining transformations and using `left_join` for statistic distribution is more efficient in `dplyr`.
 **Action:** Minimize the number of `across()` passes in `mutate()`. Use `left_join()` to distribute group-level statistics to long-format data instead of re-grouping. Prefer `replace()` over `ifelse()` for simple vector substitutions.
