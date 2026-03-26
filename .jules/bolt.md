@@ -25,3 +25,7 @@
 ## 2025-05-16 - [Optimization of heatmap_group string formatting]
 **Learning:** In `heatmap_group`, using `sprintf("%s : %.2f", stat, standard)` is approximately 2x faster than the combined overhead of `round(standard, 2)` and `paste(stat, ..., sep = " : ")`. Vectorized C-level formatting is much more efficient for large datasets.
 **Action:** Prefer `sprintf()` over `paste()` + `round()` for formatting numeric values in tooltips or labels within the `vizsurvey` package.
+
+## 2025-05-17 - [Optimization of prepa_stats]
+**Learning:** The `prepa_stats` function had several performance bottlenecks: redundant `mutate(across())` calls, inefficient `group_by %>% mutate` pattern to spread a single statistic across long data, and use of `ifelse` for large vector replacements. Combining transformations and using `left_join` for statistic distribution is more efficient in `dplyr`.
+**Action:** Minimize the number of `across()` passes in `mutate()`. Use `left_join()` to distribute group-level statistics to long-format data instead of re-grouping. Prefer `replace()` over `ifelse()` for simple vector substitutions.

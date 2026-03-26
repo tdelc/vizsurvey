@@ -69,8 +69,9 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
   df <- df %>%
     mutate(
       across(any_of(vars_vc), as.numeric),
-      across(any_of(vars_vd), as.factor),
-      across(any_of(vars_vd), as.numeric),
+      # Optimization: Combine factor and numeric transformation for discrete variables.
+      # This reduces one full across/mutate pass over the columns.
+      across(any_of(vars_vd), ~ as.numeric(as.factor(.x))),
       across(any_of(var_group), as.character)
     )
 
@@ -86,7 +87,8 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
           Nval = ~ sum(!is.na(.x)),
           missing = ~ mean(is.na(.x)),
           presence = ~ mean(is.na(.x)) != 1,
-          Nmod = ~ ifelse(mean(is.na(.x)) > 0.95, NA, length(unique(.x))),
+          # Optimization: Use n_distinct instead of length(unique(...)) for better performance.
+          Nmod = ~ ifelse(mean(is.na(.x)) > 0.95, NA, dplyr::n_distinct(.x)),
           chi2 = ~ my_chisq_test(.x, cur_column(),ldist)
         ),
         .names = "{.col}|cha|{.fn}"
@@ -101,23 +103,28 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
           median   = ~ median(.x, na.rm = TRUE)
         ),
         .names = "{.col}|num|{.fn}"
-      )
+      ),
+      .groups = "drop" # Optimization: Explicitly drop groups to avoid overhead.
     ) %>%
     pivot_longer(
       cols = -c(!!sym(var_group), Nrow),
       names_to = c("variable", "type", "stat"),
       names_pattern = "^(.*?)\\|(.*?)\\|(.*?)$"
-    ) %>%
-    group_by(!!sym(var_group), variable) %>%
-    mutate(
-      Nval = ifelse(stat == "Nval", value, NA),
-      Nval = mean(Nval, na.rm = TRUE)
-    ) %>%
-    ungroup() %>%
-    filter(stat != "Nval") %>%
+    )
+
+  # Optimization: Use a left_join approach to spread Nval instead of an expensive
+  # group_by and mutate on the entire long dataframe.
+  df_nval <- df_stats %>%
+    dplyr::filter(stat == "Nval") %>%
+    dplyr::select(!!sym(var_group), variable, Nval = value)
+
+  df_stats <- df_stats %>%
+    dplyr::filter(stat != "Nval") %>%
+    dplyr::left_join(df_nval, by = c(var_group, "variable")) %>%
     group_by(variable, type, stat) %>%
     mutate(
-      value = ifelse(is.infinite(value), 1000, value),
+      # Optimization: Use replace() instead of ifelse() for better performance.
+      value = replace(value, is.infinite(value), 1000),
       value_ref = mean(value, na.rm = TRUE),
       standard = scale_IQR(value),
       standard = case_when(
