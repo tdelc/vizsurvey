@@ -29,3 +29,7 @@
 ## 2025-05-17 - [Optimization of prepa_stats]
 **Learning:** The `prepa_stats` function had several performance bottlenecks: redundant `mutate(across())` calls, inefficient `group_by %>% mutate` pattern to spread a single statistic across long data, and use of `ifelse` for large vector replacements. Combining transformations and using `left_join` for statistic distribution is more efficient in `dplyr`.
 **Action:** Minimize the number of `across()` passes in `mutate()`. Use `left_join()` to distribute group-level statistics to long-format data instead of re-grouping. Prefer `replace()` over `ifelse()` for simple vector substitutions.
+
+## 2025-05-18 - [Optimization of chi-square and prepa_stats summarise]
+**Learning:** In `prepa_stats`, calculating simple statistics like `missing` and `presence` rates within the `summarise(group_by(...))` phase is redundant and slow because they can be derived via vectorized operations on the resulting summary table using `Nval` and `Nrow`. Additionally, `stats::chisq.test` has significant overhead; a manual calculation of the chi-square statistic is ~20x faster when p-values are not needed.
+**Action:** Move simple rate calculations out of heavy grouping phases into vectorized post-processing. Use manual chi-square calculations ($\sum (O-E)^2/E$) instead of the full `stats::chisq.test` when only the statistic is required.

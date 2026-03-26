@@ -85,10 +85,8 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
         .cols = tidyselect::all_of(vars_vd),
         .fns = list(
           Nval = ~ sum(!is.na(.x)),
-          missing = ~ mean(is.na(.x)),
-          presence = ~ mean(is.na(.x)) != 1,
-          # Optimization: Use n_distinct instead of length(unique(...)) for better performance.
-          Nmod = ~ ifelse(mean(is.na(.x)) > 0.95, NA, dplyr::n_distinct(.x)),
+          # Optimization: Calculate Nmod and chi2 directly, other stats can be derived later.
+          Nmod = ~ if (sum(!is.na(.x)) < (0.05 * length(.x))) NA else dplyr::n_distinct(.x),
           chi2 = ~ my_chisq_test(.x, cur_column(),ldist)
         ),
         .names = "{.col}|cha|{.fn}"
@@ -97,14 +95,12 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
         .cols = tidyselect::all_of(vars_vc),
         .fns = list(
           Nval     = ~ sum(!is.na(.x)),
-          missing  = ~ mean(is.na(.x)),
-          presence = ~ mean(is.na(.x)) != 1,
           mean     = ~ mean(.x, na.rm = TRUE),
           median   = ~ median(.x, na.rm = TRUE)
         ),
         .names = "{.col}|num|{.fn}"
       ),
-      .groups = "drop" # Optimization: Explicitly drop groups to avoid overhead.
+      .groups = "drop"
     ) %>%
     pivot_longer(
       cols = -c(!!sym(var_group), Nrow),
@@ -112,15 +108,24 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
       names_pattern = "^(.*?)\\|(.*?)\\|(.*?)$"
     )
 
-  # Optimization: Use a left_join approach to spread Nval instead of an expensive
-  # group_by and mutate on the entire long dataframe.
-  df_nval <- df_stats %>%
-    dplyr::filter(stat == "Nval") %>%
+  # Optimization: Use a left_join approach to spread Nval and derive missing/presence
+  # instead of calculating them multiple times during the grouping/summarise phase.
+  df_nval_info <- df_stats %>%
+    dplyr::filter(stat == "Nval")
+
+  df_missing_rows <- df_nval_info %>%
+    dplyr::mutate(stat = "missing", value = 1 - (value / Nrow))
+
+  df_presence_rows <- df_nval_info %>%
+    dplyr::mutate(stat = "presence", value = as.numeric(value > 0))
+
+  df_nval_col <- df_nval_info %>%
     dplyr::select(!!sym(var_group), variable, Nval = value)
 
   df_stats <- df_stats %>%
     dplyr::filter(stat != "Nval") %>%
-    dplyr::left_join(df_nval, by = c(var_group, "variable")) %>%
+    dplyr::bind_rows(df_missing_rows, df_presence_rows) %>%
+    dplyr::left_join(df_nval_col, by = c(var_group, "variable")) %>%
     group_by(variable, type, stat) %>%
     mutate(
       # Optimization: Use replace() instead of ifelse() for better performance.
