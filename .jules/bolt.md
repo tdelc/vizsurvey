@@ -33,3 +33,7 @@
 ## 2025-05-18 - [Optimization of chi-square and prepa_stats summarise]
 **Learning:** In `prepa_stats`, calculating simple statistics like `missing` and `presence` rates within the `summarise(group_by(...))` phase is redundant and slow because they can be derived via vectorized operations on the resulting summary table using `Nval` and `Nrow`. Additionally, `stats::chisq.test` has significant overhead; a manual calculation of the chi-square statistic is ~20x faster when p-values are not needed.
 **Action:** Move simple rate calculations out of heavy grouping phases into vectorized post-processing. Use manual chi-square calculations ($\sum (O-E)^2/E$) instead of the full `stats::chisq.test` when only the statistic is required.
+
+## 2025-05-19 - [Optimization of heatmap_group info column]
+**Learning:** Constructing a complex multi-line tooltip string (the 'info' column) using 'paste0' for 10,000+ tiles in a ggplot heatmap is significantly slower than using 'sprintf'. Vectorized C-level formatting handles multiple substitutions and newline characters more efficiently.
+**Action:** Use 'sprintf' for all complex string formatting in 'heatmap_group' to maximize performance of visualization preparation on large datasets.
