@@ -66,14 +66,14 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
   vars_vd <- intersect(vars_vd, names(df))
   vars_vc <- intersect(vars_vc, names(df))
 
-  df <- df %>%
-    mutate(
-      across(any_of(vars_vc), as.numeric),
-      # Optimization: Combine factor and numeric transformation for discrete variables.
-      # This reduces one full across/mutate pass over the columns.
-      across(any_of(vars_vd), ~ as.numeric(as.factor(.x))),
-      across(any_of(var_group), as.character)
-    )
+  # Optimization: Use base R lapply for column-wise type conversion.
+  # This is significantly faster than dplyr::mutate(across(...)) for large datasets,
+  # avoiding the overhead of across() and reducing multiple passes over the data.
+  if (length(vars_vc) > 0) df[vars_vc] <- lapply(df[vars_vc], as.numeric)
+  if (length(vars_vd) > 0) {
+    df[vars_vd] <- lapply(df[vars_vd], function(x) as.numeric(as.factor(x)))
+  }
+  if (length(var_group) > 0) df[var_group] <- lapply(df[var_group], as.character)
 
   ldist <- list_dist(df,vars_vd)
 
