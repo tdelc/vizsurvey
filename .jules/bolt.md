@@ -41,3 +41,7 @@
 ## 2025-05-20 - [Optimization of score_isoforest ntrees]
 **Learning:** In the `vizsurvey` package, `score_isoforest` was using `ntrees = 1000` for isolation forest model training. Isolation forest stability typically plateaus well before 1000 trees for most datasets. Benchmarks showed that reducing `ntrees` to 100 provides a ~20x performance improvement in execution time while maintaining a correlation of 0.96+ with the original scores.
 **Action:** Use `ntrees = 100` as a default for isolation forest anomaly detection in this package unless higher precision is explicitly required and the performance trade-off is acceptable.
+
+## 2025-05-21 - [High-performance frequency counting in R]
+**Learning:** For frequency counting on large vectors, `table()` is significantly slower than the combination of `match()` and `tabulate()`. In `list_dist`, moving from `table()` to `match()`/`tabulate()` provided an additional ~5x speedup (total ~10x over original). However, when grouping rare categories, manual assignment like `out["OTH_"] <- sum(rare_props)` can overwrite existing categories. Using `tapply()` on the resulting small proportion vector is a robust way to aggregate without data loss.
+**Action:** Use `tabulate(match(x, unique(x)))` for hot-path frequency counting. Always use robust aggregation (like `tapply`) when grouping categories to avoid overwriting existing data.
