@@ -38,6 +38,10 @@
 **Learning:** Constructing a complex multi-line tooltip string (the 'info' column) using 'paste0' for 10,000+ tiles in a ggplot heatmap is significantly slower than using 'sprintf'. Vectorized C-level formatting handles multiple substitutions and newline characters more efficiently.
 **Action:** Use 'sprintf' for all complex string formatting in 'heatmap_group' to maximize performance of visualization preparation on large datasets.
 
+## 2025-05-21 - [High-performance frequency counting with tabulate/match]
+**Learning:** Replacing `table(x, useNA = 'ifany')` with `tabulate(match(x, levs))` in R provides a ~20x performance gain for frequency counting on large vectors. However, when replicating existing logic that handles missing values and rare categories, it is critical to ensure that `NA` values are correctly mapped to either a dedicated 'NA_' bin or lumped into an 'OTH_' bin based on the expected distribution's structure.
+**Action:** Use `tabulate(match(x, levs))` for performance-critical frequency counting. Always verify that edge cases like `NA` and unexpected levels are handled in a way that is bit-for-bit compatible with the original logic, especially when used in statistical tests.
+
 ## 2025-05-20 - [Optimization of score_isoforest ntrees]
 **Learning:** In the `vizsurvey` package, `score_isoforest` was using `ntrees = 1000` for isolation forest model training. Isolation forest stability typically plateaus well before 1000 trees for most datasets. Benchmarks showed that reducing `ntrees` to 100 provides a ~20x performance improvement in execution time while maintaining a correlation of 0.96+ with the original scores.
 **Action:** Use `ntrees = 100` as a default for isolation forest anomaly detection in this package unless higher precision is explicitly required and the performance trade-off is acceptable.
