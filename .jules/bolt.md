@@ -45,3 +45,7 @@
 ## 2025-05-21 - [High-performance frequency counting in R]
 **Learning:** For frequency counting on large vectors, `table()` is significantly slower than the combination of `match()` and `tabulate()`. In `list_dist`, moving from `table()` to `match()`/`tabulate()` provided an additional ~5x speedup (total ~10x over original). However, when grouping rare categories, manual assignment like `out["OTH_"] <- sum(rare_props)` can overwrite existing categories. Using `tapply()` on the resulting small proportion vector is a robust way to aggregate without data loss.
 **Action:** Use `tabulate(match(x, unique(x)))` for hot-path frequency counting. Always use robust aggregation (like `tapply`) when grouping categories to avoid overwriting existing data.
+
+## 2025-05-22 - [Optimization of my_chisq_test frequency counting]
+**Learning:** In `my_chisq_test`, using `table(x, useNA = 'ifany')` was a bottleneck for frequency counting. Replacing it with `match()` and `tabulate()` on `unique(x, na.last = TRUE)` provides a ~3-4x speedup for typical group sizes (n=1000).
+**Action:** Prefer the `match`/`tabulate` pattern over `table()` for simple frequency counts in performance-critical code. Ensure `NA` values are handled by setting `na.last = TRUE` in `unique()` and checking `is.na()` on the resulting names.
