@@ -71,10 +71,8 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     output$no_data_msg <- renderUI({
       req(wave_modality())
       if (length(wave_modality()) > 1) return(NULL)
-      if (sel$wave() == "All") return(div(class = "alert alert-warning",
-                                        tr("No wave in config file.")))
       else return(div(class = "alert alert-warning",
-                      tr("Only one wave in dataset.")))
+                 tr("No wave in config file, or only one wave in dataset.")))
     })
     
     observeEvent(filt$df(),{
@@ -179,7 +177,7 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
       levels <- data$df() %>% dplyr::pull(!!sym(r_focus$variable)) %>%
         as.character() %>% unique() %>% sort()
       
-      c(levels,NA_character_)
+      c(levels,".NA")
     })
     
     output$distri_cat <- renderPlot({
@@ -192,13 +190,15 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
       if(length(fill_levels()) > 15){
         validate(tr("Too much modalities for this categorical variable"))
       }
+      v <- r_focus$variable
       syn <- filt$df() %>%
-        count(!!sym(r_focus$variable)) %>%
+        count(!!sym(v)) %>%
         mutate(prop = n/sum(n),
-               !!sym(r_focus$variable) := as.character(!!sym(r_focus$variable)))
+               !!sym(v) := as.character(!!sym(v)),
+               !!sym(v) := tidyr::replace_na(!!sym(v), ".NA"))
       
       ggplot(syn) +
-        aes(x = !!sym(r_focus$variable), fill = !!sym(r_focus$variable), y = prop) +
+        aes(x = !!sym(v), fill = !!sym(v), y = prop) +
         geom_bar(stat = "identity") +
         scale_y_continuous(labels = scales::percent) +
         scale_fill_viridis_d(limits = fill_levels(), drop = FALSE) +
@@ -219,7 +219,8 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
         validate(tr("Too much modalities for this categorical variable"))
       }
       v <- r_focus$variable
-      df <- df_wave() %>% mutate(!!sym(v) := as.character(!!sym(v)))
+      df <- df_wave() %>% mutate(!!sym(v) := as.character(!!sym(v)),
+                                 !!sym(v) := tidyr::replace_na(!!sym(v), ".NA"))
       ggplot(df) +
         aes(x = !!sym(data$config()$var_wave), fill = !!sym(v)) +
         geom_bar(position = "fill") +
