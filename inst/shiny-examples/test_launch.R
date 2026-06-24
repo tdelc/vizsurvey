@@ -12,4 +12,4 @@ library(laeken)
 data(eusilc)
 set.seed(123)
 eusilc$NR_ITW <- paste(eusilc$db040,sample(1:5,nrow(eusilc),replace = TRUE),sep="-")
-#' \dontrun{runVizsurvey_from_r(eusilc,var_intvwr = "NR_ITW",var_filter = "db040")}
+runVizsurvey_from_r(eusilc,var_intvwr = "NR_ITW",var_filter = "db040")

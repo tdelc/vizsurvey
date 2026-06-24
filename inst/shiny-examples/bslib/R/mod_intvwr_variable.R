@@ -169,9 +169,11 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, i18n_s) {
       req(input$variable_ranking_rows_selected)
       s <- input$variable_ranking_rows_selected
       req(length(s))
-      id_variable <- pull(prepa_intvwr_ranking()[s,"variable"])
+      print(prepa_variable_ranking())
+      id_variable <- pull(prepa_variable_ranking()[s,"variable"])
+      print(id_variable)
       
-      prepa_listing(prepa_intvwr_ranking,"variable",id_variable,cfg()$var_intvwr)
+      prepa_listing(prepa_variable_ranking,"variable",id_variable,cfg()$var_intvwr)
     })
     
     ##### DT Listing ######

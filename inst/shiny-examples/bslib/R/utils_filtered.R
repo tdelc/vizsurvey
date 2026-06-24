@@ -97,6 +97,7 @@ survey_filtered <- function(data, sel) {
     df_timer_detail   = df_timer_detail,
     threshold_Nrow    = sel$threshold_Nrow,
     threshold_Nval    = sel$threshold_Nval,
+    threshold_wave    = sel$threshold_wave,
     threshold_intvwr  = sel$threshold_intvwr
   )
 }

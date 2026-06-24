@@ -16,7 +16,7 @@ mod_wave_ui <- function(id, i18n) {
       id = ns("card_presence"),
       full_screen = TRUE,
       # min_height = "650px",
-      min_height = "150px",
+      height = "200px",
       icon_header("layout-text-sidebar-reverse", i18n$t("Presence outliers")),
       DT::DTOutput(ns("tab_check"))),
     
@@ -80,7 +80,8 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     observeEvent(filt$df(),{
       modality <- sort(pull(unique(data$df()[,data$config()$var_wave])))
       updateCheckboxGroupInput(session,"wave_compare",inline=T,
-                               label=data$config()$var_wave,
+                               # label=data$config()$var_wave,
+                               label=tr("Compare with"),
                                choices = modality,
                                selected = modality[length(modality)-1])
     })

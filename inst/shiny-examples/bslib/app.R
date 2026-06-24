@@ -11,6 +11,20 @@ library(shinyjs)
 library(DT)
 library(plotly)
 library(summarytools)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(rlang)
+library(magrittr)
+library(tibble)
+library(scales)
+library(purrr)
+library(lubridate)
+library(stringr)
+library(seriation)
+library(arrow)
+library(readr)
+library(viridisLite)
 
 # i18n <- Translator$new(translation_csvs_path = "dashboard/i18n")
 # i18n$set_translation_language(i18n$get_key_translation())
@@ -121,7 +135,7 @@ app_server <- function(input, output, session) {
 
   # État partagé inter-onglets (sélection courante groupe/variable)
   r_focus <- reactiveValues(intvwr = "", variable = "")
-
+  
   # --- Chaîne de données ----------------------------------------------------
   data <- mod_source_server("source", opts, i18n_s) 
   sel  <- mod_filters_server("filters", data, i18n_s)

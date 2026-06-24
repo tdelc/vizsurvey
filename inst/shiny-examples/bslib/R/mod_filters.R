@@ -18,20 +18,11 @@ mod_filters_ui <- function(id, i18n) {
       radioButtons(ns("config_filter"), i18n$t("Filter"), choices = i18n$t("Loading...")),
       div(class = "small text-muted mt-2", textOutput(ns("info_nb_enq")))
     ),
-    bslib::accordion_panel(
-      title = i18n$t("Analysis configuration"),
-      value = "config",
-      icon = bs_icon("gear"),
-      bslib::tooltip( 
-        numericInput(ns("threshold_Nrow"), i18n$t("N row min"), value = 30),
-        i18n$t("Number of rows to include a interviewer of a variable"), 
-        id = "tip", 
-        placement = "right" 
-      ),
-      numericInput(ns("threshold_Nval"), i18n$t("N val min"), value = 30),
-      numericInput(ns("threshold_wave"), i18n$t("Δ min (wave)"), value = 0.5, min = 0, max = 2, step = 0.1),
-      numericInput(ns("threshold_intvwr"), i18n$t("Δ min (intvwr)"), value = 5, min = 0, max = 10, step = 1)
-    )
+    br(),
+    bslib::nav_item(
+      actionButton(ns("button_parms"),
+                   tagList(bs_icon("gear"), i18n$t("Detection Thresholds")),
+                   class = "btn-m"))
   )
 }
 
@@ -63,14 +54,50 @@ mod_filters_server <- function(id, data, i18n_s) {
                            choices = "All")
       }
     })
+    
+    observeEvent(input$button_parms, {
+      showModal(modalDialog(
+        h3(tr("Analysis configuration")),
+        fluidRow(
+          numericInput(ns("threshold_Nrow"), 
+                       tr("Minimal number of rows to include interviewer of variable anomalies detection"), 
+                       value = 30),
+          numericInput(ns("threshold_Nval"), 
+                       tr("Minimum number of valid values to include the variable in the analysis"), 
+                       value = 30),
+          numericInput(ns("threshold_wave"), 
+                       tr("Minimum rate of change to detect wave anomalies"), 
+                       value = 0.5, min = 0, max = 2, step = 0.1),
+          numericInput(ns("threshold_intvwr"), 
+                       tr("chi² distance / minimum median deviation to detect investigator anomalies"),
+                       value = 5, min = 0, max = 10, step = 1)
+        ),
+        size = "l",
+        footer = tagList(
+          modalButton("Ok")
+        )
+      ))
+    })
+    
+    threshold_Nrow <- reactive({
+      if (is.null(input$threshold_Nrow)) 30 else input$threshold_Nrow})
+    
+    threshold_Nval <- reactive({
+      if (is.null(input$threshold_Nval)) 30 else input$threshold_Nval})
+    
+    threshold_wave <- reactive({
+      if (is.null(input$threshold_wave)) 30 else input$threshold_wave})
+    
+    threshold_intvwr <- reactive({
+      if (is.null(input$threshold_intvwr)) 30 else input$threshold_intvwr})
 
     list(
       wave             = reactive({ req(input$config_wave); input$config_wave }),
       filter           = reactive({ req(input$config_filter); input$config_filter }),
-      threshold_Nrow   = reactive(input$threshold_Nrow),
-      threshold_Nval   = reactive(input$threshold_Nval),
-      threshold_wave   = reactive(input$threshold_wave),
-      threshold_intvwr = reactive(input$threshold_intvwr)
+      threshold_Nrow   = reactive(threshold_Nrow()),
+      threshold_Nval   = reactive(threshold_Nval()),
+      threshold_wave   = reactive(threshold_wave()),
+      threshold_intvwr = reactive(threshold_intvwr())
     )
   })
 }

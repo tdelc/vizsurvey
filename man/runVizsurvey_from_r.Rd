@@ -7,7 +7,7 @@
 runVizsurvey_from_r(
   df,
   vars_discretes = NULL,
-  vars_continous = NULL,
+  vars_continuous = NULL,
   var_wave = NULL,
   var_filter = NULL,
   var_intvwr = NULL
@@ -18,13 +18,13 @@ runVizsurvey_from_r(
 
 \item{vars_discretes}{(optional) preset of discretes variables}
 
-\item{vars_continous}{(optional) preset of continous variables}
-
 \item{var_wave}{(optional) name of wave variable}
 
 \item{var_filter}{(optional) name of filter variable}
 
 \item{var_intvwr}{(optional) name of interviewer variable}
+
+\item{vars_continous}{(optional) preset of continous variables}
 }
 \value{
 shinyapp

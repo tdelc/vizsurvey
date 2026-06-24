@@ -63,10 +63,10 @@ mod_archive_server <- function(id, data, r_focus, opts, i18n_s) {
                          comment = input$add_com)
         
         if (!file.exists(opts$path_archive)){
-          write.csv(record, file = path_archive, row.names = FALSE)
+          write.csv(record, file = opts$path_archive, row.names = FALSE)
         }else{
           df <- utils::read.csv(opts$path_archive) %>% add_row(record)
-          write.csv(df, file = path_archive, row.names = FALSE)
+          write.csv(df, file = opts$path_archive, row.names = FALSE)
           archive(df)
         }
         removeModal()

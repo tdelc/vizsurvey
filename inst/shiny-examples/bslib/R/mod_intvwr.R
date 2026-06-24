@@ -258,8 +258,8 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, i18n_s) {
         select(!!sym(cfg()$var_intv), MIN_TM_INTV, 
                starts_with('DURATION_'), starts_with('FL_')) %>%
         mutate(across(starts_with('DURATION_'), ~format_duree(as.numeric(.x,1))),
-               across(ends_with('_TM_INTV'), ~str_replace(.x,"T"," ")),
-               across(ends_with('_TM_INTV'), ~str_replace(.x,"Z","")))
+               across(ends_with('_TM_INTV'), ~stringr::str_replace(.x,"T"," ")),
+               across(ends_with('_TM_INTV'), ~stringr::str_replace(.x,"Z","")))
 
       df %>%  mutate(across(starts_with("FL_"),~ifelse(.x,"\U0001f534","")))
     })
@@ -288,8 +288,8 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, i18n_s) {
         select(!!sym(data$timer()$cfg$var_session), MIN_TM_SSN, 
                starts_with('DURATION_'), starts_with('FL_'), CHECK_SCTN) %>%
         mutate(across(starts_with('DURATION_'), ~format_duree(as.numeric(.x,1))),
-               across(ends_with('_TM_SSN'), ~str_replace(.x,"T"," ")),
-               across(ends_with('_TM_SSN'), ~str_replace(.x,"Z",""))) %>%  
+               across(ends_with('_TM_SSN'), ~stringr::str_replace(.x,"T"," ")),
+               across(ends_with('_TM_SSN'), ~stringr::str_replace(.x,"Z",""))) %>%  
         mutate(across(starts_with("FL_"),~ifelse(.x,"\U0001f534","")))
       
       datatable(df, rownames = FALSE, options = list(pageLength = 10, dom = "t"))
