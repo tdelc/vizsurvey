@@ -86,10 +86,10 @@ mod_filters_server <- function(id, data, i18n_s) {
       if (is.null(input$threshold_Nval)) 30 else input$threshold_Nval})
     
     threshold_wave <- reactive({
-      if (is.null(input$threshold_wave)) 30 else input$threshold_wave})
+      if (is.null(input$threshold_wave)) 0.5 else input$threshold_wave})
     
     threshold_intvwr <- reactive({
-      if (is.null(input$threshold_intvwr)) 30 else input$threshold_intvwr})
+      if (is.null(input$threshold_intvwr)) 5 else input$threshold_intvwr})
 
     list(
       wave             = reactive({ req(input$config_wave); input$config_wave }),

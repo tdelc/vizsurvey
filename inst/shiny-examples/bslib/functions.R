@@ -267,10 +267,7 @@ tidy_to_dt <- function(tidy_db, sensibility = 0.05,
   
   # ---- cas vide ----
   if (nrow(tidy_db) == 0) {
-    return(DT::datatable(
-      data.frame(INFO = paste("No data — probable causes: only one wave,",
-                              "or no outlier at this sensitivity.")),
-      rownames = FALSE, escape = FALSE, options = list(dom = "t")))
+    return(DT::datatable(data.frame(NULL), rownames = FALSE, escape = FALSE, options = list(dom = "t")))
   }
   
   df <- tidy_db
@@ -347,7 +344,7 @@ tidy_to_dt <- function(tidy_db, sensibility = 0.05,
 presence_check_dt <- function(pres) {
   if (nrow(pres) == 0)
     return(DT::datatable(
-      data.frame(INFO = "No missing variable"),
+      data.frame(NULL),
       rownames = FALSE, escape = FALSE, options = list(dom = "t")))
   
   long <- pres %>%
@@ -370,7 +367,7 @@ presence_check_dt <- function(pres) {
     tidyr::pivot_wider(names_from = wave, values_from = vars, names_sort = TRUE)
   
   DT::datatable(wide, rownames = FALSE, escape = FALSE,
-                options = list(dom = "t", ordering = FALSE))   # ni recherche, ni pagination
+                options = list(dom = "t", ordering = FALSE))
 }
 
 #### Comparison of distributions ####

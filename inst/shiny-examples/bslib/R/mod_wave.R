@@ -61,29 +61,29 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     tr <- function(x) i18n_s$t(x)
     cfg <- reactive(data$config())
     
+    wave_modality <- reactive({
+      req(data$df())
+      wave_modality <- sort(pull(unique(data$df()[,data$config()$var_wave])))
+      wave_modality <- wave_modality[!wave_modality == sel$wave()]
+      if (length(wave_modality) == 0) return(".all") else return(wave_modality)
+    })
+    
     output$no_data_msg <- renderUI({
-      modality <- sort(pull(unique(data$df()[,data$config()$var_wave])))
-      
-      card_ids = c(ns("card_presence"), "card_cat_detail", "card_cat", "card_num",
-                   "card_num_detail")
-      lapply(card_ids, function(card) {
-        toggle(id = card, condition = length(modality) > 1, asis = TRUE)
-      })
-      
-      if (length(modality) > 1) return(NULL)
-      if (modality == "All") return(div(class = "alert alert-warning",
+      req(wave_modality())
+      if (length(wave_modality()) > 1) return(NULL)
+      if (sel$wave() == "All") return(div(class = "alert alert-warning",
                                         tr("No wave in config file.")))
       else return(div(class = "alert alert-warning",
                       tr("Only one wave in dataset.")))
     })
     
     observeEvent(filt$df(),{
-      modality <- sort(pull(unique(data$df()[,data$config()$var_wave])))
+      req(wave_modality())
       updateCheckboxGroupInput(session,"wave_compare",inline=T,
                                # label=data$config()$var_wave,
                                label=tr("Compare with"),
-                               choices = modality,
-                               selected = modality[length(modality)-1])
+                               choices = wave_modality(),
+                               selected = wave_modality()[length(wave_modality())])
     })
     
     df_stats_wave <- reactive({
@@ -176,11 +176,16 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     
     fill_levels <- reactive({
       req(r_focus$variable)
-      data$df() %>% dplyr::pull(!!sym(r_focus$variable)) %>%
+      levels <- data$df() %>% dplyr::pull(!!sym(r_focus$variable)) %>%
         as.character() %>% unique() %>% sort()
+      
+      c(levels,NA_character_)
     })
     
     output$distri_cat <- renderPlot({
+      if(is.null(r_focus$variable) | r_focus$variable == ""){
+        return(NULL)
+      }
       if(!r_focus$variable %in% prepa_tab_cat()$variable){
         validate(tr("Plot only for categorical variable"))
       }
@@ -204,6 +209,9 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     })
     
     output$evo_cat <- renderPlot({
+      if(is.null(r_focus$variable) | r_focus$variable == ""){
+        return(NULL)
+      }
       if(!r_focus$variable %in% prepa_tab_cat()$variable){
         validate(tr("Plot only for categorical variable"))
       }
@@ -230,6 +238,9 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     })
     
     output$distri_num <- renderPlot({
+      if(is.null(r_focus$variable) | r_focus$variable == ""){
+        return(NULL)
+      }
       if(!r_focus$variable %in% prepa_tab_num()$variable){
         validate(tr("Plot only for continuous variable"))
       }
@@ -247,6 +258,9 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     })
     
     output$evo_num <- renderPlot({
+      if(is.null(r_focus$variable) | r_focus$variable == ""){
+        return(NULL)
+      }
       if(!r_focus$variable %in% prepa_tab_num()$variable){
         validate(tr("Plot only for continuous variable"))
       }

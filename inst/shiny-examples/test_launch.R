@@ -2,11 +2,11 @@ setwd("Z:/E8/1054-Monitoring-Citizens/data_dashboard/vizsurvey")
 library(devtools)
 load_all()
 
-df_timer <- read.csv("inst/extdata/SILC/HFILE/timers.csv")
-
-df_timer %>% 
-  correct_df_timer %>% 
-  correct_df_timer_session() 
+# df_timer <- read.csv("inst/extdata/SILC/HFILE/timers.csv")
+# 
+# df_timer %>% 
+#   correct_df_timer %>% 
+#   correct_df_timer_session() 
 
 library(laeken)
 data(eusilc)
