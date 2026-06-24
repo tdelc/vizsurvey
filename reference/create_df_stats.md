@@ -5,7 +5,7 @@ Create statistics from database
 ## Usage
 
 ``` r
-create_df_stats(df_, configs, var_calculs, zone_filter = NULL)
+create_df_stats(df_, configs, var_calculs, mod_filter = NULL)
 ```
 
 ## Arguments
@@ -22,9 +22,9 @@ create_df_stats(df_, configs, var_calculs, zone_filter = NULL)
 
   variable to create stats
 
-- zone_filter:
+- mod_filter:
 
-  (optional) zone modality to filter data
+  (optional) modality to filter data
 
 ## Value
 

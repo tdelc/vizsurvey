@@ -10,10 +10,24 @@ create_config(
   file_name = "config.txt",
   name_survey = NULL,
   vars_discretes = NULL,
-  vars_continous = NULL,
+  vars_continuous = NULL,
+  vars_ignore = NULL,
+  prefix_discretes = NULL,
+  prefix_continuous = NULL,
+  prefix_ignore = NULL,
   var_wave = NULL,
-  var_zone = NULL,
-  var_group = NULL
+  var_filter = NULL,
+  var_intvwr = NULL,
+  var_intv = NULL,
+  var_date = NULL,
+  var_info_geo = NULL,
+  var_timer = NULL,
+  var_itm_duration = NULL,
+  var_session = NULL,
+  duration_min_during = NULL,
+  duration_min_inter = NULL,
+  night_start = NULL,
+  night_end = NULL
 )
 ```
 
@@ -35,21 +49,66 @@ create_config(
 
   (optional) preset discretes variables name (VAR1,VAR2,...)
 
-- vars_continous:
+- vars_continuous:
 
-  (optional) preset continous variables name (VAR1,VAR2,...)
+  (optional) preset continuous variables name (VAR1,VAR2,...)
+
+- prefix_discretes:
+
+  (optional) preset prefix for discretes variables name
+
+- prefix_continuous:
+
+  (optional) preset prefix for continuous variables name
 
 - var_wave:
 
   (optional) variable name of wave
 
-- var_zone:
+- var_filter:
 
-  (optional) variable name of zone
+  (optional) variable name of filter
 
-- var_group:
+- var_intvwr:
 
-  variable name of group
+  (optional) variable name of interviewer id
+
+- var_intv:
+
+  (optional) variable name of interview id
+
+- var_date:
+
+  (optional) variable name of the date of the interview
+
+- var_timer:
+
+  (optional, audit trail) variable name of the beginning of a item
+
+- var_itm_duration:
+
+  (optional, audit trail) variable name of the duration of a item
+
+- var_session:
+
+  (optional, audit trail) variable name of the session of a item
+
+- duration_min_during:
+
+  (optional, audit trail) threshold of a interview duration
+
+- duration_min_inter:
+
+  (optional, audit trail) threshold of the duration between two
+  interviews
+
+- night_start:
+
+  (optional, audit trail) hour of beginning of the night
+
+- night_end:
+
+  (optional, audit trail) hour of end of the night
 
 ## Examples
 

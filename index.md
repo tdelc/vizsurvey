@@ -23,6 +23,7 @@ You can install the development version of `vizsurvey` from github like
 so:
 
 ``` r
+
 install.packages("devtools") # if necessary
 library(devtools)
 
@@ -32,6 +33,7 @@ devtools::install_github("tdelc/vizsurvey")
 Or also from the R-universe:
 
 ``` r
+
 options(repos = c(
     tdelc = 'https://tdelc.r-universe.dev',
     CRAN = 'https://cloud.r-project.org'))
@@ -74,6 +76,7 @@ function `runVizsurvey` is the easier way to launch the dashboard. It
 will be empty, you will then need to load your own dataset.
 
 ``` r
+
 library(vizsurvey)
 runVizsurvey()
 ```
@@ -100,6 +103,7 @@ example with a R dataset. We use the `eusilc` dataset from `laeken` and
 add a fake interviewer id.
 
 ``` r
+
 # EU-SILC data
 library(laeken)
 data(eusilc)
@@ -118,6 +122,7 @@ Files](https://ec.europa.eu/eurostat/web/microdata/public-microdata/statistics-o
 for EU-SILC from Eurostat.
 
 ``` r
+
 path <- "inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"
 runVizsurvey_from_file(path,var_group = "NR_ITW",var_zone = "db040")
 ```
@@ -137,6 +142,7 @@ generate all necessary objects for the application to run smoothly and
 systematically across multiple surveys.
 
 ``` r
+
 # We assume that config.txt, and prepa_surveys are already done here.
 # See vignette to learn how to prepare data folders
 runVizsurvey_from_folder("inst/extdata",depth_folder = 3)

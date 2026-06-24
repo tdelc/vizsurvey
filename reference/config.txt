@@ -1,9 +1,24 @@
 name_survey = 
 
 vars_discretes = 
-vars_continous = 
+vars_continuous = 
+vars_ignore = 
+
+prefix_discretes = 
+prefix_continuous = 
+prefix_ignore = 
 
 var_wave = 
-var_zone = 
+var_filter = 
+var_intvwr = 
+var_intv = 
 
-var_group = 
+var_date = 
+var_info_geo = 
+var_timer = 
+var_itm_duration = 
+var_session = 
+duration_min_during = 
+duration_min_inter  = 
+night_start         = 
+night_end           = 

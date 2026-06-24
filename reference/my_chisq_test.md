@@ -32,6 +32,5 @@ chisq value
 ldist <- list_dist(mtcars,c("cyl","gear"))
 sub_mtcars <- subset(mtcars,vs == 1)
 my_chisq_test(sub_mtcars$cyl,"cyl",ldist)
-#> X-squared 
-#>  12.00371 
+#> [1] 12.00371
 ```

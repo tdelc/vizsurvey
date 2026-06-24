@@ -1,6 +1,6 @@
-# Loop of stats creation by zone
+# Loop of stats creation by filter
 
-Loop of stats creation by zone
+Loop of stats creation by filter
 
 ## Usage
 

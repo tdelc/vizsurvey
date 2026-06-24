@@ -1,6 +1,7 @@
 # Méthodologie et usages des fonctions
 
 ``` r
+
 library(vizsurvey)
 library(isotree)
 library(tibble)
@@ -58,6 +59,7 @@ variable de province. Cela permet de simuler la présence de 45
 enquêteur·rices.
 
 ``` r
+
 library(laeken)
 data(eusilc)
 set.seed(123)
@@ -102,6 +104,7 @@ décider seule de la catégorie de vos variables, ou forcer vous mêmes la
 catégorie de certaines variables avec le `config.txt` (voir vignette 2).
 
 ``` r
+
 classify_df(eusilc)
 #> # A tibble: 29 × 2
 #>    variable type      
@@ -131,6 +134,7 @@ vides, la fonction `classify_df` est passée sur la base de données avant
 de procéder aux statistiques.
 
 ``` r
+
 prepa_stats(eusilc,var_group = "NR_ITW")
 ```
 
@@ -156,11 +160,11 @@ variable `value_ref` donne la valeur de l’indicateur pour toute la
 population La variable `standard` est une standardisation de la variable
 (précisé plus loin).
 
-### Calcul du $\chi^{2}$
+### Calcul du $`\chi^2`$
 
 La plupart des indicateurs ont des formules de calcul simples. Seul
 l’indicateur “chi2” mérite une attention particulière. Voici les étapes
-de calcul du $\chi 2$ :
+de calcul du $`\chi2`$ :
 
 1.  On commence par calculer la distribution des modalités de la
     variable sur l’ensemble des lignes avec la fonction `list_dist`. On
@@ -218,6 +222,7 @@ couleur ira de blanc à la couleur sélectionnée par l’argument `color`
 un écart trop important n’invisible pas les autres écarts.
 
 ``` r
+
 df_stats_eusilc <- prepa_stats(eusilc, "NR_ITW")
 
 heatmap_group(df_stats_eusilc, threshold = 1, color = "green2") +
@@ -227,6 +232,7 @@ heatmap_group(df_stats_eusilc, threshold = 1, color = "green2") +
 ![](methods_files/figure-html/unnamed-chunk-5-1.png)
 
 ``` r
+
 df_stats_eusilc %>% 
   filter(stat == 'chi2') %>% 
   heatmap_group(threshold = 1,color = "purple2") +
@@ -240,6 +246,7 @@ filtrant les données du data.frame issu de `prepa_stats`. Voici les
 trois exemples repris dans l’interface interactive :
 
 ``` r
+
 threshold <- 3
 
 df_stats_eusilc %>%
@@ -253,6 +260,7 @@ df_stats_eusilc %>%
 ![](methods_files/figure-html/unnamed-chunk-6-1.png)
 
 ``` r
+
 df_stats_eusilc %>%
   group_by(variable) %>%
   filter(max(abs(standard),na.rm=TRUE)>threshold) %>%
@@ -264,6 +272,7 @@ df_stats_eusilc %>%
 ![](methods_files/figure-html/unnamed-chunk-6-2.png)
 
 ``` r
+
 df_stats_eusilc %>%
   group_by(NR_ITW,variable) %>%
   filter(max(abs(standard),na.rm=TRUE)>threshold) %>%
@@ -278,6 +287,7 @@ L’objet ggplot issu de `heatmap_group` intègre des infos bulles pouvant
 être activées par {plotly}.
 
 ``` r
+
 p <- df_stats_eusilc %>%
   heatmap_group(3) +
   ggtitle("Carte de chaleur interactive")
@@ -307,6 +317,7 @@ catégorielles et des médianes pour les variables continues. La fonction
 indicateurs avant de l’appliquer.
 
 ``` r
+
 df_prepa <- df_stats_eusilc %>%
   filter(stat %in% c("chi2","median")) %>%
   select(NR_ITW,variable,standard) %>%

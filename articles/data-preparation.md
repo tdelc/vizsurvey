@@ -1,6 +1,7 @@
 # Préparer les données
 
 ``` r
+
 library(vizsurvey)
 ```
 
@@ -93,6 +94,7 @@ ménages de l’enquête SILC, avec l’année (`HB010`) comme vague d’enquêt
 et la province (`HB020`) comme zone :
 
 ``` r
+
 create_config(
   folder_path = "inst/extdata/SILC/HFILE",
   name_survey = "SILC-H",
@@ -109,6 +111,7 @@ nombre de modalités. Le seuil de classification d’une variable comme
 catégorielle est fixé par défaut à 15.
 
 ``` r
+
 classify_df(iris)
 #> # A tibble: 5 × 2
 #>   variable     type      
@@ -144,6 +147,7 @@ fichier `global.rds` est ensuite généré dans le même dossier : c’est le
 seul fichier qui sera utilisé par l’interface interactive.
 
 ``` r
+
 prepa_survey(
   folder_path  = "inst/extdata/SILC/HFILE",
   file_pattern = "*.csv")
@@ -153,6 +157,7 @@ L’application peut ensuite être lancée simplement à l’aide de la
 fonction `runVizsurvey_from_folder`.
 
 ``` r
+
 runVizsurvey_from_folder("inst/extdata/SILC/HFILE",depth_folder = 1)
 ```
 
@@ -180,6 +185,7 @@ répertoires enfants du chemin spécifié. Dans ce cas, il faut indiquer
 `depth_folder = 2`.
 
 ``` r
+
 prepa_surveys(folder_path  = "inst/extdata/SILC",depth_folder = 2)
 ```
 
@@ -187,6 +193,7 @@ Vous pouvez ensuite lancer l’interface en précisant le même niveau de
 profondeur :
 
 ``` r
+
 runVizsurvey_from_folder("inst/extdata/SILC",depth_folder = 2)
 ```
 
@@ -219,12 +226,14 @@ l’ensemble des fichiers doit avoir la même structure de données. Vous
 pouvez ensuite exécuter la préparation globale :
 
 ``` r
+
 prepa_surveys(folder_path  = "data",depth_folder = 3)
 ```
 
 Enfin, l’interface est lancée avec la même profondeur :
 
 ``` r
+
 runVizsurvey_from_folder("data",depth_folder = 3)
 ```
 

@@ -60,6 +60,7 @@ Pour lancer l’interface à partir d’un objet R, il suffit d’appeler la
 fonction `runVizsurvey_from_r` avec le nom de l’objet.
 
 ``` r
+
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 library(vizsurvey)
 # Not Work
@@ -74,6 +75,7 @@ vagues d’enquête ou la zone géographique. Voici la commande pour
 intégrer ces paramètres.
 
 ``` r
+
 # Not Work
 runVizsurvey_from_r(df,
                     var_group = "NR_ITW",
@@ -88,6 +90,7 @@ ou tout autre format lisible par la fonction `fread` du package
 {data.table}. La commande est similaire à celle pour un objet R :
 
 ``` r
+
 # Not Work
 runVizsurvey_from_file(path,
                        var_group = "NR_ITW",
@@ -118,6 +121,7 @@ par exemple la commande pour une structure comportant 2 niveaux de
 répertoire et 1 niveau pour les fichiers.
 
 ``` r
+
 runVizsurvey_from_folder("data",depth_folder = 3)
 ```
 
@@ -152,6 +156,7 @@ supplémentaire `var_zone = "DB040"` afin de prévoir l’analyse par
 province.
 
 ``` r
+
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 data(eusilc) 
 set.seed(123) 
@@ -175,7 +180,7 @@ l’enquêteur·rice pour cette variable est suffisamment différente des
 réponses du reste de la base de données.
 
 Pour les variables catégorielles, il peut s’agir d’un écart trop
-important sur le pourcentage de données manquantes, ou d’un $\chi ²$
+important sur le pourcentage de données manquantes, ou d’un $`\chi²`$
 trop élevé (donc d’une distribution très éloignée du reste de la base de
 données). Pour les variables numériques, il peut s’agir d’un écart trop
 important sur le pourcentage de données manquantes ou sur la médiane.
@@ -358,6 +363,7 @@ variable `hsize` n’existera pas, et la variable de revenu équivalent
 moyen `eqIncome` sera à la mauvaise échelle.
 
 ``` r
+
 data(eusilc)
 
 # Générer la variable d'année
