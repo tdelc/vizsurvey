@@ -23,6 +23,8 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: 
+    bsicons,
+    bslib,
     cli,
     corrplot,
     data.table,
@@ -39,13 +41,15 @@ Imports:
     rlang,
     scales,
     shiny,
+    shiny.i18n,
+    shinybusy,
     shinydashboard,
     stats,
     summarytools,
     tibble,
     tidyr,
     tidyselect
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Suggests: 
     knitr,
     rmarkdown,

@@ -2,6 +2,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom data.table is.data.table
 #' @importFrom dplyr across
 #' @importFrom dplyr any_of
 #' @importFrom dplyr arrange

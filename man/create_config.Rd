@@ -9,10 +9,24 @@ create_config(
   file_name = "config.txt",
   name_survey = NULL,
   vars_discretes = NULL,
-  vars_continous = NULL,
+  vars_continuous = NULL,
+  vars_ignore = NULL,
+  prefix_discretes = NULL,
+  prefix_continuous = NULL,
+  prefix_ignore = NULL,
   var_wave = NULL,
-  var_zone = NULL,
-  var_group = NULL
+  var_filter = NULL,
+  var_intvwr = NULL,
+  var_intv = NULL,
+  var_date = NULL,
+  var_info_geo = NULL,
+  var_timer = NULL,
+  var_itm_duration = NULL,
+  var_session = NULL,
+  duration_min_during = NULL,
+  duration_min_inter = NULL,
+  night_start = NULL,
+  night_end = NULL
 )
 }
 \arguments{
@@ -24,13 +38,35 @@ create_config(
 
 \item{vars_discretes}{(optional) preset discretes variables name (VAR1,VAR2,...)}
 
-\item{vars_continous}{(optional) preset continous variables name (VAR1,VAR2,...)}
+\item{vars_continuous}{(optional) preset continuous variables name (VAR1,VAR2,...)}
+
+\item{prefix_discretes}{(optional) preset prefix for discretes variables name}
+
+\item{prefix_continuous}{(optional) preset prefix for continuous variables name}
 
 \item{var_wave}{(optional) variable name of wave}
 
-\item{var_zone}{(optional) variable name of zone}
+\item{var_filter}{(optional) variable name of filter}
 
-\item{var_group}{variable name of group}
+\item{var_intvwr}{(optional) variable name of interviewer id}
+
+\item{var_intv}{(optional) variable name of interview id}
+
+\item{var_date}{(optional) variable name of the date of the interview}
+
+\item{var_timer}{(optional, audit trail) variable name of the beginning of a item}
+
+\item{var_itm_duration}{(optional, audit trail) variable name of the duration of a item}
+
+\item{var_session}{(optional, audit trail) variable name of the session of a item}
+
+\item{duration_min_during}{(optional, audit trail) threshold of a interview duration}
+
+\item{duration_min_inter}{(optional, audit trail) threshold of the duration between two interviews}
+
+\item{night_start}{(optional, audit trail) hour of beginning of the night}
+
+\item{night_end}{(optional, audit trail) hour of end of the night}
 }
 \description{
 Create a template of configuration file

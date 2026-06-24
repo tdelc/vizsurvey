@@ -4,7 +4,7 @@
 \alias{create_df_stats}
 \title{Create statistics from database}
 \usage{
-create_df_stats(df_, configs, var_calculs, zone_filter = NULL)
+create_df_stats(df_, configs, var_calculs, mod_filter = NULL)
 }
 \arguments{
 \item{df_}{database}
@@ -13,7 +13,7 @@ create_df_stats(df_, configs, var_calculs, zone_filter = NULL)
 
 \item{var_calculs}{variable to create stats}
 
-\item{zone_filter}{(optional) zone modality to filter data}
+\item{mod_filter}{(optional) modality to filter data}
 }
 \value{
 df

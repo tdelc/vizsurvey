@@ -30,6 +30,80 @@ classify_df <- function(df, threhold = 15) {
     arrange(variable)
 }
 
+classify_df_pattern <- function(df,configs){
+  # List of all variables
+  vars <- names(df)
+  
+  # Remove variable of calculation 
+  vars_remove <- c(configs$var_intvwr,configs$var_intv,configs$var_date,
+                   configs$var_wave,configs$var_filter)
+  vars <- setdiff(vars, vars_remove)
+  
+  # 1. apply pattern and remove vars # PREFIX
+  configs$prefix_discretes  <- paste0("^",configs$prefix_discretes)
+  configs$prefix_continuous <- paste0("^",configs$prefix_continuous)
+  vars_vd <- vars[grep(paste(configs$prefix_discretes,collapse = "|"),vars)]
+  vars_vc <- vars[grep(paste(configs$prefix_continuous,collapse = "|"),vars)]
+  
+  if (is.na(configs$prefix_discretes)) vars_vd <- NULL
+  if (is.na(configs$prefix_continuous)) vars_vc <- NULL
+  vars_left <- setdiff(setdiff(vars,vars_vd),vars_vc)
+  
+  # 2. add force variable
+  vars_vd <- c(vars_vd, intersect(vars,configs$vars_discretes))
+  vars_vc <- c(vars_vc, intersect(vars,configs$vars_continuous))
+  
+  # 3. apply classify
+  info_vars    <- classify_df(df)
+  info_vars_vd <- info_vars[info_vars$type == "Modal", ]$variable
+  info_vars_vc <- info_vars[info_vars$type == "Continuous", ]$variable
+  
+  other_vars <- setdiff(names(df),c(info_vars_vd,info_vars_vc))
+  vars_vd <- c(vars_vd, intersect(vars_left,info_vars_vd))
+  vars_vc <- c(vars_vc, intersect(vars_left,info_vars_vc))
+  
+  # 4. Force ignore some variables
+  if (all(!is.na(configs$prefix_ignore))){
+    configs$prefix_ignore <- paste0("^",configs$prefix_ignore)
+    vars_ignore <- vars[grep(paste(configs$prefix_ignore,collapse = "|"),vars)]
+  }else{
+    vars_ignore <- NULL
+  }
+  vars_ignore <- c(vars_ignore,configs$vars_ignore)
+  
+  vars_vd <- setdiff(vars_vd, vars_ignore)
+  vars_vc <- setdiff(vars_vc, vars_ignore)
+  
+  # 5. Format variables discretes and continuous
+  
+  vars_vd <- sort(unique(vars_vd))
+  vars_vc <- sort(unique(vars_vc))
+                           
+  # 6. Checks
+  vars <- setdiff(setdiff(setdiff(setdiff(vars,info_vars_vd),info_vars_vc),vars_ignore),other_vars)
+  dup <- duplicated(c(vars_vd,vars_vc))
+  dup <- paste(c(vars_vd,vars_vc)[dup],collapse = ",")
+  
+  mis <- paste(setdiff(names(df),c(vars_vd,vars_vc,other_vars,configs$var_intvwr)),collapse = ",")
+  
+  if (mis != "" | dup != "" | length(vars) != 0){
+    cli::cli_alert_warning("Variables classification may not work :")
+    cli::cli_alert_warning("{length(vars)} remaining variables")
+    cli::cli_alert_warning("Duplicated : {dup}")
+    cli::cli_alert_warning("Missing : {mis}")
+    
+    writeLines(paste0("Variables classification may not work :\n", 
+                      length(vars)," remaining variables\n",
+                      "Duplicated : ",dup,"\n",
+                      "Missing : ",mis,"\n"),
+               file.path(configs$path,"log.txt"))
+  }
+  list(
+    vars_vd = vars_vd,
+    vars_vc = vars_vc
+  )
+}
+
 #' Create a summarise of all the difference
 #'
 #' @param df data frame for the summary
@@ -49,6 +123,7 @@ classify_df <- function(df, threhold = 15) {
 #' vars_vc <- info_vars[info_vars$type == "Continuous", ]$variable
 #' prepa_stats(eusilc, "db040", vars_vd, vars_vc)
 prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
+  
   if (length(var_group) == 0) {
     return(tibble(NULL))
   }
@@ -72,9 +147,9 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
       across(any_of(vars_vd), as.numeric),
       across(any_of(var_group), as.character)
     )
-
+  
   ldist <- list_dist(df,vars_vd)
-
+  
   df_stats <- df %>%
     group_by(!!sym(var_group)) %>%
     summarise(
@@ -127,6 +202,7 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
     ) %>%
     dplyr::relocate(!!sym(var_group), variable, Nrow, Nval) %>%
     ungroup()
+
   return(df_stats)
 }
 
@@ -135,11 +211,22 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
 #' @param folder_path folder where create the file
 #' @param file_name Name of the config file (config.txt by default)
 #' @param name_survey Name of the survey (not used)
-#' @param var_group variable name of group
 #' @param var_wave (optional) variable name of wave
-#' @param var_zone (optional) variable name of zone
 #' @param vars_discretes (optional) preset discretes variables name (VAR1,VAR2,...)
-#' @param vars_continous (optional) preset continous variables name (VAR1,VAR2,...)
+#' @param vars_continuous (optional) preset continuous variables name (VAR1,VAR2,...)
+#' @param prefix_discretes (optional) preset prefix for discretes variables name
+#' @param prefix_continuous (optional) preset prefix for continuous variables name 
+#' @param var_filter (optional) variable name of filter
+#' @param var_intvwr (optional) variable name of interviewer id
+#' @param var_intv  (optional) variable name of interview id
+#' @param var_date (optional) variable name of the date of the interview
+#' @param var_timer (optional, audit trail) variable name of the beginning of a item
+#' @param var_itm_duration (optional, audit trail) variable name of the duration of a item
+#' @param var_session (optional, audit trail) variable name of the session of a item
+#' @param duration_min_during (optional, audit trail) threshold of a interview duration 
+#' @param duration_min_inter (optional, audit trail) threshold of the duration between two interviews 
+#' @param night_start (optional, audit trail) hour of beginning of the night
+#' @param night_end (optional, audit trail) hour of end of the night
 #'
 #' @returns NULL
 #' @export
@@ -147,12 +234,26 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
 #' @examples
 #' create_config(".") # creation of config.txt in working directory
 create_config <- function(folder_path, file_name = "config.txt",
-                          name_survey = NULL,
-                          vars_discretes = NULL,
-                          vars_continous = NULL,
-                          var_wave = NULL,
-                          var_zone = NULL,
-                          var_group = NULL) {
+                          name_survey         = NULL,
+                          vars_discretes      = NULL,
+                          vars_continuous     = NULL,
+                          vars_ignore         = NULL,
+                          prefix_discretes    = NULL,
+                          prefix_continuous   = NULL,
+                          prefix_ignore       = NULL,
+                          var_wave            = NULL,
+                          var_filter          = NULL,
+                          var_intvwr          = NULL,
+                          var_intv            = NULL,
+                          var_date            = NULL,
+                          var_info_geo        = NULL,
+                          var_timer           = NULL,
+                          var_itm_duration    = NULL,
+                          var_session         = NULL,
+                          duration_min_during = NULL,
+                          duration_min_inter  = NULL,
+                          night_start         = NULL,
+                          night_end           = NULL) {
   if (!dir.exists(folder_path)) {
     stop("folder_path does not exists")
   }
@@ -165,12 +266,27 @@ create_config <- function(folder_path, file_name = "config.txt",
     paste("name_survey =", name_survey),
     "",
     paste("vars_discretes =", vars_discretes),
-    paste("vars_continous =", vars_continous),
+    paste("vars_continuous =", vars_continuous),    
+    paste("vars_ignore =", vars_ignore),    
+    "",
+    paste("prefix_discretes =", prefix_discretes),
+    paste("prefix_continuous =", prefix_continuous),
+    paste("prefix_ignore =", prefix_ignore),
     "",
     paste("var_wave =", var_wave),
-    paste("var_zone =", var_zone),
+    paste("var_filter =", var_filter),
+    paste("var_intvwr =", var_intvwr),
+    paste("var_intv =", var_intv),
     "",
-    paste("var_group =", var_group)
+    paste("var_date =", var_date),
+    paste("var_info_geo =", var_info_geo),
+    paste("var_timer =", var_timer),
+    paste("var_itm_duration =", var_itm_duration),
+    paste("var_session =", var_session),
+    paste("duration_min_during =", duration_min_during),
+    paste("duration_min_inter  =", duration_min_inter),
+    paste("night_start         =", night_start),
+    paste("night_end           =", night_end)
   )
 
   writeLines(content, file_path)
@@ -285,48 +401,59 @@ folder_to_df <- function(folder,
 
   # extract info from config.txt
   configs <- list()
-  configs$vd <- intersect(config %>% extract_config("vars_discretes"), names(df))
-  configs$vc <- intersect(config %>% extract_config("vars_continous"), names(df))
-  configs$path <- folder
-  configs$vg <- intersect(config %>% extract_config("var_group"), names(df))
-  configs$vw <- config %>% extract_config("var_wave")
-  configs$vz <- config %>% extract_config("var_zone")
-  configs$enq <- config %>% extract_config("name_survey")
+  configs$name_survey      <- config %>% extract_config("name_survey")
+  configs$vars_discretes   <- intersect(config %>% extract_config("vars_discretes"), names(df))
+  configs$vars_continuous  <- intersect(config %>% extract_config("vars_continuous"), names(df))
+  configs$vars_ignore  <- intersect(config %>% extract_config("vars_ignore"), names(df))
+  configs$prefix_discretes <- config %>% extract_config("prefix_discretes")
+  configs$prefix_continuous <- config %>% extract_config("prefix_continuous")
+  configs$prefix_ignore <- config %>% extract_config("prefix_ignore")
+  configs$path       <- folder
+  configs$var_wave   <- intersect(config %>% extract_config("var_wave"), names(df))
+  configs$var_filter <- intersect(config %>% extract_config("var_filter"), names(df))
+  configs$var_intvwr <- intersect(config %>% extract_config("var_intvwr"), names(df))
+  configs$var_intv   <- intersect(config %>% extract_config("var_intv"), names(df))
 
-  # add automatic classification
-  df_variables <- classify_df(df)
-  prepa_vd <- df_variables %>%
-    filter(type == "Modal") %>%
-    pull(variable)
-  prepa_vc <- df_variables %>%
-    filter(type == "Continuous") %>%
-    pull(variable)
-
+  configs$var_date <- config %>% extract_config("var_date")
+  configs$var_info_geo <- config %>% extract_config("var_info_geo")
+  
+  configs$var_timer           <- config %>% extract_config("var_timer")
+  configs$var_itm_duration    <- config %>% extract_config("var_itm_duration")
+  configs$var_session         <- config %>% extract_config("var_session")
+  configs$duration_min_during <- config %>% extract_config("duration_min_during")
+  configs$duration_min_inter  <- config %>% extract_config("duration_min_inter")
+  configs$night_start         <- config %>% extract_config("night_start")
+  configs$night_end           <- config %>% extract_config("night_end")
+  
+  out <- classify_df_pattern(df,configs)
+  prepa_discretes  <- out$vars_vd
+  prepa_continuous <- out$vars_vc
+  
   # use manual classification instead avec automatic
-  config_all <- config %>%
-    pull(value) %>%
-    unique() %>%
-    unlist()
-  prepa_vd <- prepa_vd[!prepa_vd %in% config_all]
-  prepa_vc <- prepa_vc[!prepa_vc %in% config_all]
+  # config_all <- config %>%
+  #   pull(value) %>%
+  #   unique() %>%
+  #   unlist()
+  # prepa_discretes <- prepa_discretes[!prepa_discretes %in% config_all]
+  # prepa_continuous <- prepa_continuous[!prepa_continuous %in% config_all]
 
   # add variables in config obj
-  configs$vd <- sort(unique(c(configs$vd, prepa_vd)))
-  configs$vc <- sort(unique(c(configs$vc, prepa_vc)))
+  configs$vars_discretes <- sort(unique(c(configs$vars_discretes, prepa_discretes)))
+  configs$vars_continuous <- sort(unique(c(configs$vars_continuous, prepa_continuous)))
 
   # minimal correction of the file
   df <- df %>%
     mutate(
-      across(any_of(configs$vc), as.numeric),
-      across(any_of(configs$vd), as.factor)
+      across(any_of(configs$vars_continuous), as.numeric),
+      across(any_of(configs$vars_discretes), as.factor)
     )
 
-  if (!is.na(configs$vw)){
-    df <- df %>% mutate(across(any_of(configs$vw), as.character))
+  if (!is.null(configs$var_wave)){
+    df <- df %>% mutate(across(any_of(configs$var_wave), as.character))
   }
 
-  if (!is.na(configs$vz)){
-    df <- df %>% mutate(across(any_of(configs$vz), as.character))
+  if (!is.null(configs$var_filter)){
+    df <- df %>% mutate(across(any_of(configs$var_filter), as.character))
   }
 
   return(list(df = df, configs = configs))
@@ -338,33 +465,33 @@ folder_to_df <- function(folder,
 #' @param df_ database
 #' @param configs configs
 #' @param var_calculs variable to create stats
-#' @param zone_filter (optional) zone modality to filter data
+#' @param mod_filter (optional) modality to filter data
 #'
 #' @returns df
 create_df_stats <- function(df_, configs,
                             var_calculs,
-                            zone_filter = NULL) {
+                            mod_filter = NULL) {
   df <- df_
 
-  if (!is.null(zone_filter)) {
-    df <- df %>% filter(!!sym(configs$vz) %in% zone_filter)
+  if (!is.null(mod_filter)) {
+    df <- df %>% filter(!!sym(configs$var_filter) %in% mod_filter)
   }
 
   variables <- list()
   variables$variables_vd <- configs$vd
   variables$variables_vc <- configs$vc
 
-  df_stats <- df %>% prepa_stats(var_calculs, configs$vd, configs$vc)
+  df_stats <- df %>% prepa_stats_dt(var_calculs, configs)
 
-  if (!is.null(zone_filter)) {
-    df_stats <- df_stats %>% mutate(zone = zone_filter)
+  if (!is.null(mod_filter)) {
+    df_stats <- df_stats %>% mutate(filter = mod_filter)
   } else {
-    df_stats <- df_stats %>% mutate(zone = "All")
+    df_stats <- df_stats %>% mutate(filter = "All")
   }
   df_stats
 }
 
-#' Loop of stats creation by zone
+#' Loop of stats creation by filter
 #'
 #' @param df database
 #' @param configs configs
@@ -372,20 +499,20 @@ create_df_stats <- function(df_, configs,
 #'
 #' @returns df
 loop_stats <- function(df, configs, var_calculs) {
-  cli::cli_progress_step("df_stats for {var_calculs}", spinner = TRUE)
+  cli::cli_progress_step("create_df_stats for {var_calculs}", spinner = TRUE)
   df_stats <- create_df_stats(df, configs, var_calculs)
 
-  if (length(pull(unique(df[, configs$vz]))) > 1) {
-    vec_zone <- pull(unique(df[, configs$vz]))
+  if (length(pull(unique(df[, configs$var_filter]))) > 1) {
+    vec_filter <- pull(unique(df[, configs$var_filter]))
 
-    cli::cli_alert_info("create_df_stats for zone {configs$vz}")
-    df_stats_zone <- vec_zone %>% map_df(~ {
-      cli::cli_progress_step("{configs$vz} = {.x}", spinner = TRUE)
-      create_df_stats(df, configs, var_calculs, zone_filter = .x)
+    cli::cli_alert_info("create_df_stats for {configs$var_filter}")
+    df_stats_filter <- vec_filter %>% map_df(~ {
+      cli::cli_progress_step("{configs$var_filter} = {.x}", spinner = TRUE)
+      create_df_stats(df, configs, var_calculs, mod_filter = .x)
     })
 
     df_stats <- df_stats %>%
-      dplyr::add_row(df_stats_zone)
+      dplyr::add_row(df_stats_filter)
   }
   return(df_stats)
 }
@@ -406,7 +533,7 @@ loop_stats <- function(df, configs, var_calculs) {
 prepa_survey <- function(folder_path,
                          file_pattern = "*.csv",
                          file_config = "config.txt") {
-  cli::cli_alert_info("path {folder_path}")
+  cli::cli_h3("prepa_survey for path {folder_path}")
   list_df <- folder_to_df(folder_path, file_pattern, file_config)
   if (is.null(list_df)) {
     cli::cli_alert_danger("no df in path {folder_path}")
@@ -417,47 +544,45 @@ prepa_survey <- function(folder_path,
 
   df <- list_df$df
 
-  # Create a fake all wave or zone or group if null
-  if (length(configs$vw) == 0 || is.na(configs$vw)){
+  # Create a fake all wave or filter or group if null
+  if (length(configs$var_wave) == 0 || is.na(configs$var_wave)){
     df <- df %>% mutate(wave = "All")
-    configs$vw <- "wave"
+    configs$var_wave <- "wave"
   }
 
-  if (length(configs$vz) == 0 || is.na(configs$vz)){
-    df <- df %>% mutate(zone = "All")
-    configs$vz <- "zone"
+  if (length(configs$var_filter) == 0 || is.na(configs$var_filter)){
+    df <- df %>% mutate(filter = "All")
+    configs$var_filter <- "filter"
   }
 
-  if (length(configs$vg) == 0 || is.na(configs$vg)){
-    df <- df %>% mutate(group = "All")
-    configs$vg <- "group"
+  if (length(configs$var_intvwr) == 0 || is.na(configs$var_intvwr)){
+    df <- df %>% mutate(intvwr = "All")
+    configs$var_intvwr <- "intvwr"
   }
-
+  
   # Wave variation
-  if (length(pull(unique(df[, configs$vw]))) > 1) {
-    df_stats <- loop_stats(df, configs, configs$vw)
-  } else {
-    df_stats <- NULL
-  }
-
+  cli::cli_h3("Wave Variation")
+  df_stats_wave <- loop_stats(df, configs, configs$var_wave)
+  
   # Interviewer variation
-  if (length(pull(unique(df[, configs$vg]))) > 1) {
-    df_stats_group <- pull(unique(df[, configs$vw])) %>% map_df(~ {
-      cli::cli_progress_step("df_stats_group for wave {.x}",spinner = TRUE)
+  cli::cli_h3("Interviewer Variation")
+  if (length(pull(unique(df[, configs$var_intvwr]))) > 1) {
+    df_stats_intvwr <- pull(unique(df[, configs$var_wave])) %>% map_df(~ {
+      cli::cli_progress_step("df_stats_intvwr for wave {.x}",spinner = TRUE)
       sub_df <- df %>%
-        filter(!!sym(configs$vw) == .x) %>%
-        loop_stats(configs, configs$vg) %>%
-        mutate(!!sym(configs$vw) := .x)
+        filter(!!sym(configs$var_wave) == .x) %>%
+        loop_stats(configs, configs$var_intvwr) %>%
+        mutate(!!sym(configs$var_wave) := .x)
     })
   } else {
-    df_stats_group <- NULL
+    df_stats_intvwr <- NULL
   }
 
   global <- list(
     configs = configs,
     df = df,
-    df_stats = df_stats,
-    df_stats_group = df_stats_group
+    df_stats_wave = df_stats_wave,
+    df_stats_intvwr = df_stats_intvwr
   )
 
   readr::write_rds(global, file.path(folder_path,"global.rds"),compress = "gz")
