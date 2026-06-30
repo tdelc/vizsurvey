@@ -91,6 +91,7 @@ list_dist <- function(df, vars_vd) {
 #' @param x value to procede chisq test
 #' @param varname name of the variable
 #' @param ldist named list of expected probability
+#' @param useNA useNA parameter for the table function
 #'
 #' @returns chisq value
 #' @export
@@ -99,11 +100,11 @@ list_dist <- function(df, vars_vd) {
 #' ldist <- list_dist(mtcars,c("cyl","gear"))
 #' sub_mtcars <- subset(mtcars,vs == 1)
 #' my_chisq_test(sub_mtcars$cyl,"cyl",ldist)
-my_chisq_test <- function(x, varname, ldist) {
+my_chisq_test <- function(x, varname, ldist, useNA = "ifany") {
   if (all(is.na(x))) {
     return(NA_real_)
   }
-  observed_counts <- table(x, useNA = "ifany")
+  observed_counts <- table(x, useNA = useNA)
   expected_prop <- ldist[[varname]]
 
   names(observed_counts)[which(is.na(names(observed_counts)))] <- "NA_"

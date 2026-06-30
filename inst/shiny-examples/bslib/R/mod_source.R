@@ -33,7 +33,7 @@ mod_source_server <- function(id, opts, i18n_s) {
     # --- État interne : UNE seule profondeur, UN seul dossier racine ---------
     rv <- reactiveValues(
       depth = opts$depth_folder,
-      root  = opts$link_data_folder,
+      root  = opts$path_data_folder,
       pattern = opts$data_rds_pattern,
       df_user = NULL
     )

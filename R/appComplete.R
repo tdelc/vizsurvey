@@ -33,7 +33,9 @@ runVizsurvey <- function() {
 #' # We assume that config.txt, and prepa_surveys are already done here.
 #' \dontrun{runVizsurvey_from_folder("inst/extdata",depth_folder = 3)}
 runVizsurvey_from_folder <- function(
-    link,
+    path,
+    path_dict    = NULL,
+    path_archive = NULL,
     data_rds_pattern = "global",
     depth_folder = 1
 ) {
@@ -43,7 +45,9 @@ runVizsurvey_from_folder <- function(
     stop("Could not find example directory. Try re-installing `vizsurvey`.", call. = FALSE)
   }
 
-  shiny::shinyOptions(link_data_folder = normalizePath(link))
+  shiny::shinyOptions(path_data_folder = normalizePath(path))
+  shiny::shinyOptions(path_dict    = normalizePath(path_dict))
+  shiny::shinyOptions(path_archive = normalizePath(path_archive))
   shiny::shinyOptions(data_rds_pattern = data_rds_pattern)
   shiny::shinyOptions(depth_folder = depth_folder)
   shiny::runApp(appDir, display.mode = "normal",launch.browser = TRUE)

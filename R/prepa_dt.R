@@ -3,10 +3,11 @@
 #' @param df 
 #' @param var_group 
 #' @param configs 
+#' @param na.rm 
 #'
 #' @returns data.frame
 #' @export
-prepa_stats_dt <- function(df, var_group, configs) {
+prepa_stats_dt <- function(df, var_group, configs, na.rm = FALSE) {
   
   vars_discretes   <- configs$vars_discretes
   vars_continuous  <- configs$vars_continuous
@@ -36,7 +37,9 @@ prepa_stats_dt <- function(df, var_group, configs) {
     )
   
   setDT(df)
-  ldist <- list_dist_dt(df,vars_discretes)
+  ldist <- list_dist_dt(df,vars_discretes,na.rm=na.rm)
+  
+  useNA <- if (na.rm) "ifany" else "no"
   
   exprs_vd <- lapply(vars_discretes, function(nm) {
     list(
@@ -45,7 +48,7 @@ prepa_stats_dt <- function(df, var_group, configs) {
       substitute(mean(is.na(x)) != 1, list(x = as.name(nm))),
       substitute(if(is.na(mean(is.na(x))) | mean(is.na(x)) > 0.95) 
         NA_integer_ else data.table::uniqueN(x), list(x = as.name(nm))),
-      substitute(my_chisq_test(x, vname, ldist), list(x = as.name(nm), vname = nm))
+      substitute(my_chisq_test(x, vname, ldist, useNA), list(x = as.name(nm), vname = nm))
     )
   })
   
@@ -87,7 +90,7 @@ prepa_stats_dt <- function(df, var_group, configs) {
     mutate(
       value = ifelse(is.infinite(value), 1000, value),
       value_ref = mean(value, na.rm = TRUE),
-      standard = scale_IQR(value),
+      standard = abs(scale_IQR(value)),
       standard = case_when(
         sd(value, na.rm = TRUE) == 0 ~ 0,
         is.nan(standard) ~ NA,
@@ -100,23 +103,28 @@ prepa_stats_dt <- function(df, var_group, configs) {
   return(df_stats)
 }
 
-#' Title
+#' List of proportions for categorical variables
 #'
-#' @param df 
-#' @param vars_discretes 
+#' @param df data.frame
+#' @param vars_discretes vector of categorical variable to calculate proportion 
+#' @param na.rm Remove missing values or not ?
 #'
 #' @returns list
 #' @export
 #' 
 #' @importFrom data.table setDT := .N
-list_dist_dt <- function(df, vars_discretes) {
+list_dist_dt <- function(df, vars_discretes, na.rm = FALSE) {
   if (!is.data.table(df)) setDT(df)
   
   res <- lapply(vars_discretes, function(nm) {
     dt_prop <- df[, .N, by = c(nm)]
     data.table::setnames(dt_prop, nm, "category")
     dt_prop[, category := as.character(category)]
-    dt_prop[is.na(category), category := "NA_"]
+    if (na.rm){
+      dt_prop <- dt_prop[!is.na(category)]
+    }else{
+      dt_prop[is.na(category), category := "NA_"]
+    }
     total <- sum(dt_prop$N)
     dt_prop[, prop := N / total]
     dt_prop[prop < 0.01, category := "OTH_"]

@@ -466,11 +466,13 @@ folder_to_df <- function(folder,
 #' @param configs configs
 #' @param var_calculs variable to create stats
 #' @param mod_filter (optional) modality to filter data
+#' @param na.rm include or not missing values as modality
 #'
-#' @returns df
+#' @returns df data.frame
 create_df_stats <- function(df_, configs,
                             var_calculs,
-                            mod_filter = NULL) {
+                            mod_filter = NULL,
+                            na.rm = FALSE) {
   df <- df_
 
   if (!is.null(mod_filter)) {
@@ -481,7 +483,7 @@ create_df_stats <- function(df_, configs,
   variables$variables_vd <- configs$vd
   variables$variables_vc <- configs$vc
 
-  df_stats <- df %>% prepa_stats_dt(var_calculs, configs)
+  df_stats <- df %>% prepa_stats_dt(var_calculs, configs, na.rm)
 
   if (!is.null(mod_filter)) {
     df_stats <- df_stats %>% mutate(filter = mod_filter)
@@ -498,9 +500,9 @@ create_df_stats <- function(df_, configs,
 #' @param var_calculs variable to create stats
 #'
 #' @returns df
-loop_stats <- function(df, configs, var_calculs) {
+loop_stats <- function(df, configs, var_calculs, na.rm = FALSE) {
   cli::cli_progress_step("create_df_stats for {var_calculs}", spinner = TRUE)
-  df_stats <- create_df_stats(df, configs, var_calculs)
+  df_stats <- create_df_stats(df, configs, var_calculs, na.rm = na.rm)
 
   if (length(pull(unique(df[, configs$var_filter]))) > 1) {
     vec_filter <- pull(unique(df[, configs$var_filter]))
@@ -508,7 +510,7 @@ loop_stats <- function(df, configs, var_calculs) {
     cli::cli_alert_info("create_df_stats for {configs$var_filter}")
     df_stats_filter <- vec_filter %>% map_df(~ {
       cli::cli_progress_step("{configs$var_filter} = {.x}", spinner = TRUE)
-      create_df_stats(df, configs, var_calculs, mod_filter = .x)
+      create_df_stats(df, configs, var_calculs, mod_filter = .x, na.rm = na.rm)
     })
 
     df_stats <- df_stats %>%
@@ -532,12 +534,18 @@ loop_stats <- function(df, configs, var_calculs) {
 #' }
 prepa_survey <- function(folder_path,
                          file_pattern = "*.csv",
-                         file_config = "config.txt") {
+                         file_config = "config.txt",
+                         na.rm = FALSE) {
   cli::cli_h3("prepa_survey for path {folder_path}")
   list_df <- folder_to_df(folder_path, file_pattern, file_config)
   if (is.null(list_df)) {
     cli::cli_alert_danger("no df in path {folder_path}")
     return(NULL)
+  }
+  if (na.rm){
+    cli::cli_alert_info("missing values removed before chi² calculation")
+  }else{
+    cli::cli_alert_info("missing values added as a modality during chi² calculation")
   }
 
   configs <- list_df$configs
@@ -562,7 +570,7 @@ prepa_survey <- function(folder_path,
   
   # Wave variation
   cli::cli_h3("Wave Variation")
-  df_stats_wave <- loop_stats(df, configs, configs$var_wave)
+  df_stats_wave <- loop_stats(df, configs, configs$var_wave, na.rm = na.rm)
   
   # Interviewer variation
   cli::cli_h3("Interviewer Variation")
@@ -571,7 +579,7 @@ prepa_survey <- function(folder_path,
       cli::cli_progress_step("df_stats_intvwr for wave {.x}",spinner = TRUE)
       sub_df <- df %>%
         filter(!!sym(configs$var_wave) == .x) %>%
-        loop_stats(configs, configs$var_intvwr) %>%
+        loop_stats(configs, configs$var_intvwr, na.rm = na.rm) %>%
         mutate(!!sym(configs$var_wave) := .x)
     })
   } else {

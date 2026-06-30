@@ -71,7 +71,8 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     output$no_data_msg <- renderUI({
       req(wave_modality())
       if (length(wave_modality()) > 1) return(NULL)
-      else return(div(class = "alert alert-warning",
+      if (length(wave_modality()) == 1 & wave_modality() != ".all") return(NULL)
+      return(div(class = "alert alert-warning",
                  tr("No wave in config file, or only one wave in dataset.")))
     })
     
@@ -228,7 +229,8 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
         scale_fill_viridis_d(limits = fill_levels(), drop = FALSE) +
         labs(title = tr("Evolution accross waves")) +
         coord_flip() +
-        theme_minimal(base_size = 15)
+        theme_minimal(base_size = 15) +
+        theme(legend.position = "bottom")
     })
     
     bornes <- reactive({

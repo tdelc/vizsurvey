@@ -37,11 +37,11 @@ i18n$use_js()
 # modules, plus de variable globale lue ailleurs.
 app_opts <- function() {
   list(
-    link_data_folder = getShinyOption("link_data_folder", "data"),
+    path_data_folder = getShinyOption("path_data_folder", "data"),
     data_rds_pattern = getShinyOption("data_rds_pattern", "global"),
     depth_folder     = getShinyOption("depth_folder", 1L),
     path_archive     = getShinyOption("path_archive", "archive.csv"),
-    dict             = getShinyOption("dict", NULL),
+    path_dict        = getShinyOption("path_dict", NULL),
     user             = getShinyOption("user", Sys.getenv("USERNAME", "unknown")),
     seed             = getShinyOption("seed", 42L)  # iForest reproductible
   )
@@ -122,7 +122,7 @@ app_ui <- function() {
 
 app_server <- function(input, output, session) {
   opts <- app_opts()
-  
+
   i18n_s <- i18n$clone()
   lang <- reactiveVal("en")
   
@@ -150,7 +150,7 @@ app_server <- function(input, output, session) {
   mod_wave_server("wave",  filt, data, sel, r_focus, i18n_s)
   mod_intvwr_variable_server("intvwr_variable", filt, data, r_focus, opts, i18n_s)
   mod_data_explorer_server("data",  data)
-  mod_dict_server("dict",opts$dict,"main_nav",session, i18n_s)
+  mod_dict_server("dict",opts$path_dict,"main_nav",session, i18n_s)
   mod_archive_server("archive", data, r_focus, opts, i18n_s)
 }
 

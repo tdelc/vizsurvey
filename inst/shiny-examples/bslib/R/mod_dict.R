@@ -3,20 +3,25 @@
 # Consomme : dict
 # ============================================================================
 
-mod_dict_server <- function(id, dict, nav_id = "main_nav", main_session, i18n_s) {
+mod_dict_server <- function(id, path_dict, nav_id = "main_nav", main_session, i18n_s) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     tr <- function(x) i18n_s$t(x)
     inserted <- reactiveVal(FALSE)
     
+    dict <- reactive({
+      req(path_dict)
+      readRDS(path_dict)
+    })
+    
     output$dict_table <- DT::renderDT({
-      req(dict)
-      DT::datatable(dict, escape = FALSE, filter = "top",
+      req(dict())
+      DT::datatable(dict(), escape = FALSE, filter = "top",
                     rownames = FALSE, options = list(pageLength = 20))
     })
     
-    observeEvent(dict, ignoreNULL = FALSE, {
-      d <- dict
+    observeEvent(dict(), ignoreNULL = FALSE, {
+      d <- dict()
       available <- !is.null(d) && (!is.data.frame(d) || nrow(d) > 0)
       
       if (available && !inserted()) {
