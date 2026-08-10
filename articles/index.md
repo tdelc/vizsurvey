@@ -2,9 +2,9 @@
 
 ### All vignettes
 
-- [Préparer les
-  données](https://tdelc.github.io/vizsurvey/articles/data-preparation.md):
-- [Méthodologie et usages des
-  fonctions](https://tdelc.github.io/vizsurvey/articles/methods.md):
-- [Guide pas à pas pour fouiller et détecter les
+- [Preparing the
+  data](https://tdelc.github.io/vizsurvey/articles/data-preparation.md):
+- [Methodology and use of the
+  functions](https://tdelc.github.io/vizsurvey/articles/methods.md):
+- [Step-by-step guide to explore and detect
   anomalies](https://tdelc.github.io/vizsurvey/articles/vizsurvey.md):

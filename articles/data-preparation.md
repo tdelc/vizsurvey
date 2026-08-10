@@ -1,4 +1,4 @@
-# Préparer les données
+# Preparing the data
 
 ``` r
 
@@ -7,59 +7,56 @@ library(vizsurvey)
 
 ## Introduction
 
-Cette vignette présente la préparation des données nécessaires à
-l’utilisation de {vizsurvey} via l’appel `runVizsurvey_from_folder`.
-L’objectif est de permettre une utilisation régulière et structurée de
-l’outil au sein d’une équipe gérant plusieurs enquêtes.
+This vignette presents the data preparation required to use {vizsurvey}
+through the `runVizsurvey_from_folder` call. The goal is to enable
+regular, structured use of the tool within a team managing several
+surveys.
 
-Dans ce contexte, lancer manuellement l’interface pour chaque base de
-données devient rapidement fastidieux. De plus, le calcul des écarts,
-notamment lorsqu’ils sont ventilés par vague d’enquête ou de zone, peut
-s’avérer coûteux en ressources.
+In this context, launching the interface manually for each database
+quickly becomes tedious. Moreover, computing the gaps, especially when
+they are broken down by survey wave or by filter, can be
+resource-intensive.
 
-Pour faciliter ce processus, {vizsurvey} propose plusieurs fonctions de
-préparation automatisée. Cette vignette en décrit le fonctionnement pas
-à pas, depuis la structuration des fichiers jusqu’à la génération des
-objets nécessaires au lancement de l’application.
+To make this process easier, {vizsurvey} offers several automated
+preparation functions. This vignette describes how they work, step by
+step, from structuring the files to generating the objects needed to
+launch the application.
 
-## Données d’exemples
+## Example data
 
-L’EU-SILC est une enquête annuelle coordonnée par Eurostat. Elle sert à
-mesurer les revenus, la pauvreté, les inégalités et les conditions de
-vie dans les pays européens. Eurostat fournit des [Public Use
+EU-SILC is an annual survey coordinated by Eurostat. It is used to
+measure income, poverty, inequality and living conditions in European
+countries. Eurostat provides [Public Use
 Files](https://ec.europa.eu/eurostat/web/microdata/public-microdata)
-utilisables librement pour des tests. Les fichiers sont anonymisés et ne
-reproduisent pas nécessairement les résultats officiels. Nous
-fournissons deux années de l’enquête EU-SILC pour la Belgique concernant
-le fichier des ménages. Il n’y a pas de numéro d’enquêteur indiqué dans
-ces fichiers initialement, donc un numéro fictif `NR_ITW` a été créé
-pour les exemples ici.
+that can be used freely for testing. The files are anonymised and do not
+necessarily reproduce the official results. We provide two years of the
+EU-SILC survey for Belgium, for the household file. There is no
+interviewer number in these files initially, so a fictitious number
+`NR_ITW` was created for the examples here.
 
-Les fichiers se trouvent dans les fichiers sources du package
-`inst/extdata/SILC` ou
-[ici](https://github.com/tdelc/vizsurvey/tree/master/inst/extdata/SILC/)
-en téléchargement.
+The files can be found in the package source files at
+`inst/extdata/SILC`, or downloaded
+[here](https://github.com/tdelc/vizsurvey/tree/master/inst/extdata/SILC/).
 
-## Configuration d’une enquête
+## Configuring a survey
 
-Le fichier de votre base de données doit pouvoir être lu par la fonction
-[`data.table::fread`](https://rdrr.io/pkg/data.table/man/fread.html).
-Cette fonction reconnaît automatiquement les formats standards (CSV,
-TSV, etc.). Placez votre fichier dans un répertoire dédié, où il sera le
-**seul fichier de ce format**
+Your database file must be readable by the
+[`data.table::fread`](https://rdrr.io/pkg/data.table/man/fread.html)
+function. This function automatically recognises standard formats (CSV,
+TSV, etc.). Place your file in a dedicated directory, where it will be
+the **only file of that format**.
 
-Si votre enquête comporte plusieurs fichiers (par exemple un fichier par
-année ou par pays, comme pour l’enquête EU-SILC), vous pouvez les placer
-dans un même répertoire. Tous les fichiers doivent toutefois contenir
-les mêmes variables que celles indiquées dans le fichier de
-configuration, et être au même format. De plus, aucun autre fichier de
-ce type ne doit être présent dans le répertoire.
+If your survey is made up of several files (for example one file per
+year or per country, as for the EU-SILC survey), you can place them in
+the same directory. All files must, however, contain the same variables
+as those listed in the configuration file, and be in the same format. In
+addition, no other file of that type must be present in the directory.
 
-### Fichier de configuration de l’enquête
+### Survey configuration file
 
-Chaque répertoire de données doit contenir un fichier de configuration
-nommé `config.txt`. Ce fichier indique à {vizsurvey} comment interpréter
-et structurer vos données. Il doit comporter les éléments suivants :
+Each data directory must contain a configuration file named
+`config.txt`. This file tells {vizsurvey} how to interpret and structure
+your data. It must include the following elements:
 
     name_survey = 
 
@@ -67,31 +64,29 @@ et structurer vos données. Il doit comporter les éléments suivants :
     vars_continous =
 
     var_wave = 
-    var_zone = 
+    var_filter = 
 
-    var_group = 
+    var_intvwr = 
 
-- `name_survey` : nom de l’enquête (utile pour identifier les fichiers)
-  ;
+- `name_survey`: name of the survey (useful for identifying the files);
 
-- `vars_discretes` : variables à traiter comme catégorielles ;
+- `vars_discretes`: variables to be treated as categorical;
 
-- `vars_continous` : variables à traiter comme continues ;
+- `vars_continous`: variables to be treated as continuous;
 
-- `var_wave` : variable de vague d’enquête utilisée pour ventiler les
-  calculs (exemple : année) ;
+- `var_wave`: survey wave variable used to break down the calculations
+  (example: year);
 
-- `var_zone` : variable de zone permettant une ventilation
-  supplémentaire (exemple : province). Les calculs seront également
-  produits sans distinction de zone ;
+- `var_filter`: filter variable allowing an additional breakdown
+  (example: province). The calculations are also produced without any
+  filter distinction;
 
-- `var_group` : variable d’identifiant du groupe (par exemple
-  enquêteur·rice).
+- `var_intvwr`: interviewer identifier variable.
 
-Le fichier peut être créé manuellement, ou généré automatiquement à
-l’aide de la fonction `create_config`. Voici l’exemple pour les fichiers
-ménages de l’enquête SILC, avec l’année (`HB010`) comme vague d’enquête
-et la province (`HB020`) comme zone :
+The file can be created manually, or generated automatically with the
+`create_config` function. Here is the example for the household files of
+the SILC survey, with the year (`HB010`) as the survey wave and the
+province (`HB020`) as the filter:
 
 ``` r
 
@@ -99,16 +94,16 @@ create_config(
   folder_path = "inst/extdata/SILC/HFILE",
   name_survey = "SILC-H",
   var_wave    = "HB010",
-  var_zone    = "HB020",
-  var_group   = "NR_ITW"
+  var_filter    = "HB020",
+  var_intvwr   = "NR_ITW"
 )
 ```
 
-Les variables discrètes et continues ne doivent être précisées que si la
-fonction `classify_df` identifie mal leur type. Cette fonction détermine
-automatiquement le type de chaque variable, à partir du format et du
-nombre de modalités. Le seuil de classification d’une variable comme
-catégorielle est fixé par défaut à 15.
+The discrete and continuous variables only need to be specified if the
+`classify_df` function misidentifies their type. This function
+automatically determines the type of each variable, based on its format
+and number of categories. The threshold for classifying a variable as
+categorical is set to 15 by default.
 
 ``` r
 
@@ -123,28 +118,60 @@ classify_df(iris)
 #> 5 Species      Modal
 ```
 
-## Préparation de l’enquête
+### Optional: interviewer summary file
 
-### Structure simple : un seul répertoire
+In addition to the microdata, you can place an **optional summary file
+containing one row per interviewer** in the survey directory. This file
+gathers interviewer-level indicators that are not derived from the
+response distributions themselves, for example the number of completed
+interviews, the average interview duration, or the response rate. It
+must include the interviewer identifier (the same one used in
+`var_intvwr`) so that it can be matched to the microdata.
 
-Une fois la configuration en place, {vizsurvey} peut calculer **en
-amont** toutes les statistiques nécessaires au suivi de l’enquête.
-Lorsque vous n’avez qu’un seul répertoire d’enquêtes, la fonction
-`prepa_survey` utilise ce répertoire contenant les données et le fichier
-`config.txt` pour produire :
+To use it, declare its filename in `config.txt` with the
+`file_synthesis` key, or pass it to `create_config`:
 
-- Par vague, Les statistiques descriptives de chaque variable ;
+    file_synthesis = synthesis.csv
 
-- Par vague, pour chaque variable, les écarts de chaque groupe avec la
-  population (dans la vague) ;
+``` r
 
-- Par vague et par zone, pour chaque variable, les écarts de chaque
-  groupe avec la population (dans la zone et la vague).
+create_config(
+  folder_path    = "inst/extdata/SILC/HFILE",
+  name_survey    = "SILC-H",
+  var_wave       = "HB010",
+  var_filter     = "HB020",
+  var_intvwr     = "NR_ITW",
+  file_synthesis = "synthesis.csv"
+)
+```
 
-Par défaut, `prepa_survey` recherche les fichiers CSV du répertoire,
-mais l’argument `file_pattern` permet d’adapter ce comportement. Un
-fichier `global.rds` est ensuite généré dans le même dossier : c’est le
-seul fichier qui sera utilisé par l’interface interactive.
+When such a file is present, it is automatically integrated and analysed
+during preparation, so that any atypical interviewer-level indicator is
+flagged as a potential anomaly, in the same way as the distributional
+gaps.
+
+## Preparing the survey
+
+### Simple structure: a single directory
+
+Once the configuration is in place, {vizsurvey} can compute **in
+advance** all the statistics needed to monitor the survey. When you have
+only a single survey directory, the `prepa_survey` function uses this
+directory, containing the data and the `config.txt` file, to produce:
+
+- per wave, the descriptive statistics of each variable;
+
+- per wave, for each variable, the gaps of each interviewer relative to
+  the population (within the wave);
+
+- per wave and per filter, for each variable, the gaps of each
+  interviewer relative to the population (within the filter and the
+  wave).
+
+By default, `prepa_survey` looks for the CSV files in the directory, but
+the `file_pattern` argument lets you adapt this behaviour. A
+`global.rds` file is then generated in the same folder: it is the only
+file that will be used by the interactive interface.
 
 ``` r
 
@@ -153,22 +180,22 @@ prepa_survey(
   file_pattern = "*.csv")
 ```
 
-L’application peut ensuite être lancée simplement à l’aide de la
-fonction `runVizsurvey_from_folder`.
+The application can then be launched simply with the
+`runVizsurvey_from_folder` function.
 
 ``` r
 
-runVizsurvey_from_folder("inst/extdata/SILC/HFILE",depth_folder = 1)
+runVizsurvey_from_folder("inst/extdata/SILC/HFILE", depth_folder = 1)
 ```
 
-La fonction `prepa_survey` peut être appelée à chaque mise à jour de vos
-données d’enquête. Son exécution peut être planifiée pour avoir
-quotidienne le calcul de toutes les statistiques sur vos enquêtes.
+The `prepa_survey` function can be called each time your survey data are
+updated. Its execution can be scheduled so that all the statistics on
+your surveys are computed daily.
 
-### Structure double : plusieurs répertoires
+### Double structure: several directories
 
-Si vous gérez plusieurs enquêtes, vous pouvez créer les répertoires
-côte-à-côte selon cette structure :
+If you manage several surveys, you can create the directories side by
+side following this structure:
 
     data/
       ├── ENQ1/
@@ -178,35 +205,33 @@ côte-à-côte selon cette structure :
           ├── *.csv
           └── config.txt
 
-Ensuite, vous pouvez préparer toutes vos enquêtes à l’aide de la
-fonction `prepa_surveys`. Cette fonction agit comme un wrapper de
-`prepa_survey` et applique automatiquement la préparation à tous les
-répertoires enfants du chemin spécifié. Dans ce cas, il faut indiquer
-`depth_folder = 2`.
+You can then prepare all your surveys with the `prepa_surveys` function.
+This function acts as a wrapper around `prepa_survey` and automatically
+applies the preparation to all the child directories of the specified
+path. In this case, you need to set `depth_folder = 2`.
 
 ``` r
 
-prepa_surveys(folder_path  = "inst/extdata/SILC",depth_folder = 2)
+prepa_surveys(folder_path  = "inst/extdata/SILC", depth_folder = 2)
 ```
 
-Vous pouvez ensuite lancer l’interface en précisant le même niveau de
-profondeur :
+You can then launch the interface by specifying the same depth level:
 
 ``` r
 
-runVizsurvey_from_folder("inst/extdata/SILC",depth_folder = 2)
+runVizsurvey_from_folder("inst/extdata/SILC", depth_folder = 2)
 ```
 
-### Structure triple : plusieurs niveaux de répertoires
+### Triple structure: several directory levels
 
-Il est également possible de gérer une arborescence complète d’enquêtes,
-avec plusieurs niveaux hiérarchiques. Il peut s’agit, au premier niveau,
-des différentes enquêtes menées et, comme deuxième niveau, d’un
-répertoire par type de fichier issu de cette enquête. Par exemple,
-l’enquête SILC contient quatre types de fichiers, deux au niveau des
-ménages, deux au niveau des individus. L’enquête HBS contient un fichier
-d’enquête et un fichier pour les carnets de dépense, etc. Voici un
-exemple de structure de répertoires attendue :
+It is also possible to manage a full survey tree, with several
+hierarchical levels. The first level may correspond to the different
+surveys conducted and, as a second level, one directory per type of file
+produced by that survey. For example, the SILC survey contains four
+types of files, two at the household level and two at the individual
+level. The HBS survey contains a survey file and a file for expenditure
+diaries, and so on. Here is an example of the expected directory
+structure:
 
     data/
       ├── ENQ1/
@@ -220,41 +245,38 @@ exemple de structure de répertoires attendue :
           └── ENQ2-B/
               └── ...
 
-Chaque sous-répertoire doit comporter son propre `config.txt` et ses
-propres fichiers de données. Au sein de chaque sous-répertoire,
-l’ensemble des fichiers doit avoir la même structure de données. Vous
-pouvez ensuite exécuter la préparation globale :
+Each sub-directory must contain its own `config.txt` and its own data
+files. Within each sub-directory, all files must have the same data
+structure. You can then run the global preparation:
 
 ``` r
 
-prepa_surveys(folder_path  = "data",depth_folder = 3)
+prepa_surveys(folder_path  = "data", depth_folder = 3)
 ```
 
-Enfin, l’interface est lancée avec la même profondeur :
+Finally, the interface is launched with the same depth:
 
 ``` r
 
-runVizsurvey_from_folder("data",depth_folder = 3)
+runVizsurvey_from_folder("data", depth_folder = 3)
 ```
 
-Si les données sont mises à jour, par exemple durant le terrain, il
-suffit d’exécuter une nouvelle fois la fonction `prepa_surveys` pour
-obtenir une version mise à jour des objets `global.rda`, et ainsi une
-mise à jour complète de l’interface interactive.
+If the data are updated, for example during fieldwork, you simply need
+to run the `prepa_surveys` function again to obtain an updated version
+of the `global.rds` objects, and thus a full update of the interactive
+interface.
 
 ## Conclusion
 
-La préparation des données constitue une étape essentielle avant
-d’utiliser pleinement {vizsurvey} dans le cadre d’un organisme
-organisant des enquêtes au quotidien. Elle permet d’optimiser la
-fluidité de l’application et de garantir que tous les responsables
-d’enquête analyse les mêmes fichiers mis à jour.
+Data preparation is an essential step before fully using {vizsurvey}
+within an organisation that runs surveys on a daily basis. It optimises
+the responsiveness of the application and guarantees that all survey
+managers analyse the same up-to-date files.
 
-Une fois les fichiers structurés, configurés et préparés, chaque
-lancement de l’interface devient immédiat : toutes les statistiques
-nécessaires sont déjà calculées et stockées dans le fichier
-`global.rds`. Cette approche assure une réutilisation efficace des
-données, quel que soit le nombre d’enquêtes ou la complexité de leur
-arborescence. Elle facilite aussi le travail collaboratif au sein d’une
-équipe : chaque membre peut explorer les résultats sans devoir maîtriser
-R.
+Once the files are structured, configured and prepared, each launch of
+the interface becomes immediate: all the necessary statistics are
+already computed and stored in the `global.rds` file. This approach
+ensures an efficient reuse of the data, whatever the number of surveys
+or the complexity of their tree structure. It also facilitates
+collaborative work within a team: each member can explore the results
+without having to know R.

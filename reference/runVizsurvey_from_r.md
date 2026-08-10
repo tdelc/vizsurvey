@@ -8,7 +8,7 @@ Shiny vizsurvey from a R data.frame
 runVizsurvey_from_r(
   df,
   vars_discretes = NULL,
-  vars_continous = NULL,
+  vars_continuous = NULL,
   var_wave = NULL,
   var_filter = NULL,
   var_intvwr = NULL
@@ -25,10 +25,6 @@ runVizsurvey_from_r(
 
   (optional) preset of discretes variables
 
-- vars_continous:
-
-  (optional) preset of continous variables
-
 - var_wave:
 
   (optional) name of wave variable
@@ -40,6 +36,10 @@ runVizsurvey_from_r(
 - var_intvwr:
 
   (optional) name of interviewer variable
+
+- vars_continous:
+
+  (optional) preset of continous variables
 
 ## Value
 

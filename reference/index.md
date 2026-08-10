@@ -66,8 +66,6 @@
   : Read and rbind many timer files in csv
 - [`runVizsurvey()`](https://tdelc.github.io/vizsurvey/reference/runVizsurvey.md)
   : Shiny vizsurvey
-- [`runVizsurvey_from_file()`](https://tdelc.github.io/vizsurvey/reference/runVizsurvey_from_file.md)
-  : Shiny vizsurvey from a csv/tsv
 - [`runVizsurvey_from_folder()`](https://tdelc.github.io/vizsurvey/reference/runVizsurvey_from_folder.md)
   : Shiny vizsurvey with already prepared data
 - [`runVizsurvey_from_r()`](https://tdelc.github.io/vizsurvey/reference/runVizsurvey_from_r.md)

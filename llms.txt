@@ -256,8 +256,6 @@ Feedback and contributions are welcome.
   : Read and rbind many timer files in csv
 - [`runVizsurvey()`](https://tdelc.github.io/vizsurvey/reference/runVizsurvey.md)
   : Shiny vizsurvey
-- [`runVizsurvey_from_file()`](https://tdelc.github.io/vizsurvey/reference/runVizsurvey_from_file.md)
-  : Shiny vizsurvey from a csv/tsv
 - [`runVizsurvey_from_folder()`](https://tdelc.github.io/vizsurvey/reference/runVizsurvey_from_folder.md)
   : Shiny vizsurvey with already prepared data
 - [`runVizsurvey_from_r()`](https://tdelc.github.io/vizsurvey/reference/runVizsurvey_from_r.md)
@@ -271,9 +269,9 @@ Feedback and contributions are welcome.
 
 ### All vignettes
 
-- [Préparer les
-  données](https://tdelc.github.io/vizsurvey/articles/data-preparation.md):
-- [Méthodologie et usages des
-  fonctions](https://tdelc.github.io/vizsurvey/articles/methods.md):
-- [Guide pas à pas pour fouiller et détecter les
+- [Preparing the
+  data](https://tdelc.github.io/vizsurvey/articles/data-preparation.md):
+- [Methodology and use of the
+  functions](https://tdelc.github.io/vizsurvey/articles/methods.md):
+- [Step-by-step guide to explore and detect
   anomalies](https://tdelc.github.io/vizsurvey/articles/vizsurvey.md):
