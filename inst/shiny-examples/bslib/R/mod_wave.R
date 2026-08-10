@@ -90,11 +90,27 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     })
     
     df_stats_wave <- reactive({
-      req(filt$df_stats_wave())
+      # req(filt$df_stats_wave())
+      req(data$df())
       
-      filt$df_stats_wave() %>% 
-        filter(!!rlang::sym(data$config()$var_wave) %in% 
-                 c(sel$wave(), input$wave_compare))
+      # Update ici : on recalcule la stat par wave, afin de faire les cut
+      # sur les mêmes valeurs
+      
+      df <- data$df()
+      if (length(data$config()$vars_wave) > 1) {
+        df$wave <- combine_vars(df, data$config()$vars_wave)
+      }
+      
+      df <- df %>% filter(!!rlang::sym(data$config()$var_wave) %in% 
+                            c(sel$wave(), input$wave_compare))
+      
+      df_stats <- create_df_stats(df, data$config(), data$config()$var_wave)
+      
+      return(df_stats)
+      
+      # filt$df_stats_wave() %>% 
+      #   filter(!!rlang::sym(data$config()$var_wave) %in% 
+      #            c(sel$wave(), input$wave_compare))
     })
     
     df_wave <- reactive({
@@ -106,6 +122,7 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
       if (length(vars_wave()) > 1 && sel$wave_level() == 1) {
         df[[cfg()$var_wave]] <- key_level1(df[[cfg()$var_wave]])
       }
+      
       df
     })
 
@@ -226,12 +243,26 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
       if(!r_focus$variable %in% prepa_tab_cat()$variable){
         validate(tr("Plot only for categorical variable"))
       }
-      if(length(fill_levels()) > 15){
-        validate(tr("Too much modalities for this categorical variable"))
-      }
+      
+      df <- df_wave()
       v <- r_focus$variable
-      df <- df_wave() %>% mutate(!!sym(v) := as.character(!!sym(v)),
-                                 !!sym(v) := tidyr::replace_na(!!sym(v), ".NA"))
+      
+      if(length(fill_levels()) > 15){
+        # validate(tr("Too much modalities for this categorical variable"))
+        df <- df %>% mutate(
+          !!sym(v) := cut(!!sym(v), breaks = 5)
+        )
+        
+        levels <- df %>% dplyr::pull(!!sym(v)) %>% as.character() %>% 
+          unique() %>% sort()
+        
+        fill_levels <- reactive({
+          c(levels,".NA")
+        })
+      }
+      
+      df <- df %>% mutate(!!sym(v) := as.character(!!sym(v)),
+                          !!sym(v) := tidyr::replace_na(!!sym(v), ".NA"))
       ggplot(df) +
         aes(x = !!sym(data$config()$var_wave), fill = !!sym(v)) +
         geom_bar(position = "fill") +

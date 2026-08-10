@@ -10,27 +10,21 @@
 prepa_stats_dt <- function(df, var_group, configs, na.rm = FALSE) {
   
   vars_discretes   <- configs$vars_discretes
-  vars_continuous  <- configs$vars_continuous
   
   if (length(var_group) == 0) {
     return(tibble(NULL))
   }
   
-  if (is.null(vars_discretes) & is.null(vars_continuous)){
+  if (is.null(vars_discretes)){
     info_vars <- classify_df_pattern(df, configs)
     vars_discretes <- info_vars$vars_discretes
-    vars_continuous <- info_vars$vars_continuous
   }
   
   vars_discretes <- setdiff(vars_discretes, var_group)
-  vars_continuous <- setdiff(vars_continuous, var_group)
-  
   vars_discretes <- intersect(vars_discretes, names(df))
-  vars_continuous <- intersect(vars_continuous, names(df))
 
   df <- df %>%
     mutate(
-      across(any_of(vars_continuous), as.numeric),
       across(any_of(vars_discretes), as.factor),
       across(any_of(vars_discretes), as.numeric),
       across(any_of(var_group), as.character)
@@ -52,24 +46,11 @@ prepa_stats_dt <- function(df, var_group, configs, na.rm = FALSE) {
     )
   })
   
-  exprs_vc <- lapply(vars_continuous, function(nm) {
-    list(
-      substitute(sum(!is.na(x)), list(x = as.name(nm))),
-      substitute(mean(is.na(x)), list(x = as.name(nm))),
-      substitute(mean(is.na(x)) != 1, list(x = as.name(nm))),
-      substitute(mean(x, na.rm = TRUE), list(x = as.name(nm))),
-      substitute(median(x, na.rm = TRUE), list(x = as.name(nm)))
-    )
-  })
-  
-  all_exprs <- c(list(Nrow = quote(.N)), unlist(exprs_vd), unlist(exprs_vc))
+  all_exprs <- c(list(Nrow = quote(.N)), unlist(exprs_vd))
   
   names_vd <- expand.grid(stat = c("Nval", "missing", "presence", "Nmod", "chi2"), col = vars_discretes)
-  names_vc <- expand.grid(stat = c("Nval", "missing", "presence", "mean", "median"), col = vars_continuous)
-  
-  names(all_exprs) <- c("Nrow", 
-                        paste(names_vd$col, "cha", names_vd$stat, sep="|"),
-                        paste(names_vc$col, "num", names_vc$stat, sep="|"))
+
+  names(all_exprs) <- c("Nrow", paste(names_vd$col, "cha", names_vd$stat, sep="|"))
   
   df_stats <- df[, eval(as.call(c(quote(list), all_exprs))), by = var_group]
   

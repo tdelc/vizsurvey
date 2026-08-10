@@ -500,10 +500,20 @@ create_df_stats <- function(df_, configs,
     df <- df[match_keys(df, vars_levels(configs, "filter"),
                         configs$var_filter, mod_filter), ]
   }
+  
+  cut_safe <- function(x, breaks = 5){
+    if (all(is.na(x))) return(NA)
+    else return(cut(x, breaks = breaks))
+  }
+  
+  # All continuous variable become discrete one
+  df <- df %>% mutate(across(any_of(configs$vars_continuous), ~ cut_safe(.x)))
+  configs$vars_discretes <- unique(c(configs$vars_continuous,configs$vars_discretes))
+  configs$vars_continuous <- NULL
 
-  variables <- list()
-  variables$variables_vd <- configs$vd
-  variables$variables_vc <- configs$vc
+  # variables <- list()
+  # variables$variables_vd <- configs$vd
+  # variables$variables_vc <- configs$vc
 
   df_stats <- df %>% prepa_stats_dt(var_calculs, configs, na.rm)
 
