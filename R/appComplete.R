@@ -60,8 +60,10 @@ runVizsurvey_from_folder <- function(
 #' @param df data.frame
 #' @param vars_discretes (optional) preset of discretes variables
 #' @param vars_continous (optional) preset of continous variables
-#' @param var_wave (optional) name of wave variable
-#' @param var_filter (optional) name of filter variable
+#' @param var_wave (optional) name of wave variable. Two variables can be given
+#'   (c("YEAR","QUARTER")) : the second one is then a second level of wave
+#' @param var_filter (optional) name of filter variable. Two variables can be
+#'   given : the second one is then a second level of filter
 #' @param var_intvwr (optional) name of interviewer variable
 #'
 #' @returns shinyapp

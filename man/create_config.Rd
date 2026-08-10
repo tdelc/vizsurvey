@@ -44,9 +44,11 @@ create_config(
 
 \item{prefix_continuous}{(optional) preset prefix for continuous variables name}
 
-\item{var_wave}{(optional) variable name of wave}
+\item{var_wave}{(optional) variable name of wave. Two variables can be given
+(c("YEAR","QUARTER")) : the second one is then a second level of wave}
 
-\item{var_filter}{(optional) variable name of filter}
+\item{var_filter}{(optional) variable name of filter. Two variables can be
+given : the second one is then a second level of filter}
 
 \item{var_intvwr}{(optional) variable name of interviewer id}
 

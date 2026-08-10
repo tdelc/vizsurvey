@@ -18,9 +18,11 @@ runVizsurvey_from_r(
 
 \item{vars_discretes}{(optional) preset of discretes variables}
 
-\item{var_wave}{(optional) name of wave variable}
+\item{var_wave}{(optional) name of wave variable. Two variables can be given
+(c("YEAR","QUARTER")) : the second one is then a second level of wave}
 
-\item{var_filter}{(optional) name of filter variable}
+\item{var_filter}{(optional) name of filter variable. Two variables can be
+given : the second one is then a second level of filter}
 
 \item{var_intvwr}{(optional) name of interviewer variable}
 

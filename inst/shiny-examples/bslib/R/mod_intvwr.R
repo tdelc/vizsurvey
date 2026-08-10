@@ -131,6 +131,7 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, i18n_s) {
       if (isTRUE(tmr$ready)){
         df_audit <- filt$df_timer_intv() %>% 
           build_df_timer_intvwr(data$timer()$cfg) %>% 
+          select(-any_of(cfg()$var_wave)) %>%
           mutate(across(starts_with('PC_'), ~round(.x*100,1))) %>% 
           mutate(across(starts_with('DURATION_'), ~round(.x,1))) %>% 
           mutate(!!sym(cfg()$var_intvwr) := as.character(!!sym(cfg()$var_intvwr))) %>% 

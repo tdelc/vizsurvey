@@ -6,10 +6,12 @@
 # ============================================================================
 
 # Helper pur : filtre wave + filter Factorise le motif dupliqué partout.
+# var_wave / var_filter sont des clés : niveau 1 ("2024") ou complète ("2024 / T1").
 filter_wave_zone <- function(df, config, var_wave, var_filter) {
-  out <- dplyr::filter(df, !!rlang::sym(config$var_wave) %in% var_wave)
-  if (length(config$var_filter) && var_filter %in% dplyr::pull(out[, config$var_filter])) {
-    out <- dplyr::filter(out, !!rlang::sym(config$var_filter) == var_filter)
+  out <- df[match_keys(df, vars_levels(config, "wave"), config$var_wave, var_wave), ]
+  if (length(config$var_filter)) {
+    keep <- match_keys(out, vars_levels(config, "filter"), config$var_filter, var_filter)
+    if (any(keep)) out <- out[keep, ]
   }
   out
 }
@@ -74,8 +76,16 @@ survey_filtered <- function(data, sel) {
     
     vec_intv <- df() %>% pull(!!sym(data$timer()$cfg$var_intv))
           
-    out <- tmr$df_timer_intv %>%
-      dplyr::filter(!!rlang::sym(data$config()$var_wave) == sel$wave()) %>% 
+    out <- tmr$df_timer_intv
+    out <- out[match_keys(out, vars_levels(data$config(), "wave"),
+                          data$config()$var_wave, sel$wave()), ]
+    
+    # Les lignes sont déjà filtrées sur la clé sélectionnée : on écrase la
+    # colonne de vague par cette clé, pour que build_df_timer_intvwr agrège
+    # au niveau choisi (année entière quand le niveau 2 est sur "All").
+    out[[data$config()$var_wave]] <- sel$wave()
+    
+    out <- out %>%
       dplyr::filter(!!rlang::sym(data$timer()$cfg$var_intv) %in% vec_intv)
     out
   })
@@ -83,7 +93,7 @@ survey_filtered <- function(data, sel) {
   # Détail timer (parquet lazy) — dépend du wave + path, pas du filtre df
   df_timer_detail <- reactive({
     path <- data$path_survey()
-    name_file <- paste0("timers_", sel$wave(), ".parquet")
+    name_file <- paste0("timers_", sel$wave_first(), ".parquet")
     req(file.exists(file.path(path, name_file)))
     arrow::open_dataset(file.path(path, name_file))
   })

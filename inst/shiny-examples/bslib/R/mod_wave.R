@@ -33,7 +33,7 @@ mod_wave_ui <- function(id, i18n) {
         full_screen = TRUE,
         min_height = "650px",
         icon_header("layout-text-sidebar-reverse", i18n$t("Detail of a variable")),
-        plotOutput(ns("distri_cat")),
+        # plotOutput(ns("distri_cat")),
         plotOutput(ns("evo_cat")))
     ),
     layout_columns(
@@ -49,7 +49,7 @@ mod_wave_ui <- function(id, i18n) {
         full_screen = TRUE,
         min_height = "650px",
         icon_header("layout-text-sidebar-reverse", i18n$t("Detail of a variable")),
-        plotOutput(ns("distri_num")),
+        # plotOutput(ns("distri_num")),
         plotOutput(ns("evo_num")))
     )
   )
@@ -61,9 +61,13 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     tr <- function(x) i18n_s$t(x)
     cfg <- reactive(data$config())
     
+    vars_wave <- reactive(vars_levels(cfg(), "wave"))
+
+    # Les vagues de comparaison sont au même niveau que la vague sélectionnée
     wave_modality <- reactive({
       req(data$df())
-      wave_modality <- sort(pull(unique(data$df()[,data$config()$var_wave])))
+      wave_modality <- keys_vars(data$df(), vars_wave(), cfg()$var_wave,
+                                 level = sel$wave_level())
       wave_modality <- wave_modality[!wave_modality == sel$wave()]
       if (length(wave_modality) == 0) return(".all") else return(wave_modality)
     })
@@ -94,9 +98,15 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     })
     
     df_wave <- reactive({
-      data$df() %>% 
-        filter(!!rlang::sym(data$config()$var_wave) %in% 
-                 c(sel$wave(), input$wave_compare))
+      keys <- c(sel$wave(), input$wave_compare)
+      df <- data$df()
+      df <- df[match_keys(df, vars_wave(), cfg()$var_wave, keys), ]
+
+      # Les graphiques sont au niveau de la sélection (année, ou année / trimestre)
+      if (length(vars_wave()) > 1 && sel$wave_level() == 1) {
+        df[[cfg()$var_wave]] <- key_level1(df[[cfg()$var_wave]])
+      }
+      df
     })
 
     stats_outliers <- reactive({

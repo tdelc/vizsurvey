@@ -44,6 +44,130 @@ scale_IQR <- function(x) {
   }
 }
 
+#' Combine several variables in one key (multi-level wave or filter)
+#'
+#' Used when var_wave (or var_filter) contains more than one variable in the
+#' configuration file, for example the year and the quarter. The complete key
+#' of a row is then "2024 / T1".
+#'
+#' @param df data.frame
+#' @param vars vector of the variable of each level
+#' @param sep separator between the levels
+#'
+#' @returns vector of the complete keys
+#' @export
+#'
+#' @examples
+#' head(combine_vars(mtcars,c("cyl","gear")))
+combine_vars <- function(df, vars, sep = " / ") {
+  values <- lapply(vars, function(v) as.character(df[[v]]))
+  do.call(paste, c(values, list(sep = sep)))
+}
+
+#' First level of a multi-level key
+#'
+#' @param x vector of keys
+#' @param sep separator between the levels
+#'
+#' @returns vector of the first level values
+#' @export
+#'
+#' @examples
+#' key_level1(c("2024 / T1","2024 / T2","2023 / T4"))
+key_level1 <- function(x, sep = " / ") {
+  vapply(strsplit(as.character(x), sep, fixed = TRUE),
+         function(v) if (length(v) > 0) v[1] else NA_character_,
+         character(1))
+}
+
+#' Other levels of a multi-level key (used as label in the interface)
+#'
+#' @param x vector of keys
+#' @param sep separator between the levels
+#'
+#' @returns vector of the values after the first level
+#' @export
+#'
+#' @examples
+#' key_level2(c("2024 / T1","2024 / T2","2023 / T4"))
+key_level2 <- function(x, sep = " / ") {
+  vapply(strsplit(as.character(x), sep, fixed = TRUE),
+         function(v) if (length(v) > 1) paste(v[-1], collapse = sep) else NA_character_,
+         character(1))
+}
+
+#' Variables of each level of the wave or of the filter
+#'
+#' Kept compatible with the global.rds prepared before the multi-level option :
+#' vars_wave (or vars_filter) is then missing and var_wave is used.
+#'
+#' @param configs list of configuration
+#' @param type "wave" or "filter"
+#'
+#' @returns vector of the variables of each level
+#' @export
+#'
+#' @examples
+#' vars_levels(list(var_wave = "YEAR"),"wave")
+vars_levels <- function(configs, type = "wave") {
+  vars <- configs[[paste0("vars_", type)]]
+  if (length(vars) == 0) vars <- configs[[paste0("var_", type)]]
+  vars
+}
+
+#' Keys (modalities) of a wave or filter variable
+#'
+#' @param df data.frame
+#' @param vars variables of each level (see vars_levels)
+#' @param var_key name of the variable containing the complete key
+#' @param level 1 (first level only), 2 (complete key) or "all" (both)
+#' @param sep separator between the levels
+#'
+#' @returns vector of keys
+#' @export
+#'
+#' @examples
+#' keys_vars(mtcars,"cyl","cyl")
+keys_vars <- function(df, vars, var_key, level = "all", sep = " / ") {
+  keys <- sort(unique(as.character(df[[var_key]])))
+  if (length(vars) <= 1) return(keys)
+
+  keys1 <- sort(unique(key_level1(keys, sep)))
+  switch(as.character(level),
+    "1" = keys1,
+    "2" = keys,
+    sort(unique(c(keys1, keys)))
+  )
+}
+
+#' Rows of a data.frame matching one or several keys
+#'
+#' A row matches a key when its complete key is one of the keys, or when its
+#' first level is one of the keys (selection of a year without the quarter).
+#'
+#' @param df data.frame
+#' @param vars variables of each level (see vars_levels)
+#' @param var_key name of the variable containing the complete key
+#' @param keys vector of keys to keep
+#' @param sep separator between the levels
+#'
+#' @returns logical vector
+#' @export
+#'
+#' @examples
+#' match_keys(mtcars,"cyl","cyl",4)
+match_keys <- function(df, vars, var_key, keys, sep = " / ") {
+  values <- as.character(df[[var_key]])
+  out <- values %in% as.character(keys)
+
+  if (length(vars) > 1) {
+    uniq <- unique(values)
+    uniq <- uniq[key_level1(uniq, sep) %in% as.character(keys)]
+    out <- out | values %in% uniq
+  }
+  out
+}
+
 #' List distribution of discrete variables
 #'
 #' @param df data.frame

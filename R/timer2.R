@@ -24,6 +24,10 @@ read_timer_config <- function(link_config) {
     var_itm_duration  = config %>% extract_config("var_itm_duration")
   )
   
+  # Multi-level wave : the complete key is created in prepa_timer_from_df
+  cfg[["vars_wave"]] = cfg$var_wave
+  if (length(cfg$var_wave) > 1) cfg[["var_wave"]] = "wave"
+
   cfg[["night_vec"]] = c(cfg$night_start:23,0:cfg$night_end)
   cfg[["var_ids"]]  = c(cfg$var_wave,cfg$var_intvwr,cfg$var_intv)
   
@@ -243,6 +247,11 @@ build_df_timer_intvwr <- function(df_timer_intv, cfg) {
 #' @returns data.frame
 #' @export
 prepa_timer_from_df <- function(df_timer_raw, cfg) {
+
+  # Multi-level wave : creation of the variable of the complete key
+  if (length(cfg$vars_wave) > 1) {
+    df_timer_raw[[cfg$var_wave]] <- combine_vars(df_timer_raw, cfg$vars_wave)
+  }
 
   df_timer <- df_timer_raw %>%
     correct_df_timer_session() %>%

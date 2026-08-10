@@ -211,12 +211,14 @@ prepa_stats <- function(df, var_group, vars_vd=NULL, vars_vc=NULL) {
 #' @param folder_path folder where create the file
 #' @param file_name Name of the config file (config.txt by default)
 #' @param name_survey Name of the survey (not used)
-#' @param var_wave (optional) variable name of wave
+#' @param var_wave (optional) variable name of wave. Two variables can be given
+#'   (c("YEAR","QUARTER")) : the second one is then a second level of wave
 #' @param vars_discretes (optional) preset discretes variables name (VAR1,VAR2,...)
 #' @param vars_continuous (optional) preset continuous variables name (VAR1,VAR2,...)
 #' @param prefix_discretes (optional) preset prefix for discretes variables name
 #' @param prefix_continuous (optional) preset prefix for continuous variables name 
-#' @param var_filter (optional) variable name of filter
+#' @param var_filter (optional) variable name of filter. Two variables can be
+#'   given : the second one is then a second level of filter
 #' @param var_intvwr (optional) variable name of interviewer id
 #' @param var_intv  (optional) variable name of interview id
 #' @param var_date (optional) variable name of the date of the interview
@@ -261,20 +263,23 @@ create_config <- function(folder_path, file_name = "config.txt",
   # complete path of config file
   file_path <- file.path(folder_path, file_name)
 
+  # several variables are written on the same line (VAR1,VAR2,...)
+  cl <- function(x) paste(x, collapse = ",")
+
   # content of config file
   content <- c(
     paste("name_survey =", name_survey),
     "",
-    paste("vars_discretes =", vars_discretes),
-    paste("vars_continuous =", vars_continuous),    
-    paste("vars_ignore =", vars_ignore),    
+    paste("vars_discretes =", cl(vars_discretes)),
+    paste("vars_continuous =", cl(vars_continuous)),
+    paste("vars_ignore =", cl(vars_ignore)),
     "",
-    paste("prefix_discretes =", prefix_discretes),
-    paste("prefix_continuous =", prefix_continuous),
-    paste("prefix_ignore =", prefix_ignore),
+    paste("prefix_discretes =", cl(prefix_discretes)),
+    paste("prefix_continuous =", cl(prefix_continuous)),
+    paste("prefix_ignore =", cl(prefix_ignore)),
     "",
-    paste("var_wave =", var_wave),
-    paste("var_filter =", var_filter),
+    paste("var_wave =", cl(var_wave)),
+    paste("var_filter =", cl(var_filter)),
     paste("var_intvwr =", var_intvwr),
     paste("var_intv =", var_intv),
     "",
@@ -456,6 +461,22 @@ folder_to_df <- function(folder,
     df <- df %>% mutate(across(any_of(configs$var_filter), as.character))
   }
 
+  # Multi-level wave / filter : the variables of each level are kept in
+  # vars_wave / vars_filter, and a variable of the complete key is created.
+  # var_wave / var_filter always designate the variable used for the calculs.
+  configs$vars_wave   <- configs$var_wave
+  configs$vars_filter <- configs$var_filter
+
+  if (length(configs$vars_wave) > 1) {
+    df$wave <- combine_vars(df, configs$vars_wave)
+    configs$var_wave <- "wave"
+  }
+
+  if (length(configs$vars_filter) > 1) {
+    df$filter <- combine_vars(df, configs$vars_filter)
+    configs$var_filter <- "filter"
+  }
+
   return(list(df = df, configs = configs))
 }
 
@@ -476,7 +497,8 @@ create_df_stats <- function(df_, configs,
   df <- df_
 
   if (!is.null(mod_filter)) {
-    df <- df %>% filter(!!sym(configs$var_filter) %in% mod_filter)
+    df <- df[match_keys(df, vars_levels(configs, "filter"),
+                        configs$var_filter, mod_filter), ]
   }
 
   variables <- list()
@@ -504,8 +526,10 @@ loop_stats <- function(df, configs, var_calculs, na.rm = FALSE) {
   cli::cli_progress_step("create_df_stats for {var_calculs}", spinner = TRUE)
   df_stats <- create_df_stats(df, configs, var_calculs, na.rm = na.rm)
 
-  if (length(pull(unique(df[, configs$var_filter]))) > 1) {
-    vec_filter <- pull(unique(df[, configs$var_filter]))
+  # keys of the filter : each level when the filter has two levels
+  vec_filter <- keys_vars(df, vars_levels(configs, "filter"), configs$var_filter)
+
+  if (length(vec_filter) > 1) {
 
     cli::cli_alert_info("create_df_stats for {configs$var_filter}")
     df_stats_filter <- vec_filter %>% map_df(~ {
@@ -553,32 +577,48 @@ prepa_survey <- function(folder_path,
   df <- list_df$df
 
   # Create a fake all wave or filter or group if null
-  if (length(configs$var_wave) == 0 || is.na(configs$var_wave)){
+  if (length(configs$var_wave) == 0 || all(is.na(configs$var_wave))){
     df <- df %>% mutate(wave = "All")
     configs$var_wave <- "wave"
   }
 
-  if (length(configs$var_filter) == 0 || is.na(configs$var_filter)){
+  if (length(configs$var_filter) == 0 || all(is.na(configs$var_filter))){
     df <- df %>% mutate(filter = "All")
     configs$var_filter <- "filter"
   }
 
-  if (length(configs$var_intvwr) == 0 || is.na(configs$var_intvwr)){
+  if (length(configs$var_intvwr) == 0 || all(is.na(configs$var_intvwr))){
     df <- df %>% mutate(intvwr = "All")
     configs$var_intvwr <- "intvwr"
   }
-  
+
+  # levels of the wave and of the filter (see folder_to_df)
+  if (length(configs$vars_wave) == 0)   configs$vars_wave   <- configs$var_wave
+  if (length(configs$vars_filter) == 0) configs$vars_filter <- configs$var_filter
+
   # Wave variation
   cli::cli_h3("Wave Variation")
   df_stats_wave <- loop_stats(df, configs, configs$var_wave, na.rm = na.rm)
-  
+
+  # Second level of wave : the stats are also computed for the first level
+  # alone, so that the interface can work with or without the second level
+  if (length(configs$vars_wave) > 1) {
+    cli::cli_h3("Wave Variation for {configs$vars_wave[1]}")
+    df_lvl1 <- df
+    df_lvl1[[configs$var_wave]] <- key_level1(df_lvl1[[configs$var_wave]])
+    df_stats_wave <- df_stats_wave %>%
+      dplyr::add_row(loop_stats(df_lvl1, configs, configs$var_wave, na.rm = na.rm))
+  }
+
+  # keys of the wave : each level when the wave has two levels
+  vec_wave <- keys_vars(df, configs$vars_wave, configs$var_wave)
+
   # Interviewer variation
   cli::cli_h3("Interviewer Variation")
   if (length(pull(unique(df[, configs$var_intvwr]))) > 1) {
-    df_stats_intvwr <- pull(unique(df[, configs$var_wave])) %>% map_df(~ {
+    df_stats_intvwr <- vec_wave %>% map_df(~ {
       cli::cli_progress_step("df_stats_intvwr for wave {.x}",spinner = TRUE)
-      sub_df <- df %>%
-        filter(!!sym(configs$var_wave) == .x) %>%
+      sub_df <- df[match_keys(df, configs$vars_wave, configs$var_wave, .x), ] %>%
         loop_stats(configs, configs$var_intvwr, na.rm = na.rm) %>%
         mutate(!!sym(configs$var_wave) := .x)
     })
