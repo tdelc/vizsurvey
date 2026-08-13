@@ -148,7 +148,8 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, i18n_s) {
     })
     
     output$cross_ranking <- renderDT({
-      df <- prepa_cross_ranking()
+      df <- prepa_cross_ranking() %>% 
+        select(!!sym(cfg()$var_intvwr),Nrow,variable,chi2,standard)
       datatable(df, filter='top', selection = 'single',escape   = FALSE,
                 options = list(pageLength = 15,dom = 'tp'),
                 rownames = F)
@@ -331,13 +332,27 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, i18n_s) {
         need(selected_variable(), tr('Choose a variable.'))
       )
       
-      if (length(dist_mods()) >= 15) {
-        validate(tr("Too much modality for this variable"))
+      # if (length(dist_mods()) >= 15) {
+      #   validate(tr("Too much modality for this variable"))
+      # }
+      
+      df <- filt$df()
+      
+      levels <- df %>% pull(!!sym(selected_variable())) %>% unique()
+      
+      if(length(levels) > 15){
+        print(head(df %>% select(!!sym(selected_variable()))))
+        if (is.factor(pull(df[,selected_variable()]))){
+          validate(tr("Too much modalities for this categorical variable"))
+        }else{
+          df <- df %>% mutate(!!sym(selected_variable()) := 
+                                cut_safe(!!sym(selected_variable())))
+        }
       }
       
-      plot_compa_distributions(filt$df(), 
+      plot_compa_distributions(df, 
                                selected_intvwr(), selected_variable(), 
-                               cfg()$var_intvwr, type = "auto")
+                               cfg()$var_intvwr, type = "categorical")
     })
     
     output$summary <- renderPrint({
@@ -360,10 +375,20 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, i18n_s) {
         select(.group,!!sym(selected_variable())) %>%
         dfSummary(graph.col=FALSE,valid.col=FALSE)
     })
+    
+    df_mods <- reactive({
+      df <- filt$df()
+      
+      if (selected_variable() %in% cfg()$vars_continuous) {
+        df <- df %>% mutate(!!sym(selected_variable()) := 
+                                cut_safe(!!sym(selected_variable())))
+      }
+      return(df)
+    })
 
     dist_mods <- reactive({
       req(selected_variable(),selected_intvwr())
-      filt$df() %>% 
+      df_mods() %>% 
         count_auto(cfg()$var_intvwr, selected_variable()) %>% 
         pull(!!sym(selected_variable())) %>% unique()
     })
@@ -375,9 +400,9 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, i18n_s) {
         validate(tr("Too much modality for this variable"))
       }
       
-      if (selected_variable() %in% cfg()$vars_continuous) {
-        validate(tr("Continuous variable"))
-      }
+      # if (selected_variable() %in% cfg()$vars_continuous) {
+      #   validate(tr("Continuous variable"))
+      # }
       
       mods <- dist_mods()
       fluidRow(lapply(seq_along(mods), function(i) {
@@ -387,7 +412,7 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, i18n_s) {
     
     dist_mods_prop <- reactive({
       req(selected_variable(),selected_intvwr())
-      filt$df() %>%
+      df_mods() %>%
         # count_auto(!!sym(cfg()$var_intvwr),!!sym(selected_variable())) %>% 
         count_auto(cfg()$var_intvwr, selected_variable()) %>% 
         group_by(!!sym(cfg()$var_intvwr)) %>% mutate(prop = n / sum(n)) %>% 

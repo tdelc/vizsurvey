@@ -67,10 +67,11 @@ prepa_stats_dt <- function(df, var_group, configs, na.rm = FALSE) {
   names_vd <- expand.grid(stat = c("Nval", "missing", "presence", "Nmod", "chi2"), col = vars_discretes)
   names_vc <- expand.grid(stat = c("Nval", "missing", "presence", "mean", "median"), col = vars_continuous)
   
-  names(all_exprs) <- c("Nrow", 
-                        paste(names_vd$col, "cha", names_vd$stat, sep="|"),
-                        paste(names_vc$col, "num", names_vc$stat, sep="|"))
-  
+  names_exprs <- "Nrow"
+  if (nrow(names_vd) > 0) names_exprs <- c(names_exprs, paste(names_vd$col, "cha", names_vd$stat, sep="|"))
+  if (nrow(names_vc) > 0) names_exprs <- c(names_exprs, paste(names_vc$col, "num", names_vc$stat, sep="|"))
+  names(all_exprs) <- names_exprs
+
   df_stats <- df[, eval(as.call(c(quote(list), all_exprs))), by = var_group]
   
   df_stats <- df_stats %>%
