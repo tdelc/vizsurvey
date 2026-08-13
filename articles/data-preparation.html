@@ -156,12 +156,47 @@ filter:</p>
 <span>  var_filter    <span class="op">=</span> <span class="st">"HB020"</span>,</span>
 <span>  var_intvwr   <span class="op">=</span> <span class="st">"NR_ITW"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="two-levels-for-the-wave-or-the-filter">Two levels for the wave or the filter<a class="anchor" aria-label="anchor" href="#two-levels-for-the-wave-or-the-filter"></a>
+</h4>
+<p><code>var_wave</code> and <code>var_filter</code> can contain
+<strong>two variables</strong>, separated by a comma. The second one is
+then a second level, nested in the first one: for example the year and
+the quarter of the survey.</p>
+<pre><code>var_wave = YEAR, QUARTER
+var_filter = REGION, DEGURBA</code></pre>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_config.html">create_config</a></span><span class="op">(</span></span>
+<span>  folder_path <span class="op">=</span> <span class="st">"inst/extdata/SILC/HFILE"</span>,</span>
+<span>  name_survey <span class="op">=</span> <span class="st">"SILC-H"</span>,</span>
+<span>  var_wave    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"YEAR"</span>, <span class="st">"QUARTER"</span><span class="op">)</span>,</span>
+<span>  var_filter  <span class="op">=</span> <span class="st">"HB020"</span>,</span>
+<span>  var_intvwr  <span class="op">=</span> <span class="st">"NR_ITW"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>In this case, {vizsurvey} builds a complete key by concatenating the
+levels (<code>2024 / T1</code>), and computes the statistics
+<strong>twice</strong>: once for the first level alone (the year), once
+for the complete key (the year and the quarter). The preparation is
+therefore longer, roughly in proportion to the number of modalities
+added.</p>
+<p>In the interface, the first level is a mandatory choice and the
+second one is optional (<code>All</code> by default), displayed in
+cascade below the first. Choosing only the year gives the analysis at
+the year level; adding the quarter restricts the analysis, and the
+comparisons (the other waves) are then also made at the year-and-quarter
+level.</p>
+<p>The same applies to <code>runVizsurvey_from_r</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">df</span>,</span>
+<span>                    var_intvwr <span class="op">=</span> <span class="st">"NR_ITW"</span>,</span>
+<span>                    var_wave   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"YEAR"</span>, <span class="st">"QUARTER"</span><span class="op">)</span>,</span>
+<span>                    var_filter <span class="op">=</span> <span class="st">"REGIO"</span><span class="op">)</span></span></code></pre></div>
 <p>The discrete and continuous variables only need to be specified if
 the <code>classify_df</code> function misidentifies their type. This
 function automatically determines the type of each variable, based on
 its format and number of categories. The threshold for classifying a
 variable as categorical is set to 15 by default.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/classify_df.html">classify_df</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span></span>
 <span><span class="co">#&gt;   variable     type      </span></span>
@@ -171,6 +206,7 @@ variable as categorical is set to 15 by default.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sepal.Length Continuous</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sepal.Width  Continuous</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Species      Modal</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level3">
 <h3 id="optional-interviewer-summary-file">Optional: interviewer summary file<a class="anchor" aria-label="anchor" href="#optional-interviewer-summary-file"></a>
@@ -187,7 +223,7 @@ microdata.</p>
 <code>file_synthesis</code> key, or pass it to
 <code>create_config</code>:</p>
 <pre><code><span><span class="va">file_synthesis</span> <span class="op">=</span> <span class="va">synthesis.csv</span></span></code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_config.html">create_config</a></span><span class="op">(</span></span>
 <span>  folder_path    <span class="op">=</span> <span class="st">"inst/extdata/SILC/HFILE"</span>,</span>
 <span>  name_survey    <span class="op">=</span> <span class="st">"SILC-H"</span>,</span>
@@ -226,13 +262,13 @@ directory, but the <code>file_pattern</code> argument lets you adapt
 this behaviour. A <code>global.rds</code> file is then generated in the
 same folder: it is the only file that will be used by the interactive
 interface.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/prepa_survey.html">prepa_survey</a></span><span class="op">(</span></span>
 <span>  folder_path  <span class="op">=</span> <span class="st">"inst/extdata/SILC/HFILE"</span>,</span>
 <span>  file_pattern <span class="op">=</span> <span class="st">"*.csv"</span><span class="op">)</span></span></code></pre></div>
 <p>The application can then be launched simply with the
 <code>runVizsurvey_from_folder</code> function.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"inst/extdata/SILC/HFILE"</span>, depth_folder <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>prepa_survey</code> function can be called each time your
 survey data are updated. Its execution can be scheduled so that all the
@@ -255,11 +291,11 @@ side following this structure:</p>
 around <code>prepa_survey</code> and automatically applies the
 preparation to all the child directories of the specified path. In this
 case, you need to set <code>depth_folder = 2</code>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/prepa_surveys.html">prepa_surveys</a></span><span class="op">(</span>folder_path  <span class="op">=</span> <span class="st">"inst/extdata/SILC"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p>You can then launch the interface by specifying the same depth
 level:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"inst/extdata/SILC"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -287,10 +323,10 @@ structure:</p>
 <p>Each sub-directory must contain its own <code>config.txt</code> and
 its own data files. Within each sub-directory, all files must have the
 same data structure. You can then run the global preparation:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/prepa_surveys.html">prepa_surveys</a></span><span class="op">(</span>folder_path  <span class="op">=</span> <span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, the interface is launched with the same depth:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p>If the data are updated, for example during fieldwork, you simply
 need to run the <code>prepa_surveys</code> function again to obtain an

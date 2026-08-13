@@ -14,6 +14,8 @@
   : Build the df_timer of sessions
 - [`classify_df()`](https://tdelc.github.io/vizsurvey/reference/classify_df.md)
   : Classify all variable of a data.frame
+- [`combine_vars()`](https://tdelc.github.io/vizsurvey/reference/combine_vars.md)
+  : Combine several variables in one key (multi-level wave or filter)
 - [`compute_timer_groups()`](https://tdelc.github.io/vizsurvey/reference/compute_timer_groups.md)
   : Compute timer of group
 - [`correct_list_df()`](https://tdelc.github.io/vizsurvey/reference/correct_list_df.md)
@@ -40,6 +42,12 @@
   : index_homogeneity
 - [`is.integer64()`](https://tdelc.github.io/vizsurvey/reference/is.integer64.md)
   : Check if value is integer64
+- [`key_level1()`](https://tdelc.github.io/vizsurvey/reference/key_level1.md)
+  : First level of a multi-level key
+- [`key_level2()`](https://tdelc.github.io/vizsurvey/reference/key_level2.md)
+  : Other levels of a multi-level key (used as label in the interface)
+- [`keys_vars()`](https://tdelc.github.io/vizsurvey/reference/keys_vars.md)
+  : Keys (modalities) of a wave or filter variable
 - [`list_dist()`](https://tdelc.github.io/vizsurvey/reference/list_dist.md)
   : List distribution of discrete variables
 - [`list_dist_dt()`](https://tdelc.github.io/vizsurvey/reference/list_dist_dt.md)
@@ -48,6 +56,8 @@
   : load a config file for prepare data
 - [`loop_stats()`](https://tdelc.github.io/vizsurvey/reference/loop_stats.md)
   : Loop of stats creation by filter
+- [`match_keys()`](https://tdelc.github.io/vizsurvey/reference/match_keys.md)
+  : Rows of a data.frame matching one or several keys
 - [`my_chisq_test()`](https://tdelc.github.io/vizsurvey/reference/my_chisq_test.md)
   : Specific chisq test to NA and Other modality
 - [`prepa_stats()`](https://tdelc.github.io/vizsurvey/reference/prepa_stats.md)
@@ -74,3 +84,5 @@
   : Robust Scale of a varible with IQR
 - [`score_isoforest()`](https://tdelc.github.io/vizsurvey/reference/score_isoforest.md)
   : calculate isoforest score from df
+- [`vars_levels()`](https://tdelc.github.io/vizsurvey/reference/vars_levels.md)
+  : Variables of each level of the wave or of the filter

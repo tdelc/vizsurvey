@@ -63,11 +63,13 @@ create_config(
 
 - var_wave:
 
-  (optional) variable name of wave
+  (optional) variable name of wave. Two variables can be given
+  (c("YEAR","QUARTER")) : the second one is then a second level of wave
 
 - var_filter:
 
-  (optional) variable name of filter
+  (optional) variable name of filter. Two variables can be given : the
+  second one is then a second level of filter
 
 - var_intvwr:
 

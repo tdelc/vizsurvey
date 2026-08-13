@@ -99,6 +99,48 @@ create_config(
 )
 ```
 
+#### Two levels for the wave or the filter
+
+`var_wave` and `var_filter` can contain **two variables**, separated by
+a comma. The second one is then a second level, nested in the first one:
+for example the year and the quarter of the survey.
+
+    var_wave = YEAR, QUARTER
+    var_filter = REGION, DEGURBA
+
+``` r
+
+create_config(
+  folder_path = "inst/extdata/SILC/HFILE",
+  name_survey = "SILC-H",
+  var_wave    = c("YEAR", "QUARTER"),
+  var_filter  = "HB020",
+  var_intvwr  = "NR_ITW"
+)
+```
+
+In this case, {vizsurvey} builds a complete key by concatenating the
+levels (`2024 / T1`), and computes the statistics **twice**: once for
+the first level alone (the year), once for the complete key (the year
+and the quarter). The preparation is therefore longer, roughly in
+proportion to the number of modalities added.
+
+In the interface, the first level is a mandatory choice and the second
+one is optional (`All` by default), displayed in cascade below the
+first. Choosing only the year gives the analysis at the year level;
+adding the quarter restricts the analysis, and the comparisons (the
+other waves) are then also made at the year-and-quarter level.
+
+The same applies to `runVizsurvey_from_r`:
+
+``` r
+
+runVizsurvey_from_r(df,
+                    var_intvwr = "NR_ITW",
+                    var_wave   = c("YEAR", "QUARTER"),
+                    var_filter = "REGIO")
+```
+
 The discrete and continuous variables only need to be specified if the
 `classify_df` function misidentifies their type. This function
 automatically determines the type of each variable, based on its format

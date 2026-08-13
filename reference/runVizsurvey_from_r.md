@@ -27,11 +27,13 @@ runVizsurvey_from_r(
 
 - var_wave:
 
-  (optional) name of wave variable
+  (optional) name of wave variable. Two variables can be given
+  (c("YEAR","QUARTER")) : the second one is then a second level of wave
 
 - var_filter:
 
-  (optional) name of filter variable
+  (optional) name of filter variable. Two variables can be given : the
+  second one is then a second level of filter
 
 - var_intvwr:
 

@@ -13,6 +13,7 @@
 <url><loc>https://tdelc.github.io/vizsurvey/reference/build_df_timer_sctn.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/build_df_timer_ssn.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/classify_df.html</loc></url>
+<url><loc>https://tdelc.github.io/vizsurvey/reference/combine_vars.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/compute_timer_groups.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/correct_list_df.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/create_config.html</loc></url>
@@ -27,10 +28,14 @@
 <url><loc>https://tdelc.github.io/vizsurvey/reference/index.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/index_homogeneity.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/is.integer64.html</loc></url>
+<url><loc>https://tdelc.github.io/vizsurvey/reference/key_level1.html</loc></url>
+<url><loc>https://tdelc.github.io/vizsurvey/reference/key_level2.html</loc></url>
+<url><loc>https://tdelc.github.io/vizsurvey/reference/keys_vars.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/list_dist.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/list_dist_dt.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/load_config.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/loop_stats.html</loc></url>
+<url><loc>https://tdelc.github.io/vizsurvey/reference/match_keys.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/my_chisq_test.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/prepa_stats.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/prepa_stats_dt.html</loc></url>
@@ -44,6 +49,7 @@
 <url><loc>https://tdelc.github.io/vizsurvey/reference/runVizsurvey_from_r.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/scale_IQR.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/score_isoforest.html</loc></url>
+<url><loc>https://tdelc.github.io/vizsurvey/reference/vars_levels.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/vizsurvey-package.html</loc></url>
 </urlset>
 
