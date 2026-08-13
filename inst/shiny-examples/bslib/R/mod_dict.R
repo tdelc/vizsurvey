@@ -31,7 +31,7 @@ mod_dict_server <- function(id, path_dict, nav_id = "main_nav", main_session, i1
             title = tagList(bs_icon("book-half"), tr("Dictionnary")),
             value = "tab_dict",
             card(full_screen = TRUE, min_height = "800px",
-                 icon_header("table", tr("Dictionnary")),
+                 icon_header("table", tr("Dictionnary"), help = ns("card_dict")),
                  DT::DTOutput(ns("dict_table")))
           ),
           session = main_session

@@ -7,6 +7,7 @@
     { "en": "Archive",                     "fr": "Archive",                         "nl": "Archief" },
     { "en": "Dictionnary",                 "fr": "Dictionnaire",                    "nl": "Woordenboek" },
 
+    { "en": "Close",                      "fr": "Fermer",                          "nl": "Sluiten" },
     { "en": "Indicators",                  "fr": "Indicateurs",                     "nl": "Indicatoren" },
     { "en": "Synthesis",                   "fr": "Synthèse",                        "nl": "Synthese" },
     { "en": "Detection Thresholds",        "fr": "Seuils de détection",             "nl": "Detectiedrempels" },

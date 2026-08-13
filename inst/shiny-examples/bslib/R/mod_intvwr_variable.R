@@ -20,13 +20,16 @@ mod_intvwr_variable_ui <- function(id, i18n) {
       
       bslib::nav_panel(
         title = tagList(bs_icon("list-ol"), i18n$t("Chi² table")),
-        card(icon_header("trophy-fill", i18n$t("Ranking of Interviewer")),
+        card(icon_header("trophy-fill", i18n$t("Ranking of Interviewer"),
+                         help = ns("card_cross")),
              DTOutput(ns("cross_ranking")))
       ),
       
       bslib::nav_panel(
         title = tagList(bs_icon("grid-3x3-gap-fill"), i18n$t("Heatmap")),
-        h2("Anomalies by Variables and Interviewers"),
+        h2(class = "d-flex align-items-center gap-2",
+           i18n$t("Anomalies by Variables and Interviewers"),
+           help_button(ns("heatmap"))),
         radioButtons(ns("heatmap_seriation"), i18n$t("Choice classification of heatmap"),
                      inline = TRUE, choices = c("None")),
         radioButtons(ns("heatmap_choice"), i18n$t("Choice of rows and columns"),
@@ -42,9 +45,11 @@ mod_intvwr_variable_ui <- function(id, i18n) {
         title = tagList(bs_icon("list-ol"), i18n$t("Interviewer Synthesis")),
         layout_columns(
           col_widths = c(6, 6),
-          card(icon_header("trophy-fill", i18n$t("Ranking of Interviewers")),
+          card(icon_header("trophy-fill", i18n$t("Ranking of Interviewers"),
+                           help = ns("card_intvwr_ranking")),
                DTOutput(ns("intvwr_ranking"))),
-          card(icon_header("list-ul", i18n$t("Listing of variables")),
+          card(icon_header("list-ul", i18n$t("Listing of variables"),
+                           help = ns("card_variable_listing")),
                DTOutput(ns("variable_listing")))
         )
       ),
@@ -53,16 +58,19 @@ mod_intvwr_variable_ui <- function(id, i18n) {
         title = tagList(bs_icon("layout-three-columns"), i18n$t("Variable Synthesis")),
         layout_columns(
           col_widths = c(6, 6),
-          card(icon_header("trophy-fill", i18n$t("Ranking of Variables")),
+          card(icon_header("trophy-fill", i18n$t("Ranking of Variables"),
+                           help = ns("card_variable_ranking")),
                DTOutput(ns("variable_ranking"))),
-          card(icon_header("list-ul", i18n$t("Listing of Interviewers")),
+          card(icon_header("list-ul", i18n$t("Listing of Interviewers"),
+                           help = ns("card_intvwr_listing")),
                DTOutput(ns("intvwr_listing")))
         )
       )
     ),
     card(
       full_screen = TRUE,
-      icon_header("list-task", i18n$t("Comparison of distributions")),
+      icon_header("list-task", i18n$t("Comparison of distributions"),
+                  help = ns("card_distrib")),
       layout_columns(
         col_widths = c(6, 6),
         plotOutput(ns("distrib")),
@@ -71,7 +79,8 @@ mod_intvwr_variable_ui <- function(id, i18n) {
     ),
     card(
       full_screen = TRUE,
-      icon_header("list-task", i18n$t("Distribution of modalities")),
+      icon_header("list-task", i18n$t("Distribution of modalities"),
+                  help = ns("card_distrib_mods")),
       uiOutput(ns("distrib_ui"))
     )
   )

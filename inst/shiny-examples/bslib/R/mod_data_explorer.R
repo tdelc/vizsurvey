@@ -14,7 +14,7 @@ mod_data_explorer_ui <- function(id, i18n) {
     bslib::card(
       full_screen = TRUE,
       min_height = "800px",
-      icon_header("table", i18n$t("Data")),
+      icon_header("table", i18n$t("Data"), help = ns("card_data")),
       DT::DTOutput(ns("table"))
     )
   )

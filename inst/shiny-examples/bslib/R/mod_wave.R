@@ -20,22 +20,15 @@ mod_wave_ui <- function(id, i18n) {
         id = ns("card_cat"),
         full_screen = TRUE,
         min_height = "650px",
-        card_header(
-          icon_header("layout-text-sidebar-reverse", i18n$t("Categorical outliers")),
-          toolbar(
-            align = "right",
-            toolbar_input_button(
-              id = "help",label = "Aide",
-              icon = icon("question")
-            )
-          )
-        ),
+        icon_header("layout-text-sidebar-reverse", i18n$t("Categorical outliers"),
+                    help = ns("card_cat")),
         DT::DTOutput(ns("tab_cat"))),
       card(
         id = ns("card_cat_detail"),
         full_screen = TRUE,
         min_height = "650px",
-        icon_header("layout-text-sidebar-reverse", i18n$t("Detail of a variable")),
+        icon_header("layout-text-sidebar-reverse", i18n$t("Detail of a variable"),
+                    help = ns("card_cat_detail")),
         # plotOutput(ns("distri_cat")),
         plotOutput(ns("evo_cat")))
     ),
@@ -45,13 +38,15 @@ mod_wave_ui <- function(id, i18n) {
         id = ns("card_num"),
         full_screen = TRUE,
         min_height = "650px",
-        icon_header("layout-text-sidebar-reverse", i18n$t("Numeric outliers")),
+        icon_header("layout-text-sidebar-reverse", i18n$t("Numeric outliers"),
+                    help = ns("card_num")),
         DT::DTOutput(ns("tab_num"))),
       card(
         id = ns("card_num_detail"),
         full_screen = TRUE,
         min_height = "650px",
-        icon_header("layout-text-sidebar-reverse", i18n$t("Detail of a variable")),
+        icon_header("layout-text-sidebar-reverse", i18n$t("Detail of a variable"),
+                    help = ns("card_num_detail")),
         # plotOutput(ns("distri_num")),
         plotOutput(ns("evo_num")))
     )
@@ -204,7 +199,8 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
         id = ns("card_presence"),
         full_screen = TRUE,
         height = "200px",
-        icon_header("layout-text-sidebar-reverse", tr("Presence outliers")),
+        icon_header("layout-text-sidebar-reverse", tr("Presence outliers"),
+                    help = ns("card_presence")),
         DT::DTOutput(ns("tab_check"))
       )
     })

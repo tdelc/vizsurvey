@@ -4,6 +4,7 @@
 
 source("functions.R")
 source("ui_helpers.R")
+source("help_utils.R")
 
 suppressPackageStartupMessages({
   library(bslib, quietly = T)
@@ -27,6 +28,9 @@ suppressPackageStartupMessages({
   library(readr, quietly = T)
   library(viridisLite, quietly = T)
 })
+
+# Textes de l'aide contextuelle (help/help_<lang>.md), chargés une fois
+HELP <- help_load("help")
 
 i18n <- shiny.i18n::Translator$new(translation_json_path = "i18n/translation.json")
 i18n$set_translation_language("fr")
@@ -131,6 +135,15 @@ app_server <- function(input, output, session) {
     i18n_s$set_translation_language(input$selected_lang)
     lang(input$selected_lang)
   }, ignoreInit = TRUE)
+
+  # --- Aide contextuelle ----------------------------------------------------
+  # Un seul observeur pour toutes les cards : help_button() pousse la clé de la
+  # card dans input$help_show, le texte vient de help/help_<lang>.md
+  observeEvent(input$help_show, {
+    showModal(help_modal(input$help_show,
+                         lang = input$selected_lang %||% "fr",
+                         close_label = i18n_s$t("Close")))
+  })
 
   # État partagé inter-onglets (sélection courante groupe/variable)
   r_focus <- reactiveValues(intvwr = "", variable = "")

@@ -14,7 +14,7 @@ mod_archive_ui <- function(id, i18n) {
       bslib::card(
         full_screen = TRUE,
         min_height = "800px",
-        icon_header("table", i18n$t("Archive")),
+        icon_header("table", i18n$t("Archive"), help = ns("card_archive")),
         DT::DTOutput(ns("archive"))
       )
     ),

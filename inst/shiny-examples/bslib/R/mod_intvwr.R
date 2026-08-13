@@ -16,15 +16,18 @@ mod_intvwr_ui <- function(id, i18n) {
     value = "tab_intvwr",
     uiOutput(ns("no_data_msg")),
     card(
+      id = ns("card_indics"),
+      icon_header("sliders", i18n$t("Indicators"), help = ns("card_indics")),
       card_body(
-        checkboxGroupInput(ns("indics"), i18n$t("Indicators"),
+        checkboxGroupInput(ns("indics"), NULL,
                            choices = i18n$t("Loading..."), inline = TRUE)
       )
     ),
     card(
+      id = ns("card_synthesis"),
       full_screen = TRUE,
       min_height = "650px",
-      icon_header("table", i18n$t("Synthesis")),
+      icon_header("table", i18n$t("Synthesis"), help = ns("card_synthesis")),
       DTOutput(ns("table"))
     ),
     uiOutput(ns("intvwr_title")),
@@ -34,7 +37,13 @@ mod_intvwr_ui <- function(id, i18n) {
       placement = "above",
       nav_panel(
         title = tagList(bs_icon("bar-chart-line"), i18n$t("Details per indicator")),
-        uiOutput(ns("distrib_ui"))
+        card(
+          id = ns("card_distrib"),
+          full_screen = TRUE,
+          icon_header("bar-chart-line", i18n$t("Details per indicator"),
+                      help = ns("card_distrib")),
+          uiOutput(ns("distrib_ui"))
+        )
       ),
       nav_panel(
         value = "nav_detail_intvw",
@@ -42,19 +51,22 @@ mod_intvwr_ui <- function(id, i18n) {
         card(
           full_screen = TRUE,
           min_height = "800px",
-          icon_header("list-task", i18n$t("Table of interviews")),
+          icon_header("list-task", i18n$t("Table of interviews"),
+                      help = ns("card_intv")),
           DTOutput(ns("intv_table"))
         ),
         
         uiOutput(ns("intvw_title")),
         card(
           full_screen = TRUE,
-          icon_header("hourglass-split", i18n$t("Sessions of interview")),
+          icon_header("hourglass-split", i18n$t("Sessions of interview"),
+                      help = ns("card_ssn")),
           DTOutput(ns("ssn_table"))),
         card(
           full_screen = TRUE,
           min_height = "650px",
-          icon_header("layout-text-sidebar-reverse", i18n$t("Detail of the interview")),
+          icon_header("layout-text-sidebar-reverse", i18n$t("Detail of the interview"),
+                      help = ns("card_details")),
           DTOutput(ns("details")))
       ),
       nav_panel(
@@ -63,19 +75,22 @@ mod_intvwr_ui <- function(id, i18n) {
           col_widths = c(6, 6),
           card(
             full_screen = TRUE,
-            icon_header("list-task", i18n$t("Table of variables")),
+            icon_header("list-task", i18n$t("Table of variables"),
+                        help = ns("card_var")),
             DTOutput(ns("var_table"))
           ),
           card(
             full_screen = TRUE,
-            icon_header("list-task", i18n$t("Comparison of distributions")),
+            icon_header("list-task", i18n$t("Comparison of distributions"),
+                        help = ns("card_var_distrib")),
             plotOutput(ns("var_distrib")),
             verbatimTextOutput(ns("var_summary"))
           )
         ),
         card(
           full_screen = TRUE,
-          icon_header("list-task", i18n$t("Distribution of modalities")),
+          icon_header("list-task", i18n$t("Distribution of modalities"),
+                      help = ns("card_var_mods")),
           uiOutput(ns("var_distrib_ui"))
         )
       ),
@@ -85,12 +100,14 @@ mod_intvwr_ui <- function(id, i18n) {
           col_widths = c(6, 6),
           card(
             full_screen = TRUE,
-            icon_header("list-task", i18n$t("Localisation of interviews")),
+            icon_header("list-task", i18n$t("Localisation of interviews"),
+                        help = ns("card_geo")),
             DTOutput(ns("intvwr_geo"))
           ),
           card(
             full_screen = TRUE,
-            icon_header("list-task", i18n$t("Number of interviews across wave")),
+            icon_header("list-task", i18n$t("Number of interviews across wave"),
+                        help = ns("card_stat")),
             DTOutput(ns("intvwr_stat"))
           )
         )

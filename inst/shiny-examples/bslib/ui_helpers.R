@@ -17,11 +17,14 @@ vz_theme <- bslib::bs_theme(
 
 
 # ---- Helper : header de carte avec icône ----
-icon_header <- function(icon, title, ...) {
+# help = clé de l'aide contextuelle (= id complet de la card, ns compris),
+#        voir help_utils.R et help/help_<lang>.md
+icon_header <- function(icon, title, ..., help = NULL) {
   card_header(
     class = "d-flex align-items-center gap-2",
     bs_icon(icon, class = "text-primary"),
     span(title, class = "fw-semibold"),
-    ...
+    ...,
+    if (!is.null(help)) help_button(help)
   )
 }
