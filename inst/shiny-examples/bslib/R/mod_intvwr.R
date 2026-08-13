@@ -191,6 +191,18 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, i18n_s) {
         select(-any_of(c(var_itwvr,var_rank,var_quanti))) %>%
         select(where(is.numeric)) %>% names()
       
+      # new_names <- paste0(
+      #   names(df),
+      #   "<br><small style='color:gray;'>",
+      #   df_label_all$LABEL[ match(names(df), df_label_all$VARIABLE) ],
+      #   "</small>"
+      # )
+      # 
+      # dt <- datatable(df, filter='top', selection = 'single',
+      #                 colnames = new_names, escape   = FALSE,
+      #                 options = list(pageLength = 20,dom = 'tp'),
+      #                 rownames = F)
+      
       dt <- df_to_formated_dt(scored(),var_rank,var_quanti,var_outliers)
       
       dt

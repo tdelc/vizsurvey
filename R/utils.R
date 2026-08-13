@@ -257,6 +257,15 @@ my_chisq_test <- function(x, varname, ldist, useNA = "ifany") {
   return(out)
 }
 
+cut_safe <- function(x, n_breaks = 5){
+  if (all(is.na(x))) return(NA)
+  breaks = unique(quantile(x,seq(0,1,1/n_breaks), na.rm = T))
+  if (length(breaks) == 1) return(paste0("(",min(x,na.rm=T),",",max(x,na.rm=T),")"))
+  x <- cut(x, breaks, ordered_result = TRUE)
+  levels(x) <- paste0(1:n_breaks,": ",levels(x))
+  return(x)
+}
+
 
 
 

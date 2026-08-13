@@ -120,16 +120,16 @@ mod_filters_server <- function(id, data, i18n_s) {
         fluidRow(
           numericInput(ns("threshold_Nrow"), 
                        tr("Minimal number of rows to include interviewer of variable anomalies detection"), 
-                       value = 30),
+                       value = threshold_Nrow()),
           numericInput(ns("threshold_Nval"), 
                        tr("Minimum number of valid values to include the variable in the analysis"), 
-                       value = 30),
+                       value = threshold_Nval()),
           numericInput(ns("threshold_wave"), 
                        tr("Minimum rate of change to detect wave anomalies"), 
-                       value = 0.5, min = 0, max = 2, step = 0.1),
+                       value = threshold_wave(), min = 0, max = 2, step = 0.1),
           numericInput(ns("threshold_intvwr"), 
                        tr("chi² distance / minimum median deviation to detect investigator anomalies"),
-                       value = 5, min = 0, max = 10, step = 1)
+                       value = threshold_intvwr(), min = 0, max = 10, step = 1)
         ),
         size = "l",
         footer = tagList(

@@ -23,7 +23,7 @@ mod_archive_ui <- function(id, i18n) {
   )
 }
 
-mod_archive_server <- function(id, data, r_focus, opts, i18n_s) {
+mod_archive_server <- function(id, data, sel, r_focus, opts, i18n_s) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     tr <- function(x) i18n_s$t(x)
@@ -39,6 +39,7 @@ mod_archive_server <- function(id, data, r_focus, opts, i18n_s) {
         fluidRow(
           textInput(ns("add_user"), tr("User"),value = opts$user),
           column(6,textInput(ns("add_path"), tr("Path"),value = data$path_survey_short())),
+          column(6,textInput(ns("add_wave"), tr("Wave"),value = sel$wave()))
         ),
         fluidRow(
           column(6,textInput(ns("add_intvwr"), tr("Interviewer"),value = r_focus$intvwr)),

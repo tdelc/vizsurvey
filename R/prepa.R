@@ -490,30 +490,25 @@ folder_to_df <- function(folder,
 #' @param na.rm include or not missing values as modality
 #'
 #' @returns df data.frame
-create_df_stats <- function(df_, configs,
+create_df_stats <- function(df_, configs_,
                             var_calculs,
                             mod_filter = NULL,
-                            na.rm = FALSE) {
+                            na.rm = FALSE,
+                            force_cat = FALSE) {
   df <- df_
+  configs <- configs_
 
   if (!is.null(mod_filter)) {
     df <- df[match_keys(df, vars_levels(configs, "filter"),
                         configs$var_filter, mod_filter), ]
   }
   
-  cut_safe <- function(x, breaks = 5){
-    if (all(is.na(x))) return(NA)
-    else return(cut(x, breaks = breaks))
+  if (force_cat){
+    # All continuous variable become discrete one
+    df <- df %>% mutate(across(any_of(configs$vars_continuous), ~ cut_safe(.x)))
+    configs$vars_discretes <- unique(c(configs$vars_continuous,configs$vars_discretes))
+    configs$vars_continuous <- NULL
   }
-  
-  # All continuous variable become discrete one
-  df <- df %>% mutate(across(any_of(configs$vars_continuous), ~ cut_safe(.x)))
-  configs$vars_discretes <- unique(c(configs$vars_continuous,configs$vars_discretes))
-  configs$vars_continuous <- NULL
-
-  # variables <- list()
-  # variables$variables_vd <- configs$vd
-  # variables$variables_vc <- configs$vc
 
   df_stats <- df %>% prepa_stats_dt(var_calculs, configs, na.rm)
 
@@ -532,9 +527,10 @@ create_df_stats <- function(df_, configs,
 #' @param var_calculs variable to create stats
 #'
 #' @returns df
-loop_stats <- function(df, configs, var_calculs, na.rm = FALSE) {
+loop_stats <- function(df, configs, var_calculs, na.rm = FALSE, force_cat = FALSE) {
   cli::cli_progress_step("create_df_stats for {var_calculs}", spinner = TRUE)
-  df_stats <- create_df_stats(df, configs, var_calculs, na.rm = na.rm)
+  df_stats <- create_df_stats(df, configs, var_calculs, 
+                              na.rm = na.rm, force_cat = force_cat)
 
   # keys of the filter : each level when the filter has two levels
   vec_filter <- keys_vars(df, vars_levels(configs, "filter"), configs$var_filter)
@@ -544,7 +540,8 @@ loop_stats <- function(df, configs, var_calculs, na.rm = FALSE) {
     cli::cli_alert_info("create_df_stats for {configs$var_filter}")
     df_stats_filter <- vec_filter %>% map_df(~ {
       cli::cli_progress_step("{configs$var_filter} = {.x}", spinner = TRUE)
-      create_df_stats(df, configs, var_calculs, mod_filter = .x, na.rm = na.rm)
+      create_df_stats(df, configs, var_calculs, mod_filter = .x, 
+                      na.rm = na.rm, force_cat = force_cat)
     })
 
     df_stats <- df_stats %>%
@@ -629,7 +626,7 @@ prepa_survey <- function(folder_path,
     df_stats_intvwr <- vec_wave %>% map_df(~ {
       cli::cli_progress_step("df_stats_intvwr for wave {.x}",spinner = TRUE)
       sub_df <- df[match_keys(df, configs$vars_wave, configs$var_wave, .x), ] %>%
-        loop_stats(configs, configs$var_intvwr, na.rm = na.rm) %>%
+        loop_stats(configs, configs$var_intvwr, na.rm = na.rm, force_cat = T) %>%
         mutate(!!sym(configs$var_wave) := .x)
     })
   } else {

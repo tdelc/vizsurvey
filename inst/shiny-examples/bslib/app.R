@@ -151,7 +151,7 @@ app_server <- function(input, output, session) {
   mod_intvwr_variable_server("intvwr_variable", filt, data, r_focus, opts, i18n_s)
   mod_data_explorer_server("data",  data)
   mod_dict_server("dict",opts$path_dict,"main_nav",session, i18n_s)
-  mod_archive_server("archive", data, r_focus, opts, i18n_s)
+  mod_archive_server("archive", data, sel, r_focus, opts, i18n_s)
 }
 
 # Standalone

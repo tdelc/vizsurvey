@@ -12,13 +12,7 @@ mod_wave_ui <- function(id, i18n) {
     checkboxGroupInput(ns("wave_compare"), i18n$t("Compare with"),
                        inline = TRUE, choices = i18n$t("Loading...")),
     
-    card(
-      id = ns("card_presence"),
-      full_screen = TRUE,
-      # min_height = "650px",
-      height = "200px",
-      icon_header("layout-text-sidebar-reverse", i18n$t("Presence outliers")),
-      DT::DTOutput(ns("tab_check"))),
+    uiOutput(ns("ui_presence")),
     
     layout_columns(
       col_widths = c(6, 6),
@@ -90,27 +84,11 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     })
     
     df_stats_wave <- reactive({
-      # req(filt$df_stats_wave())
-      req(data$df())
+      req(filt$df_stats_wave())
       
-      # Update ici : on recalcule la stat par wave, afin de faire les cut
-      # sur les mêmes valeurs
-      
-      df <- data$df()
-      if (length(data$config()$vars_wave) > 1) {
-        df$wave <- combine_vars(df, data$config()$vars_wave)
-      }
-      
-      df <- df %>% filter(!!rlang::sym(data$config()$var_wave) %in% 
-                            c(sel$wave(), input$wave_compare))
-      
-      df_stats <- create_df_stats(df, data$config(), data$config()$var_wave)
-      
-      return(df_stats)
-      
-      # filt$df_stats_wave() %>% 
-      #   filter(!!rlang::sym(data$config()$var_wave) %in% 
-      #            c(sel$wave(), input$wave_compare))
+      filt$df_stats_wave() %>%
+        filter(!!rlang::sym(data$config()$var_wave) %in%
+                 c(sel$wave(), input$wave_compare))
     })
     
     df_wave <- reactive({
@@ -130,9 +108,27 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
       req(df_stats_wave())
       
       db_longer <- df_stats_wave() %>%
-        select(variable,!!sym(data$config()$var_wave),Nrow,Nval,type,
-               stat,value,standard,value_ref) %>%
-        filter(!stat %in% c("chi2","mean")) %>%
+        select(variable,!!sym(data$config()$var_wave),Nrow,
+               Nval,type,stat,value)
+      
+      # Nombre de modalité en tout (pour categorial)
+      db_Nrow <- db_longer %>% 
+        group_by(variable,type) %>% 
+        summarise(Nrow = max(Nrow),Nval = max(Nval))
+      
+      db_Nmod <- df_wave() %>% 
+        select(any_of(cfg()$vars_discretes)) %>% 
+        mutate(across(cfg()$vars_discretes, ~ length(unique(.x)))) %>% distinct() %>% 
+        pivot_longer(everything(),names_to = "variable", values_to = "value") %>% 
+        mutate(
+          !!sym(data$config()$var_wave) := "ALL",
+          stat = "Nmod"
+        ) %>% 
+        left_join(db_Nrow, by = "variable")
+      
+      db_longer <- db_longer %>%
+        add_row(db_Nmod) %>% 
+        filter(stat %in% c("Nmod","missing","presence","median")) %>%
         group_by(variable,stat) %>%
         mutate(value = case_when(
           sum(Nrow,na.rm = TRUE) < sel$threshold_Nrow() ~ 0,
@@ -140,7 +136,7 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
           TRUE ~ value
         )) %>%
         ungroup() %>%
-        select(-standard,-Nrow,-Nval,-value_ref) %>%
+        select(-Nrow,-Nval) %>%
         group_by(variable,stat) %>%
         mutate(sd = sd(value,na.rm=T)/mean(value,na.rm=T),
                sd = tidyr::replace_na(sd,0)) %>%
@@ -157,6 +153,7 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
     })
     
     prepa_tab <- reactive({
+      req(stats_outliers())
       stats_outliers() %>%
         filter(if_any(starts_with("sd|"), ~ abs(.x) > sel$threshold_wave()),
                if_all(matches("^value\\|.*\\|presence$"), ~ .x == 1)) %>%
@@ -181,14 +178,30 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
       tidy_to_dt(prepa_tab_num(), sel$threshold_wave(), drop_inds = c("mean", "Nmod"))
     })
     
-    output$tab_check <- DT::renderDT({
+    tab_check_data <- reactive({
+      req(stats_outliers())
       stats_outliers() %>%
         dplyr::select(variable, type,
                       dplyr::matches("^value.*presence$"),
                       dplyr::matches("^sd.*presence$")) %>%
         dplyr::filter(dplyr::if_any(dplyr::starts_with("sd|"),
-                                    ~ !is.na(.x) & abs(.x) > 0)) %>%
-        presence_check_dt()
+                                    ~ !is.na(.x) & abs(.x) > 0))
+    })
+    
+    output$ui_presence <- renderUI({
+      if (nrow(tab_check_data()) == 0) return(NULL)
+      
+      card(
+        id = ns("card_presence"),
+        full_screen = TRUE,
+        height = "200px",
+        icon_header("layout-text-sidebar-reverse", tr("Presence outliers")),
+        DT::DTOutput(ns("tab_check"))
+      )
+    })
+    
+    output$tab_check <- DT::renderDT({
+      presence_check_dt(tab_check_data())
     })
     
     bind_selection <- function(input_id, df, field, id_col = 1) {
@@ -208,34 +221,6 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
       c(levels,".NA")
     })
     
-    output$distri_cat <- renderPlot({
-      if(is.null(r_focus$variable) | r_focus$variable == ""){
-        return(NULL)
-      }
-      if(!r_focus$variable %in% prepa_tab_cat()$variable){
-        validate(tr("Plot only for categorical variable"))
-      }
-      if(length(fill_levels()) > 15){
-        validate(tr("Too much modalities for this categorical variable"))
-      }
-      v <- r_focus$variable
-      syn <- filt$df() %>%
-        count(!!sym(v)) %>%
-        mutate(prop = n/sum(n),
-               !!sym(v) := as.character(!!sym(v)),
-               !!sym(v) := tidyr::replace_na(!!sym(v), ".NA"))
-      
-      ggplot(syn) +
-        aes(x = !!sym(v), fill = !!sym(v), y = prop) +
-        geom_bar(stat = "identity") +
-        scale_y_continuous(labels = scales::percent) +
-        scale_fill_viridis_d(limits = fill_levels(), drop = FALSE) +
-        labs(title = paste(tr("Distribution for wave"),sel$wave())) +
-        guides(fill = "none") +
-        coord_flip() +
-        theme_minimal(base_size = 15)
-    })
-    
     output$evo_cat <- renderPlot({
       if(is.null(r_focus$variable) | r_focus$variable == ""){
         return(NULL)
@@ -248,17 +233,7 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
       v <- r_focus$variable
       
       if(length(fill_levels()) > 15){
-        # validate(tr("Too much modalities for this categorical variable"))
-        df <- df %>% mutate(
-          !!sym(v) := cut(!!sym(v), breaks = 5)
-        )
-        
-        levels <- df %>% dplyr::pull(!!sym(v)) %>% as.character() %>% 
-          unique() %>% sort()
-        
-        fill_levels <- reactive({
-          c(levels,".NA")
-        })
+        validate(tr("Too much modalities for this categorical variable"))
       }
       
       df <- df %>% mutate(!!sym(v) := as.character(!!sym(v)),

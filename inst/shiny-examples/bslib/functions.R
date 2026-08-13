@@ -332,12 +332,12 @@ tidy_to_dt <- function(tidy_db, sensibility = 0.05,
   
   # formats numériques
   int_cols <- value_cols[ind_of(value_cols) %in% c("Nmod")]
-  round_cols <- value_cols[ind_of(value_cols) %in% c("mean","median","sd","Nmod","khi2")]
+  round_cols <- value_cols[ind_of(value_cols) %in% c("mean","median","sd","khi2","Vcramer")]
   pct_cols   <- value_cols[ind_of(value_cols) == "missing"]
-  if (length(int_cols))   dt <- dt %>% DT::formatRound(round_cols, digits = 0)
+  if (length(int_cols))   dt <- dt %>% DT::formatRound(int_cols, digits = 0)
   if (length(round_cols)) dt <- dt %>% DT::formatRound(round_cols, digits = 2)
   if (length(pct_cols))   dt <- dt %>% DT::formatPercentage(pct_cols, digits = 2)
-  
+
   dt
 }
 
