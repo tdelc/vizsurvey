@@ -24,7 +24,7 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     bsicons,
-    bslib,
+    bslib (>= 0.12.0),
     cli,
     corrplot,
     data.table,

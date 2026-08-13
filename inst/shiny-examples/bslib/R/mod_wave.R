@@ -20,7 +20,16 @@ mod_wave_ui <- function(id, i18n) {
         id = ns("card_cat"),
         full_screen = TRUE,
         min_height = "650px",
-        icon_header("layout-text-sidebar-reverse", i18n$t("Categorical outliers")),
+        card_header(
+          icon_header("layout-text-sidebar-reverse", i18n$t("Categorical outliers")),
+          toolbar(
+            align = "right",
+            toolbar_input_button(
+              id = "help",label = "Aide",
+              icon = icon("question")
+            )
+          )
+        ),
         DT::DTOutput(ns("tab_cat"))),
       card(
         id = ns("card_cat_detail"),
