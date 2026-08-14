@@ -16,7 +16,7 @@ mod_filters_ui <- function(id, i18n) {
 
   list(
     bslib::accordion_panel(
-      title = i18n$t("Database filtering"),
+      title = i18n$t("Filters"),
       value = "filtering",
       icon = bs_icon("funnel-fill"),
       radioButtons(ns("config_wave"), i18n$t("Wave"), choices = i18n$t("Loading...")),
@@ -119,7 +119,7 @@ mod_filters_server <- function(id, data, lang, i18n_s) {
         h3(tr("Analysis configuration")),
         fluidRow(
           numericInput(ns("threshold_Nrow"), 
-                       tr("Minimal number of rows to include interviewer of variable anomalies detection"), 
+                       tr("Minimum number of rows to include interviewer of variable anomalies detection"), 
                        value = threshold_Nrow()),
           numericInput(ns("threshold_Nval"), 
                        tr("Minimum number of valid values to include the variable in the analysis"), 
@@ -128,7 +128,7 @@ mod_filters_server <- function(id, data, lang, i18n_s) {
                        tr("Minimum rate of change to detect wave anomalies"), 
                        value = threshold_wave(), min = 0, max = 2, step = 0.1),
           numericInput(ns("threshold_intvwr"), 
-                       tr("chi² distance / minimum median deviation to detect investigator anomalies"),
+                       tr("Minimum chi² distance to detect investigator anomalies"),
                        value = threshold_intvwr(), min = 0, max = 10, step = 1)
         ),
         size = "l",

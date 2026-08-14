@@ -15,7 +15,7 @@ mod_source_ui <- function(id, i18n) {
   list(
     shiny.i18n::usei18n(i18n),
     accordion_panel(
-      title = i18n$t("Database loading"),
+      title = i18n$t("Survey loading"),
       value = "loading",
       icon = bs_icon("database-fill"),
       radioButtons(ns("path_folder"), i18n$t("List of directories"), choices = "Loading..."),

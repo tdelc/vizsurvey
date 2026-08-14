@@ -94,10 +94,11 @@ mod_summary_server <- function(id, filt, data, sel, opts, main_session, lang, i1
     output$boxes <- renderUI({
       req(data$df())
       
-      n_vd <- length(intersect(cfg()$vars_discretes, names(data$df())))
-      n_vc <- length(intersect(cfg()$vars_continuous, names(data$df())))
-      n_itw <- n_modalities(cfg()$var_intvwr)
-      keys1 <- keys_vars(data$df(), vars_wave(), cfg()$var_wave, level = 1)
+      n_vd    <- length(intersect(cfg()$vars_discretes, names(data$df())))
+      n_vc    <- length(intersect(cfg()$vars_continuous, names(data$df())))
+      n_itw   <- n_modalities(cfg()$var_intvwr)
+      keys1   <- keys_vars(data$df(), vars_wave(), cfg()$var_wave, level = 1)
+      n_waves <- max(1,length(keys1))
       
       sub <- function(txt) p(class = "small mb-0 opacity-75", txt)
       
@@ -118,8 +119,8 @@ mod_summary_server <- function(id, filt, data, sel, opts, main_session, lang, i1
           title = tr("Interviewers"),
           value = if (n_itw > 1) fmt(n_itw) else "—",
           showcase = bs_icon("person-vcard"), theme = "info",
-          sub(if (n_itw > 1) paste(fmt(round(nrow(data$df()) / n_itw)),
-                                   tr("interviews on average"))
+          sub(if (n_itw > 1) paste(fmt(round(nrow(data$df()) / n_itw / n_waves)),
+                                   tr("interviews on average per wave"))
               else tr("no interviewer variable"))
         ),
         value_box(
