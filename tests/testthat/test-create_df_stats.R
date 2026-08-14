@@ -5,16 +5,16 @@ write.csv(mtcars,file=file.path(folder_path,"data_from_r.csv"))
 create_config(
   folder_path    = folder_path,
   file_name      = "config.txt",
-  var_zone       = "gear"
+  var_filter     = "gear"
 )
 
 output <- folder_to_df(folder_path)
 
 df_stats <- create_df_stats(output$df, output$configs,"CYL")
-df_stats2 <- create_df_stats(output$df, output$configs,"CYL",zone_filter = 4)
+df_stats2 <- create_df_stats(output$df, output$configs,"CYL",mod_filter = 4)
 
 expected <- c("CYL","variable","Nrow","Nval","type",
-              "stat","value","value_ref","standard","zone")
+              "stat","value","value_ref","standard","filter")
 
 test_that("create_df_stats works", {
   expect_equal(dim(df_stats), c(120,10))
