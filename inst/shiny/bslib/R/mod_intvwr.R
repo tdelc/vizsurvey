@@ -1,14 +1,3 @@
-# ============================================================================
-# mod_interviewer.R  — onglet "Interviewer"
-# Consomme : filt (df, df_timer_intv), data (config, timer),
-#            r_focus (état partagé inter-onglets : $intvwr, $variable, écrit ici)
-#
-# Fixes intégrés :
-#   - IDs d'output dynamiques INDEXÉS (plus de paste0(prefix, valeur_modalité))
-#   - set.seed() avant le scoring iForest (reproductibilité du RANK)
-#   - DT::renderDT partout
-# ============================================================================
-
 mod_intvwr_ui <- function(id, i18n) {
   ns <- NS(id)
   nav_panel(
@@ -184,7 +173,6 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
       df <- prepa()
       if (!is.null(input$indics))
         df <- df %>% dplyr::select(!!rlang::sym(cfg()$var_intvwr), 
-                                   # !!!rlang::syms(input$indics))
                                    any_of(input$indics))
       set.seed(opts$seed)
       df %>%

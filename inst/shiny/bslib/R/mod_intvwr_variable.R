@@ -1,13 +1,3 @@
-# ============================================================================
-# mod_intvwr_variable.R  — onglet "Cross"
-# Sous-onglets : ranking par ligne / par colonne / croisé, + heatmap sériée,
-# + détail (distrib / summary / corrélations / toutes distributions).
-# Consomme : filt (df_sub, df_stats_group_sub), data (config), r_focus (partagé)
-#
-# NB : ce module est gros. Quand le squelette tournera, candidat évident à un
-# re-découpage interne en sous-modules (mod_group_ranking, mod_group_detail).
-# ============================================================================
-
 mod_intvwr_variable_ui <- function(id, i18n) {
   ns <- NS(id)
   bslib::nav_panel(
@@ -97,14 +87,6 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, lang, i18n
       variable = NULL
     )
     
-    selected_intvwr <- reactive(NULL)
-    selected_variable <- reactive(NULL)
-
-    set_focus <- function(intvwr, variable) {
-      r_focus$intvwr   <- intvwr
-      r_focus$variable <- variable
-    }
-    
     ##### Reactive df stats #####
     
     df_stats_intvwr <- reactive({
@@ -179,9 +161,7 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, lang, i18n
       req(input$variable_ranking_rows_selected)
       s <- input$variable_ranking_rows_selected
       req(length(s))
-      print(prepa_variable_ranking())
       id_variable <- pull(prepa_variable_ranking()[s,"variable"])
-      print(id_variable)
       
       prepa_listing(prepa_variable_ranking,"variable",id_variable,cfg()$var_intvwr)
     })
@@ -324,8 +304,6 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, lang, i18n
       req(heatmap_ready())
       d <- event_data("plotly_click", source = "heatmap_source")
       req(d)
-      print(values_heatmap$intvwr)
-      print(values_heatmap$variable)
       r_focus$intvwr   <- values_heatmap$intvwr[d$y]
       r_focus$variable <- values_heatmap$variable[d$x]
     })
@@ -341,16 +319,11 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, lang, i18n
         need(selected_variable(), tr('Choose a variable.'))
       )
       
-      # if (length(dist_mods()) >= 15) {
-      #   validate(tr("Too much modality for this variable"))
-      # }
-      
       df <- filt$df()
       
       levels <- df %>% pull(!!sym(selected_variable())) %>% unique()
       
       if(length(levels) > 15){
-        print(head(df %>% select(!!sym(selected_variable()))))
         if (is.factor(pull(df[,selected_variable()]))){
           validate(tr("Too much modalities for this categorical variable"))
         }else{
@@ -375,7 +348,6 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, lang, i18n
                                paste(cfg()$var_intvwr, "!=",selected_intvwr())))
       
       if (selected_variable() %in% cfg()$vars_discretes){
-        # df[,selected_variable()] <- as.character(df[,selected_variable()])
         df <- df %>%
           mutate(!!sym(selected_variable()) := as.character(!!sym(selected_variable())))
       }
@@ -409,10 +381,6 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, lang, i18n
         validate(tr("Too much modality for this variable"))
       }
       
-      # if (selected_variable() %in% cfg()$vars_continuous) {
-      #   validate(tr("Continuous variable"))
-      # }
-      
       mods <- dist_mods()
       fluidRow(lapply(seq_along(mods), function(i) {
         column(4, plotOutput(ns(paste0("mods_dist_", i)), height = "220px"))
@@ -422,7 +390,6 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, lang, i18n
     dist_mods_prop <- reactive({
       req(selected_variable(),selected_intvwr())
       df_mods() %>%
-        # count_auto(!!sym(cfg()$var_intvwr),!!sym(selected_variable())) %>% 
         count_auto(cfg()$var_intvwr, selected_variable()) %>% 
         group_by(!!sym(cfg()$var_intvwr)) %>% mutate(prop = n / sum(n)) %>% 
         ungroup()
@@ -445,7 +412,6 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, lang, i18n
         output[[paste0("mods_dist_", i)]] <- renderPlot({
           p <- ggplot(sub_df, aes(x = prop)) +
             geom_density(fill = "steelblue",alpha = 0.65) +
-            # geom_histogram(fill = "steelblue", color = "white") +
             scale_x_continuous(labels = scales::percent, limits = c(0, 1), 
                                expand = c(0, 0))+
             labs(x = paste("Proportion of",my_mod), y = "% interviewer") +

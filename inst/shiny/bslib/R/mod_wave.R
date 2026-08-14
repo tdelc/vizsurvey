@@ -1,8 +1,3 @@
-# ============================================================================
-# mod_wave.R  — onglet "Wave"
-# Consomme : filt (df_sub, df_stats_sub), data (config, df), sel (wave, zone, wave_compare)
-# ============================================================================
-
 mod_wave_ui <- function(id, i18n) {
   ns <- NS(id)
   nav_panel(
@@ -29,7 +24,6 @@ mod_wave_ui <- function(id, i18n) {
         min_height = "650px",
         icon_header("layout-text-sidebar-reverse", i18n$t("Detail of a variable"),
                     help = ns("card_cat_detail")),
-        # plotOutput(ns("distri_cat")),
         plotOutput(ns("evo_cat")))
     ),
     layout_columns(
@@ -81,7 +75,6 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, lang, i18n_s) {
     observe({
       req(wave_modality())
       updateCheckboxGroupInput(session,"wave_compare",inline=T,
-                               # label=data$config()$var_wave,
                                label=tr("Compare with"),
                                choices = wave_modality(),
                                selected = wave_modality()[length(wave_modality())])

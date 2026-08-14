@@ -1,15 +1,3 @@
-# ============================================================================
-# mod_summary.R  — onglet "Summary" (premier onglet, sélectionné au démarrage)
-#
-# Deux rôles :
-#   1. présenter l'enquête chargée (volumétrie, vagues, rôle des variables)
-#   2. donner trois points d'entrée chiffrés vers les onglets d'analyse
-#
-# Consomme : data (df, config, path_survey, timer), filt (df_var_ranking,
-#            df_stats_wave, seuils), sel (wave, wave_level, filter), opts,
-#            main_session (pour changer d'onglet depuis les boutons)
-# ============================================================================
-
 mod_summary_ui <- function(id, i18n) {
   ns <- NS(id)
   nav_panel(

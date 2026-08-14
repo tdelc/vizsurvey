@@ -433,14 +433,6 @@ folder_to_df <- function(folder,
   out <- classify_df_pattern(df,configs)
   prepa_discretes  <- out$vars_vd
   prepa_continuous <- out$vars_vc
-  
-  # use manual classification instead avec automatic
-  # config_all <- config %>%
-  #   pull(value) %>%
-  #   unique() %>%
-  #   unlist()
-  # prepa_discretes <- prepa_discretes[!prepa_discretes %in% config_all]
-  # prepa_continuous <- prepa_continuous[!prepa_continuous %in% config_all]
 
   # add variables in config obj
   configs$vars_discretes <- sort(unique(c(configs$vars_discretes, prepa_discretes)))

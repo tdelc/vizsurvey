@@ -19,8 +19,7 @@ mod_source_ui <- function(id, i18n) {
       value = "loading",
       icon = bs_icon("database-fill"),
       radioButtons(ns("path_folder"), i18n$t("List of directories"), choices = "Loading..."),
-      radioButtons(ns("path_survey"), i18n$t("List of databases"),   choices = "Loading..."),
-      div(class = "small text-muted mt-2", textOutput(ns("info_last_date")))
+      radioButtons(ns("path_survey"), i18n$t("List of databases"),   choices = "Loading...")
     )
   )
 }

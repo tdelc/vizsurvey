@@ -1,16 +1,3 @@
-# ============================================================================
-# mod_filters.R
-# Contrôles vague / zone / vagues de comparaison. Remplace verif_init() et le
-# test "Loading..." par freezeReactiveValue + req() sur la donnée réelle.
-#
-# CONTRAT (retour) : liste de reactives  $wave, $wave_level, $filter
-#
-# Multi-niveaux : quand var_wave (ou var_filter) contient deux variables, un
-# second bouton radio en cascade est affiché (facultatif, "All" par défaut).
-# La clé retournée est soit celle du niveau 1 ("2024"), soit la clé complète
-# ("2024 / T1") : les deux existent dans les stats préparées.
-# ============================================================================
-
 mod_filters_ui <- function(id, i18n) {
   ns <- NS(id)
 
@@ -22,8 +9,7 @@ mod_filters_ui <- function(id, i18n) {
       radioButtons(ns("config_wave"), i18n$t("Wave"), choices = i18n$t("Loading...")),
       uiOutput(ns("ui_wave2")),
       radioButtons(ns("config_filter"), i18n$t("Filter"), choices = i18n$t("Loading...")),
-      uiOutput(ns("ui_filter2")),
-      div(class = "small text-muted mt-2", textOutput(ns("info_nb_enq")))
+      uiOutput(ns("ui_filter2"))
     ),
     br(),
     bslib::nav_item(

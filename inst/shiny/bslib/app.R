@@ -116,7 +116,6 @@ app_ui <- function() {
     ),
     sidebar = bslib::sidebar(
       width = 320,
-      # title = "Configuration",
       bslib::accordion(
         open = c("loading", "filtering"),
         multiple = TRUE,

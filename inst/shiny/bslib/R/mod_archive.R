@@ -1,10 +1,3 @@
-# ============================================================================
-# mod_archive.R  — onglet "Archive / Historique"
-# Consomme : sel (wave/zone pour pré-remplir), r_focus (intvwr/variable), opts.
-# Fix : état en mémoire (reactiveVal) + écriture disque ; plus de relecture
-#       systématique du CSV qui pouvait écraser l'état courant.
-# ============================================================================
-
 mod_archive_ui <- function(id, i18n) {
   ns <- NS(id)
   list(

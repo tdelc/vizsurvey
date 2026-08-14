@@ -1,8 +1,3 @@
-# ============================================================================
-# mod_dict.R  — onglets "Dictionnaire"
-# Consomme : dict
-# ============================================================================
-
 mod_dict_server <- function(id, path_dict, nav_id = "main_nav", main_session, lang, i18n_s) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
