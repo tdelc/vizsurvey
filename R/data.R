@@ -9,7 +9,7 @@
 #' # create_fake_silc()
 create_fake_silc <- function(
     vec_country = c("BE", "RO"),
-    path_out = "inst/shiny-examples/complete/data/SILC/") {
+    path_out = "inst/shiny/complete/data/SILC/") {
   vec_country %>% map(~ {
     country_code <- .x
 

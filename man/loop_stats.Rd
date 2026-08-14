@@ -4,7 +4,7 @@
 \alias{loop_stats}
 \title{Loop of stats creation by filter}
 \usage{
-loop_stats(df, configs, var_calculs)
+loop_stats(df, configs, var_calculs, na.rm = FALSE, force_cat = FALSE)
 }
 \arguments{
 \item{df}{database}

@@ -1,9 +1,0 @@
-name_survey = SILC-H
-
-vars_discretes = 
-vars_continous = 
-
-var_wave = HB010
-var_zone = DB040
-
-var_group = NR_ITW

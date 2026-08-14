@@ -561,7 +561,7 @@ loop_stats <- function(df, configs, var_calculs, na.rm = FALSE, force_cat = FALS
 #'
 #' @examples
 #' \dontrun{
-#' prepa_survey("shiny-examples/complete/ESS10")
+#' prepa_survey("shiny/complete/ESS10")
 #' }
 prepa_survey <- function(folder_path,
                          file_pattern = "*.csv",

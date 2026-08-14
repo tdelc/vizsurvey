@@ -4,7 +4,12 @@
 \alias{prepa_survey}
 \title{Preparation of a survey}
 \usage{
-prepa_survey(folder_path, file_pattern = "*.csv", file_config = "config.txt")
+prepa_survey(
+  folder_path,
+  file_pattern = "*.csv",
+  file_config = "config.txt",
+  na.rm = FALSE
+)
 }
 \arguments{
 \item{folder_path}{folder of survey}
@@ -21,6 +26,6 @@ Preparation of a survey
 }
 \examples{
 \dontrun{
-prepa_survey("shiny-examples/complete/ESS10")
+prepa_survey("shiny/complete/ESS10")
 }
 }

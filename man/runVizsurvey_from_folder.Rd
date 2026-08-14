@@ -4,14 +4,20 @@
 \alias{runVizsurvey_from_folder}
 \title{Shiny vizsurvey with already prepared data}
 \usage{
-runVizsurvey_from_folder(link, data_rds_pattern = "global", depth_folder = 1)
+runVizsurvey_from_folder(
+  path,
+  path_dict = NULL,
+  path_archive = NULL,
+  data_rds_pattern = "global",
+  depth_folder = 1
+)
 }
 \arguments{
-\item{link}{link to directory of data}
-
 \item{data_rds_pattern}{name of the rds file contains all the data}
 
 \item{depth_folder}{level of depth for the tree structure}
+
+\item{link}{link to directory of data}
 }
 \value{
 shinyapp

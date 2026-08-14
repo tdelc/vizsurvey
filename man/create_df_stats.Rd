@@ -4,19 +4,28 @@
 \alias{create_df_stats}
 \title{Create statistics from database}
 \usage{
-create_df_stats(df_, configs, var_calculs, mod_filter = NULL)
+create_df_stats(
+  df_,
+  configs_,
+  var_calculs,
+  mod_filter = NULL,
+  na.rm = FALSE,
+  force_cat = FALSE
+)
 }
 \arguments{
 \item{df_}{database}
 
-\item{configs}{configs}
-
 \item{var_calculs}{variable to create stats}
 
 \item{mod_filter}{(optional) modality to filter data}
+
+\item{na.rm}{include or not missing values as modality}
+
+\item{configs}{configs}
 }
 \value{
-df
+df data.frame
 }
 \description{
 Create statistics from database

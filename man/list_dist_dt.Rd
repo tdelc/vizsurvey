@@ -2,18 +2,20 @@
 % Please edit documentation in R/prepa_dt.R
 \name{list_dist_dt}
 \alias{list_dist_dt}
-\title{Title}
+\title{List of proportions for categorical variables}
 \usage{
-list_dist_dt(df, vars_discretes)
+list_dist_dt(df, vars_discretes, na.rm = FALSE)
 }
 \arguments{
-\item{df}{}
+\item{df}{data.frame}
 
-\item{vars_discretes}{}
+\item{vars_discretes}{vector of categorical variable to calculate proportion}
+
+\item{na.rm}{Remove missing values or not ?}
 }
 \value{
 list
 }
 \description{
-Title
+List of proportions for categorical variables
 }

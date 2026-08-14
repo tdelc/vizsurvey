@@ -4,7 +4,7 @@
 \alias{my_chisq_test}
 \title{Specific chisq test to NA and Other modality}
 \usage{
-my_chisq_test(x, varname, ldist)
+my_chisq_test(x, varname, ldist, useNA = "ifany")
 }
 \arguments{
 \item{x}{value to procede chisq test}
@@ -12,6 +12,8 @@ my_chisq_test(x, varname, ldist)
 \item{varname}{name of the variable}
 
 \item{ldist}{named list of expected probability}
+
+\item{useNA}{useNA parameter for the table function}
 }
 \value{
 chisq value

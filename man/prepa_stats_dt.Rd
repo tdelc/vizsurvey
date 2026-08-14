@@ -4,7 +4,7 @@
 \alias{prepa_stats_dt}
 \title{prepa_stats_dt}
 \usage{
-prepa_stats_dt(df, var_group, configs)
+prepa_stats_dt(df, var_group, configs, na.rm = FALSE)
 }
 \arguments{
 \item{df}{}
@@ -12,6 +12,8 @@ prepa_stats_dt(df, var_group, configs)
 \item{var_group}{}
 
 \item{configs}{}
+
+\item{na.rm}{}
 }
 \value{
 data.frame

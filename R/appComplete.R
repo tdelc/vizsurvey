@@ -7,7 +7,7 @@
 #' \dontrun{runVizsurvey()}
 runVizsurvey <- function() {
 
-  appDir <- system.file("shiny-examples", "bslib", package = "vizsurvey")
+  appDir <- system.file("shiny", "bslib", package = "vizsurvey")
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `vizsurvey`.", call. = FALSE)
   }
@@ -40,7 +40,7 @@ runVizsurvey_from_folder <- function(
     depth_folder = 1
 ) {
 
-  appDir <- system.file("shiny-examples", "bslib", package = "vizsurvey")
+  appDir <- system.file("shiny", "bslib", package = "vizsurvey")
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `vizsurvey`.", call. = FALSE)
   }
@@ -88,7 +88,7 @@ runVizsurvey_from_r <- function(
     stop("df not present.", call. = FALSE)
   }
 
-  appDir <- system.file("shiny-examples", "bslib", package = "vizsurvey")
+  appDir <- system.file("shiny", "bslib", package = "vizsurvey")
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `vizsurvey`.", call. = FALSE)
   }
