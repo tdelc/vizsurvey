@@ -9,7 +9,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/tdelc/vizsurvey/blob/v0.4.1/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/tdelc/vizsurvey/blob/master/DESCRIPTION)
 
 Delclite T, Mierop A (2026). *vizsurvey: Visualisation And Analysis
 During a Survey Field*. R package version 0.4.1,
