@@ -1,12 +1,24 @@
-* Update documentation of package
+# vizsurvey 0.4.1
 
-* Remove some olds files
+## New features
+
+* Summary tab: A first tab, selected at startup, so that arriving on the 
+dashboard does not mean facing a heatmap right away.
+
+## Minor changes
 
 * Change 'shiny-examples' to 'shiny' folder
 
-* add summary folder
+* Remove some olds files: SILC examples does not work anymore. Plan to 
+refactor functions to download and automatically create global.rds
+
+## Bug fixes
 
 * Correction of translation reactive
+
+## Documentation
+
+* Update documentation of package
 
 # vizsurvey 0.4.0
 
