@@ -33,10 +33,10 @@ mod_filters_ui <- function(id, i18n) {
   )
 }
 
-mod_filters_server <- function(id, data, i18n_s) {
+mod_filters_server <- function(id, data, lang, i18n_s) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    tr <- function(x) i18n_s$t(x)
+    tr <- function(x) { lang(); i18n_s$t(x) }
 
     cfg         <- reactive(data$config())
     vars_wave   <- reactive(vars_levels(cfg(), "wave"))

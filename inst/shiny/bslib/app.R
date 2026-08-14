@@ -124,6 +124,7 @@ app_ui <- function() {
         !!!mod_filters_ui("filters", i18n)
       )
     ),
+    mod_summary_ui("summary", i18n),
     mod_intvwr_ui("intvwr", i18n),
     mod_wave_ui("wave", i18n),
     mod_intvwr_variable_ui("intvwr_variable", i18n),
@@ -143,7 +144,7 @@ app_server <- function(input, output, session) {
   opts <- app_opts()
 
   i18n_s <- i18n$clone()
-  lang <- reactiveVal("en")
+  lang <- reactiveVal("fr")
   
   observeEvent(input$selected_lang, {
     shiny.i18n::update_lang(input$selected_lang)
@@ -165,8 +166,8 @@ app_server <- function(input, output, session) {
   r_focus <- reactiveValues(intvwr = "", variable = "")
   
   # --- Chaîne de données ----------------------------------------------------
-  data <- mod_source_server("source", opts, i18n_s) 
-  sel  <- mod_filters_server("filters", data, i18n_s)
+  data <- mod_source_server("source", opts, lang, i18n_s) 
+  sel  <- mod_filters_server("filters", data, lang, i18n_s)
   filt <- survey_filtered(data, sel)
   
   observeEvent(filt$df(),{
@@ -175,12 +176,13 @@ app_server <- function(input, output, session) {
   })
   
   # --- Onglets --------------------------------------------------------------
-  mod_intvwr_server("intvwr", filt, data, r_focus, opts, i18n_s)
-  mod_wave_server("wave",  filt, data, sel, r_focus, i18n_s)
-  mod_intvwr_variable_server("intvwr_variable", filt, data, r_focus, opts, i18n_s)
-  mod_data_explorer_server("data",  data)
-  mod_dict_server("dict",opts$path_dict,"main_nav",session, i18n_s)
-  mod_archive_server("archive", data, sel, r_focus, opts, i18n_s)
+  mod_summary_server("summary", filt, data, sel, opts, session, lang, i18n_s)
+  mod_intvwr_server("intvwr", filt, data, r_focus, opts, lang, i18n_s)
+  mod_wave_server("wave",  filt, data, sel, r_focus, lang, i18n_s)
+  mod_intvwr_variable_server("intvwr_variable", filt, data, r_focus, opts, lang, i18n_s)
+  mod_data_explorer_server("data", data, lang, i18n_s)
+  mod_dict_server("dict",opts$path_dict,"main_nav",session, lang, i18n_s)
+  mod_archive_server("archive", data, sel, r_focus, opts, lang, i18n_s)
 }
 
 # Standalone

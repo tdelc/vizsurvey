@@ -25,10 +25,10 @@ mod_source_ui <- function(id, i18n) {
   )
 }
 
-mod_source_server <- function(id, opts, i18n_s) {
+mod_source_server <- function(id, opts, lang, i18n_s) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    tr <- function(x) i18n_s$t(x)
+    tr <- function(x) { lang(); i18n_s$t(x) }
     
     # --- État interne : UNE seule profondeur, UN seul dossier racine ---------
     rv <- reactiveValues(

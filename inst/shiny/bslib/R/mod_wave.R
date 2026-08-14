@@ -53,10 +53,10 @@ mod_wave_ui <- function(id, i18n) {
   )
 }
 
-mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
+mod_wave_server <- function(id, filt, data, sel, r_focus, lang, i18n_s) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    tr <- function(x) i18n_s$t(x)
+    tr <- function(x) { lang(); i18n_s$t(x) }
     cfg <- reactive(data$config())
     
     vars_wave <- reactive(vars_levels(cfg(), "wave"))
@@ -78,7 +78,7 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, i18n_s) {
                  tr("No wave in config file, or only one wave in dataset.")))
     })
     
-    observeEvent(filt$df(),{
+    observe({
       req(wave_modality())
       updateCheckboxGroupInput(session,"wave_compare",inline=T,
                                # label=data$config()$var_wave,

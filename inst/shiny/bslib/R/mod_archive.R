@@ -23,10 +23,10 @@ mod_archive_ui <- function(id, i18n) {
   )
 }
 
-mod_archive_server <- function(id, data, sel, r_focus, opts, i18n_s) {
+mod_archive_server <- function(id, data, sel, r_focus, opts, lang, i18n_s) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    tr <- function(x) i18n_s$t(x)
+    tr <- function(x) { lang(); i18n_s$t(x) }
     
     archive <- reactiveVal(
       if (file.exists(opts$path_archive)) utils::read.csv(opts$path_archive)

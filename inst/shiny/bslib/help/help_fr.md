@@ -328,3 +328,54 @@ toutes les personnes qui utilisent le même chemin d'archive.
 
 Notez ce que vous avez vérifié, y compris les fausses alertes : cela évite à la
 personne suivante de refaire la même investigation.
+
+# summary-card_survey
+## L'enquête chargée
+Identité de l'enquête sélectionnée dans le panneau de gauche.
+
+- *Préparé le* est la date du dernier `prepa_survey()` : tout ce que vous voyez
+  dans l'application date de ce moment, pas des données en cours de collecte.
+- *Vague*, *Filtre* et *Enquêteur·rice* rappellent quelles variables jouent ces
+  rôles, telles que déclarées dans `config.txt`. Deux variables séparées par une
+  barre oblique signalent une ventilation à deux niveaux.
+- *Timers* indique si l'audit trail est disponible ; sans lui, les détails des
+  entretiens et des sessions restent vides.
+
+# summary-card_waves
+## Entretiens par vague
+Nombre d'entretiens de chaque vague, sur toute l'enquête — ce graphique n'est
+pas affecté par la sélection du panneau de gauche.
+
+Quand la vague a deux niveaux, chaque barre est découpée selon le second niveau
+(les trimestres d'une année, par exemple). Une vague bien plus petite que les
+autres est normale pendant la collecte, mais mérite vérification une fois
+celle-ci terminée.
+
+# summary-card_intvwr
+## Par où commencer côté enquêteur·rices
+Nombre d'enquêteur·rices présentant au moins un écart au-dessus des seuils de
+détection, pour la vague et le filtre sélectionnés dans le panneau de gauche.
+
+La liste donne les cinq enquêteur·rices avec le plus de variables concernées.
+Ouvrez l'onglet *Enquêteur* pour le classement complet, les indicateurs d'audit
+et le détail des entretiens.
+
+# summary-card_wave
+## Par où commencer côté vagues
+Nombre de variables dont le niveau a bougé entre les vagues, pour le filtre
+sélectionné dans le panneau de gauche.
+
+La règle est celle de l'onglet *Vague* (variation d'un indicateur comparée au
+seuil *Taux de variation minimum*), appliquée ici à toutes les vagues d'un coup.
+L'onglet *Vague* permet, lui, de choisir les vagues à comparer : sa liste peut
+donc être plus courte.
+
+# summary-card_cross
+## Par où commencer côté croisement
+Nombre de couples enquêteur·rice × variable au-dessus des seuils de détection,
+pour la vague et le filtre sélectionnés dans le panneau de gauche.
+
+La liste donne les cinq variables signalées chez le plus grand nombre
+d'enquêteur·rices — souvent le signe d'une variable fragile plutôt que d'un
+problème d'enquêteur·rice. Ouvrez l'onglet *Croisé* pour la heatmap et les
+classements.

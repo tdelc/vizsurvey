@@ -20,10 +20,10 @@ mod_data_explorer_ui <- function(id, i18n) {
   )
 }
 
-mod_data_explorer_server <- function(id, data, i18n_s) {
+mod_data_explorer_server <- function(id, data, lang, i18n_s) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    tr <- function(x) i18n_s$t(x)
+    tr <- function(x) { lang(); i18n_s$t(x) }
 
     observeEvent(data$df(), {
       cfg <- data$config()

@@ -4,6 +4,10 @@
 
 * Change 'shiny-examples' to 'shiny' folder
 
+* add summary folder
+
+* Correction of translation reactive
+
 # vizsurvey 0.4.0
 
 ## Breaking changes

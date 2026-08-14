@@ -86,10 +86,10 @@ mod_intvwr_variable_ui <- function(id, i18n) {
   )
 }
 
-mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, i18n_s) {
+mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    tr <- function(x) i18n_s$t(x)
+    tr <- function(x) { lang(); i18n_s$t(x) }
     cfg <- reactive(data$config())
     
     values_heatmap <- reactiveValues(

@@ -314,3 +314,52 @@ archive path.
 
 Record what you have checked, including false alarms: it saves the next person
 from investigating the same case again.
+
+
+# summary-card_survey
+## The loaded survey
+Identity of the survey selected in the sidebar.
+
+- *Prepared on* is the date of the last `prepa_survey()` run: everything you see
+  in the application comes from that moment, not from the live data.
+- *Wave*, *Filter* and *Interviewer* recall which variables play these roles,
+  as declared in `config.txt`. Two variables separated by a slash mean the
+  breakdown has two levels.
+- *Timers* tells whether the audit trail is available; without it the interview
+  and session details stay empty.
+
+# summary-card_waves
+## Interviews per wave
+Number of interviews of each wave, over the whole survey — this chart is not
+affected by the selection in the sidebar.
+
+When the wave has two levels, each bar is split by the second level (quarters
+inside a year, for example). A wave much smaller than the others is expected
+while fieldwork is running, but is worth a check once it is closed.
+
+# summary-card_intvwr
+## Where to start with interviewers
+Number of interviewers showing at least one deviation above the detection
+thresholds, for the wave and the filter selected in the sidebar.
+
+The list gives the five interviewers with the most variables concerned. Open
+the *Interviewer* tab to see the whole ranking, the audit indicators and the
+detail of the interviews.
+
+# summary-card_wave
+## Where to start with waves
+Number of variables whose level moved between the waves, for the filter selected
+in the sidebar.
+
+The same rule as the *Wave* tab is used (variation of an indicator compared to
+the threshold *Minimum rate of change*), applied here to every wave at once. The
+*Wave* tab lets you choose which waves to compare, so its list can be shorter.
+
+# summary-card_cross
+## Where to start with the crossing
+Number of interviewer × variable pairs above the detection thresholds, for the
+wave and the filter selected in the sidebar.
+
+The list gives the five variables flagged for the largest number of
+interviewers — often a sign of a fragile variable rather than of an interviewer
+problem. Open the *Cross* tab for the heatmap and the rankings.

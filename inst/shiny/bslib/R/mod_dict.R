@@ -3,10 +3,10 @@
 # Consomme : dict
 # ============================================================================
 
-mod_dict_server <- function(id, path_dict, nav_id = "main_nav", main_session, i18n_s) {
+mod_dict_server <- function(id, path_dict, nav_id = "main_nav", main_session, lang, i18n_s) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    tr <- function(x) i18n_s$t(x)
+    tr <- function(x) { lang(); i18n_s$t(x) }
     inserted <- reactiveVal(FALSE)
     
     dict <- reactive({
