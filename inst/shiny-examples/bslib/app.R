@@ -3,8 +3,6 @@
 # ============================================================================
 
 source("functions.R")
-source("ui_helpers.R")
-source("help_utils.R")
 
 suppressPackageStartupMessages({
   library(bslib, quietly = T)
@@ -28,6 +26,23 @@ suppressPackageStartupMessages({
   library(readr, quietly = T)
   library(viridisLite, quietly = T)
 })
+
+# ---- Thème ----
+vz_theme <- bslib::bs_theme(
+  version = 5,
+  bg = "#fafbfc",
+  fg = "#1a1d29",
+  primary = "#2c5f7a",
+  secondary = "#6c7a89",
+  success = "#5a9f7d",
+  info = "#5b8db8",
+  warning = "#d4a056",
+  # base_font = font_google("Inter"),
+  # heading_font = font_google("Inter"),
+  # code_font = font_google("JetBrains Mono"),
+  "card-border-color" = "#e5e8ec",
+  "card-cap-bg"       = "#f4f6f8"
+)
 
 # Textes de l'aide contextuelle (help/help_<lang>.md), chargés une fois
 HELP <- help_load("help")
@@ -142,6 +157,7 @@ app_server <- function(input, output, session) {
   observeEvent(input$help_show, {
     showModal(help_modal(input$help_show,
                          lang = input$selected_lang %||% "fr",
+                         help = HELP,
                          close_label = i18n_s$t("Close")))
   })
 

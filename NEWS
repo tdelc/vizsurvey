@@ -1,9 +1,88 @@
-vizsurvey v0.2.1
-==============
+# vizsurvey 0.4.0
 
-Changes:
+## Breaking changes
 
-* Add a lot of tests. To escape warning, chi.test is changed (no
-  change, because chi.test is not used to perform p value)
+* `runVizsurvey_from_file()` has been removed. Read the file yourself and use
+  `runVizsurvey_from_r()`, or prepare a folder and use
+  `runVizsurvey_from_folder()`.
 
-Starts of news
+* `runVizsurvey_from_folder()`: the first argument `link` is renamed `path`, and
+  the function gains `path_dict` (dictionary file) and `path_archive` (archive
+  file). The corresponding Shiny options are renamed accordingly
+  (`link_data_folder` becomes `path_data_folder`, `dict` becomes `path_dict`).
+
+* The statistics stored in `global.rds` have changed (keys of the wave and of
+  the filter, continuous variables of the interviewer analysis). Files prepared
+  with 0.3.0 still open, but `prepa_survey()` must be run again to get the new
+  analyses.
+
+## New features
+
+* `var_wave` and `var_filter` accept **two variables** in `config.txt`
+  (`var_wave = YEAR, QUARTER`), the second one being a level nested in the
+  first. The statistics are computed for both levels, and the interface shows a
+  second selector, optional, cascading from the first one.
+
+* For the interviewer analysis, continuous variables are now cut into 5 classes
+  (`cut_safe()`) and compared like categorical ones. The whole tab reads the
+  same way, with a single chi² distance instead of a mix of chi² and medians.
+
+* `prepa_survey()` gains `na.rm`: missing values are counted as a category of
+  their own during the chi² computation (default), or removed.
+
+* Contextual help on every card: a "?" button opens a modal explaining what the
+  card shows. Texts live in `inst/shiny-examples/bslib/help/help_<lang>.md`, one
+  file per language.
+
+* New exported helpers for multi-level variables: `combine_vars()`,
+  `key_level1()`, `key_level2()`, `vars_levels()`, `keys_vars()`, `match_keys()`.
+
+## Interface
+
+* Wave tab: the comparison waves are proposed at the level of the selected wave,
+  the "Presence outliers" card only appears when a variable is actually missing
+  from a wave, and the number of categories is computed over the compared waves.
+
+* The "Detection Thresholds" dialog now opens with the current values instead of
+  the defaults.
+
+* The archive records the wave of the observation.
+
+* The interface is fully translated in English, French and Dutch.
+
+## Bug fixes
+
+* Wave tab: missing values are handled consistently in the tables and the
+  charts.
+
+* "Listing of Interviewers" listed the variables of the interviewer ranking
+  instead of the interviewers of the selected variable.
+
+* Writing to the archive file used an undefined path.
+
+* Dictionary tab corrections.
+
+## Documentation
+
+* The three vignettes are translated in English, and the data preparation
+  vignette documents the two-level `var_wave` / `var_filter`.
+
+
+# vizsurvey 0.3.0
+
+* Rewrite of the interface with {bslib}: navigation bar, sidebar, cards, and one
+  Shiny module per tab (source, filters, interviewer, wave, cross, data,
+  dictionary, archive).
+
+* Interface translated with {shiny.i18n} (English, French, Dutch).
+
+* Analysis of the timers (audit trail): duration of the interviews and of the
+  sessions, night work, interviews too close to each other.
+
+* Online demonstration of the application.
+
+
+# vizsurvey 0.2.1
+
+* Add a lot of tests. To escape warning, chi.test is changed (no change, because
+  chi.test is not used to perform p value).
