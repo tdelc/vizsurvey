@@ -5,7 +5,14 @@ Create statistics from database
 ## Usage
 
 ``` r
-create_df_stats(df_, configs, var_calculs, mod_filter = NULL)
+create_df_stats(
+  df_,
+  configs_,
+  var_calculs,
+  mod_filter = NULL,
+  na.rm = FALSE,
+  force_cat = FALSE
+)
 ```
 
 ## Arguments
@@ -13,10 +20,6 @@ create_df_stats(df_, configs, var_calculs, mod_filter = NULL)
 - df\_:
 
   database
-
-- configs:
-
-  configs
 
 - var_calculs:
 
@@ -26,6 +29,14 @@ create_df_stats(df_, configs, var_calculs, mod_filter = NULL)
 
   (optional) modality to filter data
 
+- na.rm:
+
+  include or not missing values as modality
+
+- configs:
+
+  configs
+
 ## Value
 
-df
+df data.frame

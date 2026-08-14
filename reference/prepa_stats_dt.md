@@ -5,7 +5,7 @@ prepa_stats_dt
 ## Usage
 
 ``` r
-prepa_stats_dt(df, var_group, configs)
+prepa_stats_dt(df, var_group, configs, na.rm = FALSE)
 ```
 
 ## Arguments
@@ -13,6 +13,7 @@ prepa_stats_dt(df, var_group, configs)
 - df:
 - var_group:
 - configs:
+- na.rm:
 
 ## Value
 

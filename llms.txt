@@ -241,7 +241,7 @@ Feedback and contributions are welcome.
 - [`list_dist()`](https://tdelc.github.io/vizsurvey/reference/list_dist.md)
   : List distribution of discrete variables
 - [`list_dist_dt()`](https://tdelc.github.io/vizsurvey/reference/list_dist_dt.md)
-  : Title
+  : List of proportions for categorical variables
 - [`load_config()`](https://tdelc.github.io/vizsurvey/reference/load_config.md)
   : load a config file for prepare data
 - [`loop_stats()`](https://tdelc.github.io/vizsurvey/reference/loop_stats.md)

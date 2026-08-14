@@ -5,14 +5,16 @@ Shiny vizsurvey with already prepared data
 ## Usage
 
 ``` r
-runVizsurvey_from_folder(link, data_rds_pattern = "global", depth_folder = 1)
+runVizsurvey_from_folder(
+  path,
+  path_dict = NULL,
+  path_archive = NULL,
+  data_rds_pattern = "global",
+  depth_folder = 1
+)
 ```
 
 ## Arguments
-
-- link:
-
-  link to directory of data
 
 - data_rds_pattern:
 
@@ -21,6 +23,10 @@ runVizsurvey_from_folder(link, data_rds_pattern = "global", depth_folder = 1)
 - depth_folder:
 
   level of depth for the tree structure
+
+- link:
+
+  link to directory of data
 
 ## Value
 

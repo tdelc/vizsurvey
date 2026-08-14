@@ -5,7 +5,12 @@ Preparation of a survey
 ## Usage
 
 ``` r
-prepa_survey(folder_path, file_pattern = "*.csv", file_config = "config.txt")
+prepa_survey(
+  folder_path,
+  file_pattern = "*.csv",
+  file_config = "config.txt",
+  na.rm = FALSE
+)
 ```
 
 ## Arguments
@@ -30,6 +35,6 @@ NULL (creation of rds)
 
 ``` r
 if (FALSE) { # \dontrun{
-prepa_survey("shiny-examples/complete/ESS10")
+prepa_survey("shiny/complete/ESS10")
 } # }
 ```

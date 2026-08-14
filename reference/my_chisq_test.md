@@ -5,7 +5,7 @@ Specific chisq test to NA and Other modality
 ## Usage
 
 ``` r
-my_chisq_test(x, varname, ldist)
+my_chisq_test(x, varname, ldist, useNA = "ifany")
 ```
 
 ## Arguments
@@ -21,6 +21,10 @@ my_chisq_test(x, varname, ldist)
 - ldist:
 
   named list of expected probability
+
+- useNA:
+
+  useNA parameter for the table function
 
 ## Value
 

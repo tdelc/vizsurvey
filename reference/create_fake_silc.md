@@ -7,7 +7,7 @@ Use PUF files for SILC example
 ``` r
 create_fake_silc(
   vec_country = c("BE", "RO"),
-  path_out = "inst/shiny-examples/complete/data/SILC/"
+  path_out = "inst/shiny/complete/data/SILC/"
 )
 ```
 
