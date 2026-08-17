@@ -7,14 +7,9 @@
 <url><loc>https://tdelc.github.io/vizsurvey/articles/vizsurvey.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/authors.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/index.html</loc></url>
-<url><loc>https://tdelc.github.io/vizsurvey/reference/build_df_timer_day.html</loc></url>
-<url><loc>https://tdelc.github.io/vizsurvey/reference/build_df_timer_intv.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/build_df_timer_intvwr.html</loc></url>
-<url><loc>https://tdelc.github.io/vizsurvey/reference/build_df_timer_sctn.html</loc></url>
-<url><loc>https://tdelc.github.io/vizsurvey/reference/build_df_timer_ssn.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/classify_df.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/combine_vars.html</loc></url>
-<url><loc>https://tdelc.github.io/vizsurvey/reference/compute_timer_groups.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/correct_list_df.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/create_config.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/create_df_stats.html</loc></url>
@@ -41,9 +36,6 @@
 <url><loc>https://tdelc.github.io/vizsurvey/reference/prepa_stats_dt.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/prepa_survey.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/prepa_surveys.html</loc></url>
-<url><loc>https://tdelc.github.io/vizsurvey/reference/prepa_timer_from_df.html</loc></url>
-<url><loc>https://tdelc.github.io/vizsurvey/reference/read_timer_csv.html</loc></url>
-<url><loc>https://tdelc.github.io/vizsurvey/reference/read_timer_csvs.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/runVizsurvey.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/runVizsurvey_from_folder.html</loc></url>
 <url><loc>https://tdelc.github.io/vizsurvey/reference/runVizsurvey_from_r.html</loc></url>

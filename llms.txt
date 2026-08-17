@@ -192,22 +192,12 @@ Feedback and contributions are welcome.
 
 ## All functions
 
-- [`build_df_timer_day()`](https://tdelc.github.io/vizsurvey/reference/build_df_timer_day.md)
-  : Build the df_timer for days
-- [`build_df_timer_intv()`](https://tdelc.github.io/vizsurvey/reference/build_df_timer_intv.md)
-  : Build the df_timer of interview
 - [`build_df_timer_intvwr()`](https://tdelc.github.io/vizsurvey/reference/build_df_timer_intvwr.md)
   : Build the df_timer of interviewer
-- [`build_df_timer_sctn()`](https://tdelc.github.io/vizsurvey/reference/build_df_timer_sctn.md)
-  : Build the df_timer of sections
-- [`build_df_timer_ssn()`](https://tdelc.github.io/vizsurvey/reference/build_df_timer_ssn.md)
-  : Build the df_timer of sessions
 - [`classify_df()`](https://tdelc.github.io/vizsurvey/reference/classify_df.md)
   : Classify all variable of a data.frame
 - [`combine_vars()`](https://tdelc.github.io/vizsurvey/reference/combine_vars.md)
   : Combine several variables in one key (multi-level wave or filter)
-- [`compute_timer_groups()`](https://tdelc.github.io/vizsurvey/reference/compute_timer_groups.md)
-  : Compute timer of group
 - [`correct_list_df()`](https://tdelc.github.io/vizsurvey/reference/correct_list_df.md)
   : corrections of each df of a list
 - [`create_config()`](https://tdelc.github.io/vizsurvey/reference/create_config.md)
@@ -258,12 +248,6 @@ Feedback and contributions are welcome.
   : Preparation of a survey
 - [`prepa_surveys()`](https://tdelc.github.io/vizsurvey/reference/prepa_surveys.md)
   : Preparation of all surveys from a folder
-- [`prepa_timer_from_df()`](https://tdelc.github.io/vizsurvey/reference/prepa_timer_from_df.md)
-  : Prepation of timers from raw
-- [`read_timer_csv()`](https://tdelc.github.io/vizsurvey/reference/read_timer_csv.md)
-  : Read a timer file in csv
-- [`read_timer_csvs()`](https://tdelc.github.io/vizsurvey/reference/read_timer_csvs.md)
-  : Read and rbind many timer files in csv
 - [`runVizsurvey()`](https://tdelc.github.io/vizsurvey/reference/runVizsurvey.md)
   : Shiny vizsurvey
 - [`runVizsurvey_from_folder()`](https://tdelc.github.io/vizsurvey/reference/runVizsurvey_from_folder.md)
