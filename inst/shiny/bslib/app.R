@@ -10,7 +10,6 @@ suppressPackageStartupMessages({
   library(shinyjs, quietly = T)
   library(DT, quietly = T)
   library(plotly, quietly = T)
-  library(summarytools, quietly = T)
   library(dplyr, quietly = T)
   library(ggplot2, quietly = T)
   library(tidyr, quietly = T)
@@ -22,7 +21,7 @@ suppressPackageStartupMessages({
   library(lubridate, quietly = T)
   library(stringr, quietly = T)
   library(seriation, quietly = T)
-  library(arrow, quietly = T)
+  # library(arrow, quietly = T)
   library(readr, quietly = T)
   library(viridisLite, quietly = T)
 })
@@ -180,7 +179,7 @@ app_server <- function(input, output, session) {
   mod_wave_server("wave",  filt, data, sel, r_focus, lang, i18n_s)
   mod_intvwr_variable_server("intvwr_variable", filt, data, r_focus, opts, lang, i18n_s)
   mod_data_explorer_server("data", data, lang, i18n_s)
-  mod_dict_server("dict",opts$path_dict,"main_nav",session, lang, i18n_s)
+  mod_dict_server("dict", data, "main_nav",session, lang, i18n_s)
   mod_archive_server("archive", data, sel, r_focus, opts, lang, i18n_s)
 }
 

@@ -1,4 +1,4 @@
-mod_dict_server <- function(id, path_dict, nav_id = "main_nav", main_session, lang, i18n_s) {
+mod_dict_server <- function(id, data, nav_id = "main_nav", main_session, lang, i18n_s) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     tr <- function(x) { lang(); i18n_s$t(x) }
@@ -10,13 +10,13 @@ mod_dict_server <- function(id, path_dict, nav_id = "main_nav", main_session, la
     })
     
     output$dict_table <- DT::renderDT({
-      req(dict())
-      DT::datatable(dict(), escape = FALSE, filter = "top",
+      req(data$df_dict())
+      DT::datatable(data$df_dict(), escape = FALSE, filter = "top",
                     rownames = FALSE, options = list(pageLength = 20))
     })
     
-    observeEvent(dict(), ignoreNULL = FALSE, {
-      d <- dict()
+    observeEvent(data$df_dict(), ignoreNULL = FALSE, {
+      d <- data$df_dict()
       available <- !is.null(d) && (!is.data.frame(d) || nrow(d) > 0)
       
       if (available && !inserted()) {

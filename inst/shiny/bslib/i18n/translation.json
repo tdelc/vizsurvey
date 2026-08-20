@@ -2,11 +2,13 @@
   "languages": ["en", "fr", "nl"],
   "translation": [
     { "en": "Interviewer",                 "fr": "Enquêteur",                       "nl": "Interviewer" },
+    { "en": "Intvwr : ",                   "fr": "Enquêteur :",                     "nl": "Interviewer :" },
     { "en": "Cross",                       "fr": "Croisé",                          "nl": "Kruising" },
     { "en": "Data",                        "fr": "Données",                         "nl": "Gegevens" },
     { "en": "Archive",                     "fr": "Archive",                         "nl": "Archief" },
-    { "en": "Dictionnary",                 "fr": "Dictionnaire",                    "nl": "Woordenboek" },
+    { "en": "Data dictionary",             "fr": "Dictionnaire des données",        "nl": "Gegevenswoordenboek" },
     
+    { "en": "Dictionnary",                 "fr": "Dictionnaire",                    "nl": "Woordenboek" },
     { "en": "Summary", "fr": "Synthèse", "nl": "Samenvatting" },
     { "en": "Survey", "fr": "Enquête", "nl": "Enquête" },
     { "en": "Interviews", "fr": "Entretiens", "nl": "Interviews" },

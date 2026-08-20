@@ -57,6 +57,7 @@ mod_intvwr_variable_ui <- function(id, i18n) {
         )
       )
     ),
+    uiOutput(ns("dict")),
     card(
       full_screen = TRUE,
       icon_header("list-task", i18n$t("Comparison of distributions"),
@@ -64,7 +65,8 @@ mod_intvwr_variable_ui <- function(id, i18n) {
       layout_columns(
         col_widths = c(6, 6),
         plotOutput(ns("distrib")),
-        verbatimTextOutput(ns("summary"))
+        # verbatimTextOutput(ns("summary"))
+        DT::DTOutput(ns("summary"))
       )
     ),
     card(
@@ -311,6 +313,45 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, lang, i18n
     selected_intvwr   <- reactive(r_focus$intvwr)
     selected_variable <- reactive(r_focus$variable)
     
+    ###### Dictionnary of variable ######
+    
+    prepa_dict <- reactive({
+      req(data$df_dict(),selected_variable())
+      
+      df <- data$df_dict()
+      
+      colnames(df) <- toupper(colnames(df))
+      
+      if (!"VARIABLE" %in% colnames(df)) return(NULL)
+      
+      df <- df %>% filter(str_detect(toupper(VARIABLE),selected_variable()))
+      
+      if ("TX_LANG" %in% colnames(df)){
+        df <- df %>% filter(TX_LANG == toupper(lang()))
+      }  
+      
+      if (nrow(df) == 0) return(NULL) else return(df)
+    })
+    
+    output$dict_dt <- renderDataTable({
+      req(prepa_dict())
+      
+      datatable(prepa_dict(), filter = "top", selection = 'none', 
+                escape   = FALSE,
+                options = list(pageLength = 15,dom = 'tp'),
+                rownames = F)
+    })
+    
+    output$dict <- renderUI({
+      req(prepa_dict())
+      card(
+        full_screen = TRUE,
+        icon_header("book-half", tr("Data dictionary"),
+                    help = ns("card_dict")),
+        DTOutput(ns("dict_dt"))
+      )
+    })
+    
     ##### Distribution of of specific variable ######
     
     output$distrib <- renderPlot({
@@ -337,24 +378,15 @@ mod_intvwr_variable_server <- function(id, filt, data, r_focus, opts, lang, i18n
                                cfg()$var_intvwr, type = "categorical")
     })
     
-    output$summary <- renderPrint({
+    output$summary <- DT::renderDT({
       req(filt$df(),selected_variable(),selected_intvwr())
       
-      df <- filt$df() %>%
-        mutate(.group = !!sym(cfg()$var_intvwr) == selected_intvwr()) %>%
-        tidyr::replace_na(list(.group = FALSE)) %>%
-        mutate(.group = ifelse(.group,
-                               paste(cfg()$var_intvwr, "=",selected_intvwr()),
-                               paste(cfg()$var_intvwr, "!=",selected_intvwr())))
+      df   <- filt$df()
+      grp  <- group_vs_others(df[[cfg()$var_intvwr]], selected_intvwr(),cfg()$var_intvwr)
+      type <- if (selected_variable() %in% cfg()$vars_discretes)
+      "categorical" else "auto"
       
-      if (selected_variable() %in% cfg()$vars_discretes){
-        df <- df %>%
-          mutate(!!sym(selected_variable()) := as.character(!!sym(selected_variable())))
-      }
-      
-      df %>% group_by(.group) %>%
-        select(.group,!!sym(selected_variable())) %>%
-        dfSummary(graph.col=FALSE,valid.col=FALSE)
+      describe_variable_dt(df[[selected_variable()]], by = grp, type = type)
     })
     
     df_mods <- reactive({

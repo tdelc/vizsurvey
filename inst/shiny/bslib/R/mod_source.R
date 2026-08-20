@@ -100,12 +100,20 @@ mod_source_server <- function(id, opts, lang, i18n_s) {
              df_timer_ssn = t$df_timer_ssn, df_timer_sctn = t$df_timer_sctn)
       }, error = function(e) list(ready = FALSE, error = conditionMessage(e)))
     })
+    
+    # ===================== Chargement du dictionnaire ========================
+    df_dict <- reactive({
+      req(opts$path_dict)
+      readRDS(opts$path_dict)
+    })
+    
 
     # ===================== Contrat de sortie =================================
     list(
       df                = reactive(global_obj()[["df"]]),
       df_stats_wave     = reactive(global_obj()[["df_stats_wave"]]),
       df_stats_intvwr   = reactive(global_obj()[["df_stats_intvwr"]]),
+      df_dict           = df_dict,
       config            = reactive(global_obj()[["configs"]]),
       timer             = timer,
       path_survey       = path_survey,

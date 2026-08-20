@@ -26,6 +26,7 @@ mod_wave_ui <- function(id, i18n) {
                     help = ns("card_cat_detail")),
         plotOutput(ns("evo_cat")))
     ),
+    uiOutput(ns("dict")),
     layout_columns(
       col_widths = c(6, 6),
       card(
@@ -211,6 +212,11 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, lang, i18n_s) {
     bind_selection("tab_cat_rows_selected", prepa_tab_cat, "variable")
     bind_selection("tab_num_rows_selected", prepa_tab_num, "variable")
     
+    selected_variable <- reactive({
+      req(r_focus[["variable"]])
+      r_focus[["variable"]]
+    })
+    
     fill_levels <- reactive({
       req(r_focus$variable)
       levels <- data$df() %>% dplyr::pull(!!sym(r_focus$variable)) %>%
@@ -296,6 +302,45 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, lang, i18n_s) {
         labs(fill = "Wave", color = "Wave",
              title = tr("Evolution accross waves")) +
         theme_minimal(base_size = 15)
+    })
+    
+    ###### Dictionnary of variable ######
+    
+    prepa_dict <- reactive({
+      req(data$df_dict(),selected_variable())
+      
+      df <- data$df_dict()
+      
+      colnames(df) <- toupper(colnames(df))
+      
+      if (!"VARIABLE" %in% colnames(df)) return(NULL)
+      
+      df <- df %>% filter(str_detect(toupper(VARIABLE),selected_variable()))
+      
+      if ("TX_LANG" %in% colnames(df)){
+        df <- df %>% filter(TX_LANG == toupper(lang()))
+      }  
+      
+      if (nrow(df) == 0) return(NULL) else return(df)
+    })
+    
+    output$dict_dt <- renderDataTable({
+      req(prepa_dict())
+      
+      datatable(prepa_dict(), filter = "top", selection = 'none', 
+                escape   = FALSE,
+                options = list(pageLength = 15,dom = 'tp'),
+                rownames = F)
+    })
+    
+    output$dict <- renderUI({
+      req(prepa_dict())
+      card(
+        full_screen = TRUE,
+        icon_header("book-half", tr("Data dictionary"),
+                    help = ns("card_dict")),
+        DTOutput(ns("dict_dt"))
+      )
     })
     
   })
