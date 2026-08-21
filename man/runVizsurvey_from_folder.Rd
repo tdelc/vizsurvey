@@ -7,6 +7,7 @@
 runVizsurvey_from_folder(
   path,
   path_dict = NULL,
+  path_nomen = NULL,
   path_archive = NULL,
   data_rds_pattern = "global",
   depth_folder = 1
