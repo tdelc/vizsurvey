@@ -208,6 +208,10 @@ Feedback and contributions are welcome.
   : Simulate EU-SILC dataset with injected errors
 - [`create_fake_silc()`](https://tdelc.github.io/vizsurvey/reference/create_fake_silc.md)
   : Use PUF files for SILC example
+- [`describe_variable()`](https://tdelc.github.io/vizsurvey/reference/describe_variable.md)
+  : Description d'une variable, globale ou par groupe
+- [`describe_variable_dt()`](https://tdelc.github.io/vizsurvey/reference/describe_variable_dt.md)
+  : Description d'une variable rendue en DT
 - [`empty_as_na()`](https://tdelc.github.io/vizsurvey/reference/empty_as_na.md)
   : Replace empty by na
 - [`extract_config()`](https://tdelc.github.io/vizsurvey/reference/extract_config.md)
