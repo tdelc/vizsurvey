@@ -1,6 +1,17 @@
-* Add dictionnary entry in cross tab
+# vizsurvey 0.4.2
 
-* Add dictionnary into tabs
+## New features
+
+* Add dictionnary entries in cross tab
+
+* Add nomenclature to obtain columns label in main tabs
+
+* Add a tutorial to discover vizsurvey in few clicks
+
+## Minor changes
+
+* Replace summaryTools to core code
+
 * Remove unused code
 
 # vizsurvey 0.4.1

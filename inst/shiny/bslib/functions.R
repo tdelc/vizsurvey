@@ -90,7 +90,8 @@ count_auto <- function(data,
 df_to_formated_dt <- function(df,
                               var_rank = "RANK",
                               var_quanti,
-                              var_outliers){
+                              var_outliers,
+                              colnames = NULL){
   
   stats <- lapply(var_outliers, function(num_col) {
     x <- df[[num_col]]
@@ -101,7 +102,7 @@ df_to_formated_dt <- function(df,
   names(stats) <- var_outliers
   
   dt <- datatable(df, filter = "top", selection = "single",
-                  rownames = FALSE, 
+                  rownames = FALSE, colnames = colnames, escape   = FALSE,
                   options = list(pageLength = 10, dom = "tp"))
   
   for(col in var_outliers) {

@@ -35,6 +35,7 @@ runVizsurvey <- function() {
 runVizsurvey_from_folder <- function(
     path,
     path_dict    = NULL,
+    path_nomen   = NULL,
     path_archive = NULL,
     data_rds_pattern = "global",
     depth_folder = 1
@@ -47,6 +48,7 @@ runVizsurvey_from_folder <- function(
 
   shiny::shinyOptions(path_data_folder = normalizePath(path))
   shiny::shinyOptions(path_dict    = normalizePath(path_dict))
+  shiny::shinyOptions(path_nomen   = normalizePath(path_nomen))
   shiny::shinyOptions(path_archive = normalizePath(path_archive))
   shiny::shinyOptions(data_rds_pattern = data_rds_pattern)
   shiny::shinyOptions(depth_folder = depth_folder)

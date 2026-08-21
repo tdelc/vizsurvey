@@ -60,6 +60,7 @@ app_opts <- function() {
     depth_folder     = getShinyOption("depth_folder", 1L),
     path_archive     = getShinyOption("path_archive", "archive.csv"),
     path_dict        = getShinyOption("path_dict", NULL),
+    path_nomen       = getShinyOption("path_nomen", NULL),
     user             = getShinyOption("user", Sys.getenv("USERNAME", "unknown")),
     seed             = getShinyOption("seed", 42L)  # iForest reproductible
   )
@@ -77,6 +78,7 @@ app_ui <- function() {
       underline = TRUE
     ),
     header = htmltools::tagList(
+      tour_assets(),
       shinybusy::add_busy_spinner(color = "#d4a056"),
       shinybusy::add_busy_spinner(spin = "fading-circle", color = "#2c5f7a"),
       tags$head(tags$style(HTML("
@@ -128,6 +130,7 @@ app_ui <- function() {
     mod_intvwr_variable_ui("intvwr_variable", i18n),
     mod_data_explorer_ui("data", i18n),
     !!!mod_archive_ui("archive", i18n),
+    mod_tour_ui("tour", i18n),
     bslib::nav_item(
       selectInput("selected_lang", NULL,
                   choices  = setNames(i18n$get_languages(), toupper(i18n$get_languages())),
@@ -181,6 +184,7 @@ app_server <- function(input, output, session) {
   mod_data_explorer_server("data", data, lang, i18n_s)
   mod_dict_server("dict", data, "main_nav",session, lang, i18n_s)
   mod_archive_server("archive", data, sel, r_focus, opts, lang, i18n_s)
+  mod_tour_server("tour", data, filt, sel, session, i18n_s)
 }
 
 # Standalone

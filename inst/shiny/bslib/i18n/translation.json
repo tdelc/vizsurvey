@@ -9,6 +9,13 @@
     { "en": "Data dictionary",             "fr": "Dictionnaire des données",        "nl": "Gegevenswoordenboek" },
     
     { "en": "Dictionnary",                 "fr": "Dictionnaire",                    "nl": "Woordenboek" },
+    { "en": "Guided tour", "fr": "Visite guidée",  "nl": "Rondleiding" },
+    { "en": "Previous",    "fr": "Précédent",      "nl": "Vorige" },
+    { "en": "Next",        "fr": "Suivant",        "nl": "Volgende" },
+    { "en": "Finish",      "fr": "Terminer",       "nl": "Afsluiten" },
+    { "en": "Quit",        "fr": "Quitter",        "nl": "Stoppen" },
+    { "en": "Step",        "fr": "Étape",          "nl": "Stap" },
+    { "en": "No tour available.", "fr": "Aucun tutoriel disponible.", "nl": "Geen rondleiding beschikbaar." },
     { "en": "Summary", "fr": "Synthèse", "nl": "Samenvatting" },
     { "en": "Survey", "fr": "Enquête", "nl": "Enquête" },
     { "en": "Interviews", "fr": "Entretiens", "nl": "Interviews" },

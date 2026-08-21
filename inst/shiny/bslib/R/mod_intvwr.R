@@ -189,27 +189,29 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
       var_rank <- "RANK"
       var_itwvr <- cfg()$var_intvwr
       
-      var_quanti <- scored() %>%
+      df <- scored()
+      
+      var_quanti <- df %>%
         select(any_of(c("NB_INTV","DURATION_MEDIAN","DURATION_MIN"))) %>%
         select(where(is.numeric)) %>% names()
       
-      var_outliers <- scored() %>%
+      var_outliers <- df %>%
         select(-any_of(c(var_itwvr,var_rank,var_quanti))) %>%
         select(where(is.numeric)) %>% names()
+
+      if (!is.null(data$df_nomen())){
+        df_nomen <- data$df_nomen()
+
+        new_names <- paste0(
+          names(df),
+          "<br><small style='color:gray;'>",
+          df_nomen$LABEL[ match(names(df), df_nomen$VARIABLE) ],
+          "</small>"
+        )
+      }
       
-      # new_names <- paste0(
-      #   names(df),
-      #   "<br><small style='color:gray;'>",
-      #   df_label_all$LABEL[ match(names(df), df_label_all$VARIABLE) ],
-      #   "</small>"
-      # )
-      # 
-      # dt <- datatable(df, filter='top', selection = 'single',
-      #                 colnames = new_names, escape   = FALSE,
-      #                 options = list(pageLength = 20,dom = 'tp'),
-      #                 rownames = F)
-      
-      dt <- df_to_formated_dt(scored(),var_rank,var_quanti,var_outliers)
+      dt <- df_to_formated_dt(df,var_rank,var_quanti,var_outliers,
+                              colnames = new_names)
       
       dt
     })
@@ -284,7 +286,22 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
     })
     
     output$intv_table <- DT::renderDT({ 
-      datatable(prepa_intv_table(), filter = "top", selection = "single", 
+      
+      df <- prepa_intv_table()
+      
+      if (!is.null(data$df_nomen())){
+        df_nomen <- data$df_nomen()
+        
+        new_names <- paste0(
+          names(df),
+          "<br><small style='color:gray;'>",
+          df_nomen$LABEL[ match(names(df), df_nomen$VARIABLE) ],
+          "</small>"
+        )
+      }
+      
+      datatable(df, filter = "top", selection = "single", 
+                colnames = new_names, escape = FALSE,
                 rownames = FALSE, options = list(pageLength = 10, dom = "tp"))
     })
     
@@ -311,7 +328,20 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
                across(ends_with('_TM_SSN'), ~stringr::str_replace(.x,"Z",""))) %>%  
         mutate(across(starts_with("FL_"),~ifelse(.x,"\U0001f534","")))
       
-      datatable(df, rownames = FALSE, options = list(pageLength = 10, dom = "t"))
+      if (!is.null(data$df_nomen())){
+        df_nomen <- data$df_nomen()
+        
+        new_names <- paste0(
+          names(df),
+          "<br><small style='color:gray;'>",
+          df_nomen$LABEL[ match(names(df), df_nomen$VARIABLE) ],
+          "</small>"
+        )
+      }
+      
+      datatable(df, rownames = FALSE, 
+                colnames = new_names, escape = FALSE,
+                options = list(pageLength = 10, dom = "t"))
     })
     
     output$details   <- DT::renderDT({ 
@@ -323,7 +353,19 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
         filter(!!sym(cfg()$var_intv) == sel) %>% 
         collect()
       
+      if (!is.null(data$df_nomen())){
+        df_nomen <- data$df_nomen()
+        
+        new_names <- paste0(
+          names(df),
+          "<br><small style='color:gray;'>",
+          df_nomen$LABEL[ match(names(df), df_nomen$VARIABLE) ],
+          "</small>"
+        )
+      }
+      
       datatable(df, rownames = FALSE, filter = "top", 
+                colnames = new_names, escape = FALSE,
                 options = list(pageLength = 15, dom = "t"))
     })
     

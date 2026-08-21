@@ -107,6 +107,16 @@ mod_source_server <- function(id, opts, lang, i18n_s) {
       readRDS(opts$path_dict)
     })
     
+    
+    # ===================== Chargement de la nomenclature ====================
+    df_nomen <- reactive({
+      req(opts$path_nomen)
+      print(opts$path_nomen)
+      df <- tibble(data.table::fread(opts$path_nomen))
+      df$LABEL <- pull(df[,toupper(lang())])
+      df
+    })
+    
 
     # ===================== Contrat de sortie =================================
     list(
@@ -114,6 +124,7 @@ mod_source_server <- function(id, opts, lang, i18n_s) {
       df_stats_wave     = reactive(global_obj()[["df_stats_wave"]]),
       df_stats_intvwr   = reactive(global_obj()[["df_stats_intvwr"]]),
       df_dict           = df_dict,
+      df_nomen          = df_nomen,
       config            = reactive(global_obj()[["configs"]]),
       timer             = timer,
       path_survey       = path_survey,
