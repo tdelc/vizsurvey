@@ -63,8 +63,7 @@ Le premier onglet donne trois points d'entrée chiffrés. Pour la vague et le
 filtre courants, {n_outliers} couples enquêteur·rice × variable dépassent les
 seuils.
 
-Chaque carte a un bouton qui ouvre l'onglet correspondant : c'est le chemin
-le plus court entre « il y a quelque chose » et « voici quoi ».
+Chaque carte a un bouton qui ouvre l'onglet correspondant.
 
 # 06-vague
 tab: tab_wave
