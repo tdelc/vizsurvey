@@ -93,7 +93,7 @@ mod_source_server <- function(id, opts, lang, i18n_s) {
     timer <- reactive({
       path <- path_survey()
       tf <- find_timer_rds(path)
-      if (is.null(tf)) return(list(ready = FALSE, error = tr("Aucun fichier timer.")))
+      if (is.null(tf)) return(list(ready = FALSE, error = tr("Data unavailable.")))
       tryCatch({
         t <- readr::read_rds(tf)
         list(ready = TRUE, cfg = t$cfg, df_timer_intv = t$df_timer_intv,

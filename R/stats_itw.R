@@ -10,10 +10,19 @@
 index_homogeneity <- function(df,var_itw,threahold=30){
   df_n_enq <- df %>% count(!!sym(var_itw))
   
-  df %>% 
+  syn <- df_n_enq %>% 
     pivot_longer(cols = -!!sym(var_itw),values_transform=as.character) %>% 
     filter(!is.na(!!sym(var_itw)),!is.na(value),value != "") %>% 
-    count(!!sym(var_itw),name,value) %>% 
+    count(!!sym(var_itw),name,value)
+	
+  if (nrow(syn) == 0) return (tibble(
+    !!sym(var_itw) := character(),
+    min = numeric(), mean = numeric(), q1 = numeric(),
+    median = numeric(), q3 = numeric(), max = numeric(),
+    n = numeric()
+  ))
+  
+  syn %>% 
     group_by(!!sym(var_itw)) %>% mutate(n_enq = max(n)) %>%
     group_by(!!sym(var_itw),name) %>% filter(sum(n) >= threahold) %>%
     group_by(!!sym(var_itw),name) %>% mutate(prop = n/sum(n,na.rm=T)) %>% 

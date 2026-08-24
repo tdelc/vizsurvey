@@ -12,7 +12,7 @@ mod_archive_ui <- function(id, i18n) {
       )
     ),
     bslib::nav_spacer(),
-    bslib::nav_item(actionButton(ns("add_button"),i18n$t("Add history"), class = "btn-sm"))
+    bslib::nav_item(actionButton(ns("add_button"),i18n$t("Add Archive"), class = "btn-sm"))
   )
 }
 
@@ -52,6 +52,7 @@ mod_archive_server <- function(id, data, sel, r_focus, opts, lang, i18n_s) {
         record <- tibble(timestamp = as.character(lubridate::today()),
                          user = input$add_user,
                          path = input$add_path,
+                         wave = input$add_wave,
                          intvwr = input$add_intvwr,
                          variable = input$add_variable,
                          comment = input$add_com)

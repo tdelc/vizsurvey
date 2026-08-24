@@ -1,5 +1,11 @@
 # vizsurvey 0.4.2
 
+## Bug fixes
+
+* Display wave in archive
+
+* Correction for 'group_vs_other' function : export in package
+
 ## New features
 
 * Add dictionnary entries in cross tab

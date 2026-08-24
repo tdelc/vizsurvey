@@ -117,7 +117,7 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
       if (isTRUE(tmr$ready)) return(NULL)
       nav_remove("nav_details", target = "nav_detail_intvw")
       div(class = "alert alert-warning",
-          if (!is.null(tmr$error)) tmr$error else tr("Données indisponibles."))
+          if (!is.null(tmr$error)) tmr$error else tr("Data unavailable."))
     })
 
     # -- Tableau de scoring (assemblage audit + homogénéité + chi2) ------------
@@ -135,7 +135,7 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
         select(!!sym(cfg()$var_intvwr),INDEX_H) %>% 
         mutate(!!sym(cfg()$var_intvwr) := as.character(!!sym(cfg()$var_intvwr)))
       
-      if (isTRUE(tmr$ready)){
+      if (isTRUE(tmr$ready) & nrow(filt$df_timer_intv()) > 0){
         df_audit <- filt$df_timer_intv() %>% 
           build_df_timer_intvwr(data$timer()$cfg) %>% 
           select(-any_of(cfg()$var_wave)) %>%
@@ -147,11 +147,16 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
         df_audit <- tibble(!!sym(cfg()$var_intvwr) := character())
       }
       
-      df_chi2 <- filt$df_stats_intvwr() %>% 
-        filter(stat == "chi2") %>% 
-        group_by(!!sym(cfg()$var_intvwr)) %>% 
-        summarise(MAX_CHI2=round(max(standard,na.rm=T),1)) %>% 
-        mutate(!!sym(cfg()$var_intvwr) := as.character(!!sym(cfg()$var_intvwr)))
+      if (nrow(filt$df_stats_intvwr()) > 0){
+        
+        df_chi2 <- filt$df_stats_intvwr() %>% 
+          filter(stat == "chi2") %>% 
+          group_by(!!sym(cfg()$var_intvwr)) %>% 
+          summarise(MAX_CHI2=round(max(standard,na.rm=T),1)) %>% 
+          mutate(!!sym(cfg()$var_intvwr) := as.character(!!sym(cfg()$var_intvwr)))
+      }else{
+        df_chi2 <- tibble(!!sym(cfg()$var_intvwr) := character())
+      }
       
       df_audit %>% 
         dplyr::full_join(df_count,by = cfg()$var_intvwr) %>% 

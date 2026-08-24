@@ -16,8 +16,8 @@ encadrement : l'étape reste lisible.
 # 01-bienvenue
 tab: tab_summary
 ## Bienvenue dans vizsurvey
-Ce tutoriel parcourt l'interface en dix étapes, sur l'enquête que vous avez
-chargée : **{survey}**, soit {n_rows} entretiens et {n_vars} variables
+Ce tutoriel parcourt l'interface en quelques étapes, sur l'enquête que vous 
+avez chargée : **{survey}**, soit {n_rows} entretiens et {n_vars} variables
 analysées.
 
 vizsurvey ne conclut rien à votre place : il calcule des écarts et les met en
@@ -92,7 +92,7 @@ L'enquête {survey} compte actuellement {n_intvwr} enquêteur·rices,
 identifiés par la variable {var_intvwr}. Cliquez une ligne pour ouvrir 
 le détail : entretiens, sessions, variables, distributions.
 
-# 09-croise
+# 08-croise
 tab: tab_intvwr_variable
 target: #intvwr_variable-cross_ranking
 ## Le croisement enquêteur·rice × variable
@@ -108,7 +108,7 @@ Les écarts sont classement par ordre décroissant pour observer en priorité
 les cas les plus surprenants. Cliquez une case pour voir les distributions 
 comparées en bas de page.
 
-# 08-croise2
+# 09-croise2
 tab: tab_intvwr_variable
 target: #intvwr_variable-heatmap
 ## La carte de chaleur (heatmap)
@@ -120,7 +120,26 @@ problème, une **ligne** rouge signale un comportement récurrent,
 une **colonne** rouge désigne une variable sans doute complexe à comprendre. 
 Cliquez une case pour voir les distributions comparées en bas de page.
 
-# 10-archive
+# 10-données
+tab: tab_data
+target: #data-card_data
+## Les données brutes
+Ce tableau vous donne accès à toutes les données brutes de l'enquête, pour 
+toutes les vagues et sans filtre. Vous pouvez ajouter des colonnes au besoin 
+et filtrer selon vos besoins.
+
+# 10-dict
+tab: tab_dict
+target: #dict-dict_table
+## Le dictionnaire des données
+Ce tableau vous donne accès à tous les labels de variables et des modalités de 
+réponse. Vous pouvez filtrer selon vos besoins, pour retrouver les 
+informations sur les résultats remarquées dans le dashboard.
+
+Une table filtrée apparaît automatiquement dans les onglets d'enquêteur·rice 
+et de croisement si la variable sélectionnée est dans le dictionnaire.
+
+# 11-archive
 target: #archive-add_button
 ## Garder une trace
 Quand vous avez vérifié un cas, notez-le. L'archive conserve la date,
@@ -129,7 +148,7 @@ l'utilisateur·rice, l'enquête, l'enquêteur·rice et la variable concernés.
 Notez aussi les fausses alertes : c'est ce qui évite à la personne suivante
 de refaire la même investigation.
 
-# 11-aide
+# 12-aide
 tab: tab_summary
 target: #summary-card_survey .btn-link
 ## L'aide de chaque carte

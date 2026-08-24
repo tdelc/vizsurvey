@@ -137,7 +137,16 @@ describe_variable_dt <- function(x, by = NULL, ..., caption = NULL) {
                       c("(missing)", "Total"), c("#f4f6f8", "#f4f6f8")))
 }
 
-# Vecteur de groupe "VAR = valeur" / "VAR != valeur" pour les comparaisons
+#' Vecteur de groupe "VAR = valeur" / "VAR != valeur" pour les comparaisons
+#'
+#' @param x Vecteur a regrouper
+#' @param value valeur discrétionnaire
+#' @param label label à utiliser
+#'
+#' @returns vector
+#' @export
+#'
+#' @examples
 group_vs_others <- function(x, value, label) {
   ifelse(!is.na(x) & x == value,
          paste(label, "=", value),
