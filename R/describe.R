@@ -145,8 +145,6 @@ describe_variable_dt <- function(x, by = NULL, ..., caption = NULL) {
 #'
 #' @returns vector
 #' @export
-#'
-#' @examples
 group_vs_others <- function(x, value, label) {
   ifelse(!is.na(x) & x == value,
          paste(label, "=", value),
