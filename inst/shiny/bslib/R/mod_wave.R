@@ -111,8 +111,8 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, lang, i18n_s) {
       
       # Nombre de modalité en tout (pour categorial)
       db_Nrow <- db_longer %>% 
-        group_by(variable,type) %>% 
-        summarise(Nrow = max(Nrow),Nval = max(Nval))
+        summarise(Nrow = max(Nrow),Nval = max(Nval),
+                  .by = c(variable,type))
       
       db_Nmod <- df_wave() %>% 
         select(any_of(cfg()$vars_discretes)) %>% 
@@ -127,18 +127,21 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, lang, i18n_s) {
       db_longer <- db_longer %>%
         add_row(db_Nmod) %>% 
         filter(stat %in% c("Nmod","missing","presence","median")) %>%
-        group_by(variable,stat) %>%
-        mutate(value = case_when(
-          sum(Nrow,na.rm = TRUE) < sel$threshold_Nrow() ~ 0,
-          sum(Nval,na.rm = TRUE) < sel$threshold_Nval() ~ 0,
-          TRUE ~ value
-        )) %>%
-        ungroup() %>%
+        mutate(.by = c(variable,stat),
+               value = if (
+                 sum(Nrow,na.rm = TRUE) < sel$threshold_Nrow() |
+                 sum(Nval,na.rm = TRUE) < sel$threshold_Nval()) 0
+               else value) %>% 
+               # else if ()
+               # value = case_when(
+               #   sum(Nrow,na.rm = TRUE) < sel$threshold_Nrow() ~ 0,
+               #   sum(Nval,na.rm = TRUE) < sel$threshold_Nval() ~ 0,
+               #   TRUE ~ value
+               # )) %>%
         select(-Nrow,-Nval) %>%
-        group_by(variable,stat) %>%
-        mutate(sd = sd(value,na.rm=T)/mean(value,na.rm=T),
+        mutate(.by = c(variable,stat),
+               sd = sd(value,na.rm=T)/mean(value,na.rm=T),
                sd = tidyr::replace_na(sd,0)) %>%
-        ungroup() %>%
         arrange(variable,stat)
       
       db_longer %>%
