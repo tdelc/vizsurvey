@@ -14,14 +14,14 @@ mod_wave_ui <- function(id, i18n) {
       card(
         id = ns("card_cat"),
         full_screen = TRUE,
-        min_height = "650px",
+        min_height = "400px",
         icon_header("layout-text-sidebar-reverse", i18n$t("Categorical outliers"),
                     help = ns("card_cat")),
         DT::DTOutput(ns("tab_cat"))),
       card(
         id = ns("card_cat_detail"),
         full_screen = TRUE,
-        min_height = "650px",
+        min_height = "400px",
         icon_header("layout-text-sidebar-reverse", i18n$t("Detail of a variable"),
                     help = ns("card_cat_detail")),
         plotOutput(ns("evo_cat")))
@@ -32,14 +32,14 @@ mod_wave_ui <- function(id, i18n) {
       card(
         id = ns("card_num"),
         full_screen = TRUE,
-        min_height = "650px",
+        min_height = "400px",
         icon_header("layout-text-sidebar-reverse", i18n$t("Numeric outliers"),
                     help = ns("card_num")),
         DT::DTOutput(ns("tab_num"))),
       card(
         id = ns("card_num_detail"),
         full_screen = TRUE,
-        min_height = "650px",
+        min_height = "400px",
         icon_header("layout-text-sidebar-reverse", i18n$t("Detail of a variable"),
                     help = ns("card_num_detail")),
         # plotOutput(ns("distri_num")),
@@ -169,10 +169,16 @@ mod_wave_server <- function(id, filt, data, sel, r_focus, lang, i18n_s) {
     })
     
     output$tab_cat <- DT::renderDT({
+      if (nrow(prepa_tab_cat()) == 0) {
+        validate(tr("No Categorical outliers"))
+      }
       tidy_to_dt(prepa_tab_cat(), sel$threshold_wave(), drop_inds = c("mean", "median"))
     })
     
     output$tab_num <- DT::renderDT({
+      if (nrow(prepa_tab_num()) == 0) {
+        validate(tr("No Numeric outliers"))
+      }
       tidy_to_dt(prepa_tab_num(), sel$threshold_wave(), drop_inds = c("mean", "Nmod"))
     })
     

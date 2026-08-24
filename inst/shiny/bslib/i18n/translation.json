@@ -132,6 +132,8 @@
     { "en": "Evolution accross waves",     "fr": "Évolution par vague",             "nl": "Evolutie door golven" },
     { "en": "Presence outliers",           "fr": "Anomalies de présence",           "nl": "Aanwezigheidsanomalieën" },
     { "en": "Categorical outliers",        "fr": "Anomalies sur variables catégorielles", "nl": "Anomalieën in categorische variabelen" },
+    { "en": "No Categorical outliers",     "fr": "Pas d'anomalies sur variables catégorielles", "nl": "Geen Anomalieën in categorische variabelen" },
+    { "en": "No Numeric outliers",     "fr": "Pas d'anomalies sur variables continues", "nl": "Geen Anomalieën in continue variabelen" },
     { "en": "Detail of a variable",        "fr": "Détail sur une variable",		     "nl": "Details over een variabele" },
     { "en": "Numeric outliers",            "fr": "Anomalies sur variables continues","nl": "Anomalieën op continue variabelen" },
     
