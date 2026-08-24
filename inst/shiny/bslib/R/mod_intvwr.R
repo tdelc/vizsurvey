@@ -312,7 +312,9 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
     
     selected_intv <- reactive({
       req(input$intv_table_rows_selected)
-      dplyr::pull(prepa_intv_table()[input$intv_table_rows_selected, 1])
+      intv <- dplyr::pull(prepa_intv_table()[input$intv_table_rows_selected, 1])
+      r_focus$intv <- intv
+      return(intv)
     })
     
     output$intvw_title <- renderUI({ 

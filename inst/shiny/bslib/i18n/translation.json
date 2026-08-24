@@ -106,6 +106,7 @@
     { "en": "Explanation",                 "fr": "Explication",                     "nl": "Uitleg" },
     { "en": "User",                        "fr": "Utilisateur",                     "nl": "Gebruiker" },
     { "en": "Path",                        "fr": "Chemin",                          "nl": "Pad" },
+    { "en": "Interview",                   "fr": "Interview",                       "nl": "Interview" },
     { "en": "Comment",                     "fr": "Commentaire",                     "nl": "Opmerking" },
     { "en": "Cancel",                      "fr": "Annuler",                         "nl": "Annuleren" },
     { "en": "Send",                        "fr": "Envoyer",                         "nl": "Verzenden" },

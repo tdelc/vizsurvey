@@ -164,7 +164,7 @@ app_server <- function(input, output, session) {
   })
 
   # État partagé inter-onglets (sélection courante groupe/variable)
-  r_focus <- reactiveValues(intvwr = "", variable = "")
+  r_focus <- reactiveValues(intvwr = "", variable = "", intv = "")
   
   # --- Chaîne de données ----------------------------------------------------
   data <- mod_source_server("source", opts, lang, i18n_s) 

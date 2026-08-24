@@ -22,7 +22,8 @@ mod_archive_server <- function(id, data, sel, r_focus, opts, lang, i18n_s) {
     tr <- function(x) { lang(); i18n_s$t(x) }
     
     archive <- reactiveVal(
-      if (file.exists(opts$path_archive)) utils::read.csv(opts$path_archive)
+      if (file.exists(opts$path_archive)) utils::read.csv(opts$path_archive) %>% 
+        mutate_all(as.character)
       else tibble::tibble()
     )
 
@@ -38,6 +39,9 @@ mod_archive_server <- function(id, data, sel, r_focus, opts, lang, i18n_s) {
           column(6,textInput(ns("add_intvwr"), tr("Interviewer"),value = r_focus$intvwr)),
           column(6,textInput(ns("add_variable"), tr("Variable"),value = r_focus$variable))
         ),
+        fluidRow(
+          column(6,textInput(ns("add_intv"), tr("Interview"),value = r_focus$intv))
+        ),
         textAreaInput(ns("add_com"), tr("Comment"),height = 100,width = 400,
                       placeholder = 'explanation'),
         footer = tagList(
@@ -52,15 +56,18 @@ mod_archive_server <- function(id, data, sel, r_focus, opts, lang, i18n_s) {
         record <- tibble(timestamp = as.character(lubridate::today()),
                          user = input$add_user,
                          path = input$add_path,
-                         wave = input$add_wave,
-                         intvwr = input$add_intvwr,
-                         variable = input$add_variable,
+                         wave = as.character(input$add_wave),
+                         intvwr = as.character(input$add_intvwr),
+                         variable = as.character(input$add_variable),
+                         intv = as.character(input$add_intv),
                          comment = input$add_com)
         
         if (!file.exists(opts$path_archive)){
           write.csv(record, file = opts$path_archive, row.names = FALSE)
         }else{
-          df <- utils::read.csv(opts$path_archive) %>% add_row(record)
+          df <- utils::read.csv(opts$path_archive) %>% 
+            mutate_all(as.character) %>%  
+            add_row(record)
           write.csv(df, file = opts$path_archive, row.names = FALSE)
           archive(df)
         }
