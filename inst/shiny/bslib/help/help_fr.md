@@ -80,8 +80,7 @@ vague.
 Indicateurs utilisés dans le tableau *Synthèse* et dans le score.
 
 Décocher un indicateur le retire du tableau **et** du calcul du score. Utile
-quand un indicateur n'a pas de sens pour l'enquête (par exemple le travail de
-nuit si les entretiens se font uniquement sur rendez-vous), ou pour vérifier si
+quand un indicateur n'a pas de sens pour l'enquête, ou pour vérifier si
 le classement ne repose pas sur un seul indicateur.
 
 # intvwr-card_synthesis
@@ -93,8 +92,8 @@ panneau de gauche.
   Forest) : plus la combinaison d'indicateurs est rare, plus le rang est élevé.
 - `NB_INTV` est le nombre d'entretiens, `INDEX_H` l'homogénéité des réponses,
   `MAX_CHI2` le plus grand écart observé sur une variable.
-- Les indicateurs en `DURATION_` viennent des timers, ceux en `PC_` sont des
-  parts d'entretiens signalés (nuit, trop courts, trop rapprochés).
+- Les indicateurs en `DURATION_` viennent des timers, ceux en `PC_` viennent 
+  de Blaise.
 - Une case rouge dépasse de plus de 2 écarts-types la moyenne de sa colonne.
 - Les enquêteur·rices sous le seuil *Nombre minimum de lignes* ne sont pas
   affichés.
@@ -119,7 +118,6 @@ timers.
   l'entretien précédent.
 - Un 🔴 signale un drapeau : entretien trop court, travail de nuit, plusieurs
   sessions, ou écart négatif (entretiens qui se chevauchent).
-- Les seuils de ces drapeaux sont fixés à la préparation, dans `config.txt`.
 
 Cliquez sur un entretien pour ouvrir ses sessions en dessous.
 
@@ -151,7 +149,7 @@ enquêteur·rices de la même vague et du même filtre.
 - `chi2` mesure la distance entre la distribution de l'enquêteur·rice et la
   distribution de référence.
 - `standard` est cette distance normalisée par variable : c'est elle qui est
-  comparée au seuil *Distance de chi² / écart de médiane minimum*.
+  comparée au seuil *Distance de chi² minimum*.
 - Les variables numériques sont découpées au préalable en 5 classes : elles se
   comparent donc comme les variables catégorielles.
 
@@ -164,10 +162,8 @@ l'ensemble des autres enquêteur·rices (en gris).
 
 - Variable catégorielle : part de chaque modalité, le pourcentage affiché est
   celui de l'enquêteur·rice.
-- Variable numérique : densité, tronquée aux 1er et 99e centiles, avec la
-  médiane en pointillés.
-- Le résumé texte en dessous donne les statistiques usuelles pour
-  l'enquêteur·rice.
+- Le tableau à côté donne les statistiques usuelles pour
+  l'enquêteur·rice et le reste des interviews (éventuellement filtrés).
 
 Lisez la forme, pas seulement l'écart : une modalité jamais utilisée, ou
 utilisée systématiquement, est plus parlante qu'une petite différence répartie
@@ -189,22 +185,22 @@ Répartition des entretiens de l'enquêteur·rice sélectionné selon la variabl
 géographique déclarée dans `config.txt` (`var_info_geo`).
 
 Un·e enquêteur·rice couvrant une zone inhabituelle, ou une seule petite zone,
-peut expliquer des écarts observés ailleurs : les répondants ne sont tout
+peut expliquer des écarts observés ailleurs : les répondant·es ne sont tout
 simplement pas les mêmes.
 
 # intvwr-card_stat
 ## Nombre d'entretiens par vague
-Nombre d'entretiens de l'enquêteur·rice sélectionné, par vague et par valeur du
-filtre.
+Nombre d'entretiens de l'enquêteur·rice sélectionné·e, par vague et par valeur 
+du filtre.
 
 Cette carte n'est pas filtrée par le panneau de gauche : elle montre tout
-l'historique. Elle permet de distinguer un·e nouveau·elle d'un·e
-enquêteur·rice expérimenté, ou de repérer une activité qui s'arrête net.
+l'historique. Elle permet d'analyser l'expérience et le travail actuel d'un·e
+enquêteur·rice.
 
 # intvwr_variable-card_cross
 ## Écarts enquêteur·rice × variable
 Une ligne par couple enquêteur·rice / variable dont l'écart dépasse le seuil
-*Distance de chi² / écart de médiane minimum*.
+*Distance de chi² minimum*.
 
 - `chi2` est la distance entre la distribution de l'enquêteur·rice et la
   distribution de référence de la vague et du filtre.
@@ -235,7 +231,7 @@ enquêteur·rices.
 
 # intvwr_variable-card_intvwr_ranking
 ## Classement des enquêteur·rices
-Enquêteur·rices classés par score d'anomalie, calculé sur leurs écarts sur
+Enquêteur·rices classé·es par score d'anomalie, calculé sur leurs écarts sur
 l'ensemble des variables.
 
 - `score` vient d'un Isolation Forest : plus le profil d'écarts est atypique,
@@ -281,11 +277,11 @@ de sous-population (essayez le filtre du panneau de gauche).
 Distribution de la variable sélectionnée pour l'enquêteur·rice sélectionné (en
 foncé) face à l'ensemble des autres (en gris).
 
-- Variable catégorielle : part de chaque modalité, le pourcentage affiché est
+- Part de chaque modalité, le pourcentage affiché est
   celui de l'enquêteur·rice.
-- Variable numérique : densité, tronquée aux 1er et 99e centiles, avec la
-  médiane en pointillés.
-- Le résumé texte donne les statistiques usuelles pour l'enquêteur·rice.
+- Une variable numérique est transformé en catégorielle par quintile avant 
+  analyse
+- Le tableau à côté donne les statistiques usuelles pour l'enquêteur·rice.
 
 Cette carte se remplit en cliquant sur une case de la heatmap ou sur une ligne
 des tableaux du dessus.
@@ -314,16 +310,16 @@ Libellés et descriptions des variables, issus du fichier dictionnaire fourni au
 lancement.
 
 C'est l'endroit où vérifier la formulation exacte d'une question avant de
-conclure sur un écart : une différence entre vagues s'explique souvent par un
+conclure sur un écart : une différence entre vagues peuvent s'expliquer par un
 changement de libellé ou de routage.
 
 # archive-card_archive
 ## Archive des observations
 Commentaires enregistrés depuis l'interface avec le bouton **Ajouter à
-l'historique**.
+l'archive**.
 
 Chaque ligne conserve la date, l'utilisateur·rice, l'enquête, l'enquêteur·rice
-et la variable concernés, ainsi que le commentaire. Le fichier est partagé par
+et la variable concerné·es, ainsi que le commentaire. Le fichier est partagé par
 toutes les personnes qui utilisent le même chemin d'archive.
 
 Notez ce que vous avez vérifié, y compris les fausses alertes : cela évite à la
