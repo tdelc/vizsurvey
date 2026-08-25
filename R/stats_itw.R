@@ -10,7 +10,7 @@
 index_homogeneity <- function(df,var_itw,threahold=30){
   df_n_enq <- df %>% count(!!sym(var_itw))
   
-  syn <- df_n_enq %>% 
+  syn <- df %>% 
     pivot_longer(cols = -!!sym(var_itw),values_transform=as.character) %>% 
     filter(!is.na(!!sym(var_itw)),!is.na(value),value != "") %>% 
     count(!!sym(var_itw),name,value)

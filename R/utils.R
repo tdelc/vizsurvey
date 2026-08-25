@@ -257,6 +257,13 @@ my_chisq_test <- function(x, varname, ldist, useNA = "ifany") {
   return(out)
 }
 
+#' Cut a continuous variable in n categories.
+#'
+#' @param x vector to cut
+#' @param n_breaks number of breaks
+#'
+#' @returns vector
+#' @export
 cut_safe <- function(x, n_breaks = 5){
   if (all(is.na(x))) return(NA)
   breaks = unique(quantile(x,seq(0,1,1/n_breaks), na.rm = T))

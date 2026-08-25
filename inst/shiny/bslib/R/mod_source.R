@@ -111,7 +111,6 @@ mod_source_server <- function(id, opts, lang, i18n_s) {
     # ===================== Chargement de la nomenclature ====================
     df_nomen <- reactive({
       req(opts$path_nomen)
-      print(opts$path_nomen)
       df <- tibble(data.table::fread(opts$path_nomen))
       df$LABEL <- pull(df[,toupper(lang())])
       df

@@ -69,6 +69,7 @@ describe_col_num <- function(x, digits) {
 #' @param digits nombre de décimales
 #'
 #' @returns data.frame
+#' @export
 describe_variable <- function(x, by = NULL,
                               type = c("auto", "categorical", "continuous"),
                               max_levels = 20, digits = 1) {
@@ -122,6 +123,7 @@ describe_variable <- function(x, by = NULL,
 #' @param caption (optionnel) titre du tableau
 #'
 #' @returns datatable
+#' @export
 describe_variable_dt <- function(x, by = NULL, ..., caption = NULL) {
   d <- describe_variable(x, by = by, ...)
   

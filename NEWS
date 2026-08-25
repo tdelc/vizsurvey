@@ -6,6 +6,8 @@
 
 * Correction for 'group_vs_other' function : export in package
 
+* Correction of index of homogeneity
+
 ## New features
 
 * Add dictionnary entries in cross tab
