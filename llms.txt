@@ -208,6 +208,8 @@ Feedback and contributions are welcome.
   : Simulate EU-SILC dataset with injected errors
 - [`create_fake_silc()`](https://tdelc.github.io/vizsurvey/reference/create_fake_silc.md)
   : Use PUF files for SILC example
+- [`cut_safe()`](https://tdelc.github.io/vizsurvey/reference/cut_safe.md)
+  : Cut a continuous variable in n categories.
 - [`describe_variable()`](https://tdelc.github.io/vizsurvey/reference/describe_variable.md)
   : Description d'une variable, globale ou par groupe
 - [`describe_variable_dt()`](https://tdelc.github.io/vizsurvey/reference/describe_variable_dt.md)
@@ -220,6 +222,9 @@ Feedback and contributions are welcome.
   : Extract timer rds files from folder
 - [`folder_to_df()`](https://tdelc.github.io/vizsurvey/reference/folder_to_df.md)
   : tranform data from folder to config and df
+- [`group_vs_others()`](https://tdelc.github.io/vizsurvey/reference/group_vs_others.md)
+  : Vecteur de groupe "VAR = valeur" / "VAR != valeur" pour les
+  comparaisons
 - [`heatmap_group()`](https://tdelc.github.io/vizsurvey/reference/heatmap_group.md)
   : Create a heatmap
 - [`index_homogeneity()`](https://tdelc.github.io/vizsurvey/reference/index_homogeneity.md)
