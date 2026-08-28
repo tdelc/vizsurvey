@@ -21,103 +21,88 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-`vizsurvey` is an R package designed to streamline the quality assessment of survey data by providing intuitive visual diagnostics through an interactive dashboard. `vizsurvey` is especially useful for institutions or researchers conducting large-scale surveys with multiple interviewers, enabling a fast and systematic overview of data quality over time.
+`vizsurvey` est un package R conçu pour faciliter le contrôle qualité des données d'enquête, grâce à des diagnostics visuels réunis dans un tableau de bord interactif. Il s'adresse particulièrement aux instituts et aux équipes de recherche conduisant des enquêtes de grande ampleur avec de nombreux enquêteur·rices : il offre une vue rapide et systématique de la qualité des données, entre vagues et entre enquêteur·rices.
 
-## Key features
+`vizsurvey` ne tire aucune conclusion à votre place : il calcule des écarts (distances de chi², scores d'anomalie, indices d'homogénéité) et les met en évidence pour **prioriser la relecture**. L'interprétation reste celle de l'équipe d'enquête.
 
--   Interactive Shiny dashboard for real-time data exploration
--   Automated computation of summary statistics by wave and/or interviewer
--   Heatmap visualization for anomaly detection
--   Tools for preparing and managing multiple survey datasets
+## Fonctionnalités clés
 
-Full documentation and vignettes are available (currently available in French) at <https://tdelc.github.io/vizsurvey>
+-   Un tableau de bord Shiny interactif : onglet de synthèse, analyse par enquêteur·rice, analyse par vague, croisement enquêteur·rice × variable (heatmap), exploration des données, archive partagée des vérifications
+-   Le calcul automatisé des statistiques par vague et/ou par enquêteur·rice, avec des vagues et des filtres à un ou deux niveaux (par exemple année et trimestre)
+-   Un traitement unifié des variables : les continues sont découpées en classes et comparées comme les catégorielles, avec une seule distance de chi²
+-   L'analyse de l'audit trail (timers) quand il est disponible : durées d'entretien, travail de nuit, entretiens trop rapprochés (en refonte)
+-   Des outils de préparation pour gérer plusieurs enquêtes en routine (`config.txt`, `prepa_surveys`), avec dictionnaire de variables, nomenclature de libellés et archive partagée
+-   Une aide contextuelle sur chaque carte, une visite guidée intégrée, et une interface en français, anglais et néerlandais
+
+La documentation complète et les vignettes (en français) sont disponibles sur <https://tdelc.github.io/vizsurvey>.
 
 ## Installation
 
-You can install the development version of `vizsurvey` from github like so:
+Vous pouvez installer la version de développement de `vizsurvey` depuis GitHub :
 
 ```{r, eval=FALSE}
-install.packages("devtools") # if necessary
-library(devtools)
-
+install.packages("devtools") # si nécessaire
 devtools::install_github("tdelc/vizsurvey")
 ```
 
-A CRAN release is planned once version 1.0.0 is reached.
+Une publication sur le CRAN est prévue une fois la version 1.0.0 atteinte.
 
-## What is `vizsurvey` ?
+## Comment utiliser `vizsurvey` ?
 
-`vizsurvey` provides a comprehensive set of R functions designed to automate key statistical computations on survey data by *wave* or *interviewer*. These functions ensure that summary indicators, distributions, and consistency checks can be produced efficiently and reproducibly across multiple survey waves. At the core of these analyses lies the heatmap module, a graphical function (in `ggplot` and `plotly`) that visualizes deviations and irregularities at a glance, making it easier to detect outliers or recurring anomalies. Together, the computational tools, visualization features, and interactive Shiny dashboard make `vizsurvey` a complete environment for the monitoring, exploration, and quality assessment of survey data.
+`vizsurvey` s'utilise de deux manières complémentaires. On peut appeler directement ses fonctions de calcul pour produire les statistiques ou les heatmaps dans un flux reproductible (rapports automatisés, contrôles planifiés) ; ces fonctions sont documentées dans une [vignette dédiée](https://tdelc.github.io/vizsurvey/articles/methods.html). On peut aussi — c'est l'usage principal — lancer le tableau de bord interactif.
 
-## How to use `vizsurvey` ?
-
-`vizsurvey` can be used in two complementary ways. First, users can call its core R functions directly to generate summary statistics or to produce the heatmap visualizations programmatically. These functions are fully documented and illustrated in a [dedicated vignette](https://tdelc.github.io/vizsurvey/articles/methods.html) (currently available in French, with an English version forthcoming). This approach is ideal for integration into automated workflows or reproducible reports.
-
-Alternatively, users can simply launch the interactive dashboard, which provides an intuitive graphical interface for exploring survey data, filtering by wave or interviewer, and visualizing anomalies in real time. The function `runVizsurvey` is the easier way to launch the dashboard. It will be empty, you will then need to load your own dataset.
-
-```{r, eval=FALSE}
-library(vizsurvey)
-runVizsurvey()
-```
-
-Considering the interviewer effect, anomalies are displayed in a heatmap by interviewer and by variable. Each cell can be clicked to display detailed plots showing the distribution of responses and the comparison between the interviewer and the rest of the population.
-
-![](images/clipboard-4202437278.png)![](images/clipboard-479834452.png)![](images/clipboard-1525333393.png)
-
-For the wave effect, a list of detected anomalies is provided, together with a set of dedicated figures that help users understand the nature and potential source of each issue.
-
-![](images/clipboard-699643965.png) ![](images/clipboard-79293162.png)
-
-All the use of the interactive dashboard is documented in a [vignette](https://tdelc.github.io/vizsurvey/articles/vizsurvey.html).
-
-We can also launch the dashboard with a specific dataset. Here is an example with a R dataset. We use the `eusilc` dataset from `laeken` and add a fake interviewer id.
+La façon la plus simple de découvrir l'interface est de partir du jeu d'exemple intégré, dérivé de l'enquête SILC, dans lequel des erreurs volontaires ont été injectées :
 
 ```{r example1, eval=FALSE}
-# EU-SILC data
-library(laeken)
-data(eusilc)
+library(vizsurvey)
 
-# Fake ID
-set.seed(123)
-eusilc$NR_ITW <- paste(eusilc$NR_ITW,sample(1:5,nrow(eusilc),replace = T),sep="-")
+df <- create_eusilc_sim()
 
-# Vizsurve
-runVizsurvey_from_r(eusilc,var_group = "NR_ITW",var_zone = "db040")
+runVizsurvey_from_r(df,
+                    var_intvwr = "nr_itw",
+                    var_wave   = "db010",
+                    var_filter = "db040")
 ```
 
-We can also launch the dashboard directly with a CSV file. We provide some [Public Use Files](https://ec.europa.eu/eurostat/web/microdata/public-microdata/statistics-on-income-and-living-conditions) for EU-SILC from Eurostat.
+L'onglet de synthèse accueille l'utilisateur·rice avec une présentation de l'enquête et trois points d'entrée chiffrés vers les analyses. Une visite guidée, accessible depuis la barre de navigation, parcourt l'interface pas à pas sur les données chargées.
 
-```{r example2, eval=FALSE}
-path <- "inst/extdata/SILC/HFILE/BE_2012h_EUSILC.csv"
-runVizsurvey_from_file(path,var_group = "NR_ITW",var_zone = "db040")
-```
+![](images/readme-synthese.png)
 
-[A dedicated vignette](https://tdelc.github.io/vizsurvey/articles/data-preparation.html) also describes how to prepare the data required to use the dashboard from `vizsurvey` through the function `runVizsurvey_from_folder`. This functionality is specifically designed for institutions managing multiple surveys on a regular basis, often involving several team members in the process. In such contexts, launching the dashboard manually for each dataset can quickly become inefficient, and computing differences by domain or group may require substantial resources. To address this, `vizsurvey` provides a set of automated data preparation functions, allowing teams to structure their files consistently and generate all necessary objects for the application to run smoothly and systematically across multiple surveys.
+L'effet enquêteur·rice s'explore via une heatmap par enquêteur·rice et par variable. Chaque case se clique pour afficher les distributions détaillées et la comparaison entre l'enquêteur·rice et le reste de la population.
+
+![](images/readme-heatmap.png)
+
+L'effet vague est présenté sous forme de tableaux d'anomalies (variables absentes, distributions qui bougent, médianes qui décrochent), accompagnés de graphiques dédiés pour comprendre la nature de chaque écart.
+
+![](images/readme-vague.png)
+
+L'utilisation complète du tableau de bord est documentée dans une [vignette de prise en main](https://tdelc.github.io/vizsurvey/articles/vizsurvey.html).
+
+Pour les organisations gérant plusieurs enquêtes en routine, une [vignette de préparation des données](https://tdelc.github.io/vizsurvey/articles/data-preparation.html) décrit comment structurer les dossiers, configurer chaque enquête (`config.txt`) et précalculer les statistiques, de sorte que l'ouverture de l'interface soit immédiate pour toute l'équipe :
 
 ```{r example3, eval=FALSE}
-# We assume that config.txt, and prepa_surveys are already done here.
-# See vignette to learn how to prepare data folders
-runVizsurvey_from_folder("inst/extdata",depth_folder = 3)
+# config.txt et prepa_surveys sont supposés déjà en place ;
+# voir la vignette de préparation des données
+runVizsurvey_from_folder("data", depth_folder = 3)
 ```
 
-## Development Notes
+## Notes de développement
 
-Current Version : 0.2.0
+Version actuelle : 0.4.3 — voir le fichier [NEWS](NEWS) pour le détail des versions.
 
-The names of the functions and arguments in `vizsurvey` are still under evaluation and may evolve based on early user feedback. As the package is currently in its initial development phase, some naming conventions may be refined to improve clarity, consistency, and usability. Our goal is to achieve full naming stability starting from version **1.0.0**, once the package has benefited from the first round of testing and contributions from the community.
+Les noms des fonctions et des arguments sont encore susceptibles d'évoluer sur la base des premiers retours d'usage. Notre objectif est une stabilité complète de l'API à partir de la version **1.0.0**.
 
-`vizsurvey` builds upon a wide range of existing R packages, combining robust data-processing tools with flexible visualization and dashboard components. Two main layers can be distinguished in the package architecture:
+`vizsurvey` s'appuie sur deux couches de packages existants :
 
--   Core computation layer (data preparation and analysis) mostly based on the *tidyverse* ecosystem and related packages, ensuring readability and efficiency in handling large survey datasets : `cli`, `data.table`, `dplyr`, `lubridate`, `magrittr`, `purrr`, `rlang`, `scales`, `stats`, `tibble`, `tidyr`, `tidyselect`
+-   une couche de calcul (préparation et analyse), fondée sur l'écosystème *tidyverse* et {data.table} : `cli`, `data.table`, `dplyr`, `isotree`, `lubridate`, `magrittr`, `purrr`, `rlang`, `scales`, `stats`, `tibble`, `tidyr`, `tidyselect` ;
+-   une couche de visualisation et de tableau de bord : `bslib`, `bsicons`, `DT`, `ggplot2`, `plotly`, `shiny`, `shiny.i18n`, `shinybusy`.
 
--   Dashboard and visualization layer providing an interactive interface to explore results, monitor anomalies, and visualize distributions : `ggplot2`, `corrplot`, `DT`, `gt`, `plotly`, `shiny`, `shinydashboard`, `summarytools`
+## Auteurs
 
-## Authors
+**Thomas Delclite** est méthodologue statistique à Statbel, l'office belge de statistique.
 
-**Thomas Delclite** is statistical methodologist and works à Statbel, the Belgian Statistical Office.
+**Adrien Mierop** est data analyst à Statbel, l'office belge de statistique.
 
-**Adrien Mierop** is data analyst and works à Statbel, the Belgian Statistical Office.
-
-Feedback and contributions are welcome.
+Retours et contributions bienvenus.
 
 ![](images/clipboard-1862383668.png)

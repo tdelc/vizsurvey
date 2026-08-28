@@ -7,4 +7,3 @@
 ^pkgdown$
 ^\.github$
 ^data-raw$
-vignettes\data-preparation.Rmd

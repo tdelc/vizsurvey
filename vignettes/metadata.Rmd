@@ -1,0 +1,208 @@
+---
+title: "Enrichir l'interface avec des métadonnées"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Enrichir l'interface avec des métadonnées}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(vizsurvey)
+```
+
+# Introduction
+
+{vizsurvey} fonctionne sans aucune métadonnée. Chargez une base, désignez l'enquêteur·rice et la vague, et tous les calculs se font : les écarts, les classements, la heatmap. C'est d'ailleurs ainsi que la plupart des utilisateur·rices démarrent.
+
+Mais l'interface utilise alors alors les termes de vos fichiers, pas celle de vos collègues. Les tableaux affichent `CD_HM_RSP_CST_ELECTRICITY`, `PC_NIGHT` ou `PB220A`, et chaque personne qui découvre l'outil doit ouvrir le questionnaire à côté pour savoir de quoi il s'agit. C'est le point de friction le plus fréquent que nous ayons observé : ce n'est pas le calcul qui bloque, c'est la lecture.
+
+Deux fichiers facultatifs répondent à ce besoin :
+
+-   la **nomenclature** ajoute un libellé court sous chaque nom de variable, directement dans les tableaux ;
+-   le **dictionnaire** met à disposition la documentation détaillée d'une variable — formulation exacte de la question, modalités, routage — à l'endroit et au moment où l'on en a besoin.
+
+Ni l'un ni l'autre n'est nécessaire au fonctionnement de {vizsurvey}. Tous deux changent radicalement le confort d'usage, et surtout la capacité à partager l'outil avec des personnes qui ne connaissent pas la base par cœur.
+
+Cette vignette décrit leur format, ce qu'ils débloquent dans l'interface, et comment les construire progressivement.
+
+# Ce que vizsurvey appelle métadonnées
+
+Trois fichiers gravitent autour des données, avec des rôles distincts :
+
+| Fichier | Où il se déclare | Format | Rôle |
+|---|---|---|---|
+| `config.txt` | dans le dossier de chaque enquête | texte | rôles des variables (vague, filtre, enquêteur·rice) et typage. **Obligatoire** |
+| Nomenclature | `path_nomen` au lancement | plat (CSV, TSV...) | un libellé court par variable, par langue |
+| Dictionnaire | `path_dict` au lancement | `.rds` | documentation détaillée, structure libre |
+
+Le premier est traité dans la [vignette de préparation des données](https://tdelc.github.io/vizsurvey/articles/data-preparation.html) : il décrit la **structure** des données, ce sans quoi aucun calcul n'est possible. Les deux autres décrivent leur **sens**, ce sans quoi les résultats sont justes mais opaques.
+
+Différence importante : la nomenclature et le dictionnaire ne se déclarent pas dans `config.txt`, mais au lancement de l'interface. Ils sont donc **transverses** : un seul fichier peut servir toutes vos enquêtes.
+
+```{r, eval=F, warning = F, message = F}
+runVizsurvey_from_folder("data", depth_folder = 2,
+                         path_nomen   = "meta/nomenclature.csv",
+                         path_dict    = "meta/dictionnaire.rds",
+                         path_archive = "meta/archive.csv")
+```
+
+Ces trois arguments sont propres à `runVizsurvey_from_folder`. En lancement direct depuis R (`runVizsurvey_from_r`), l'interface fonctionne, mais sans métadonnées : c'est un mode d'exploration rapide, pas un mode de travail en équipe.
+
+# La nomenclature : des libellés dans les tableaux
+
+Un fichier plat lisible par `data.table::fread` (CSV, TSV, point-virgule...), avec une colonne `VARIABLE` et **une colonne par langue de l'interface**, nommée `FR`, `EN` et `NL` :
+
+```         
+VARIABLE,FR,EN,NL
+AGE,Âge de la personne,Age of the person,Leeftijd van de persoon
+EQINCOME,Revenu équivalent,Equivalised income,Equivalent inkomen
+PB220A,Pays de naissance,Country of birth,Geboorteland
+HSIZE,Taille du ménage,Household size,Grootte van het huishouden
+```
+
+Trois règles à respecter :
+
+1.  la colonne `VARIABLE` s'écrit en **majuscules**. {vizsurvey} met les noms de colonnes de vos données en majuscules à la lecture, et la correspondance est faite à l'identique, sans tolérance de casse ;
+2.  la correspondance est **exacte** : `AGE` ne correspond pas à `AGE_1` ;
+3.  prévoyez la colonne de chaque langue que vous comptez utiliser. La colonne lue est celle de la langue courante de l'interface : changer de langue en cours de session recharge les libellés.
+
+Une variable absente de la nomenclature s'affiche simplement sans libellé.
+
+Les libellés s'affichent sous les noms de colonnes des quatre tableaux de l'onglet **Enquêteur** : la synthèse, la table des entretiens, celle des sessions et le détail item par item d'un entretien.
+
+La correspondance se fait sur les noms de colonnes affichés, quels qu'ils soient. Rien ne vous empêche donc de documenter les **indicateurs calculés par {vizsurvey}** eux-mêmes, au même titre que vos variables :
+
+```         
+VARIABLE,FR,EN,NL
+RANK,Rang d'anomalie,Anomaly rank,Anomalierang
+NB_INTV,Nombre d'entretiens,Number of interviews,Aantal interviews
+INDEX_H,Indice d'homogénéité des réponses,Homogeneity index,Homogeniteitsindex
+MAX_CHI2,Plus grand écart observé,Largest deviation,Grootste afwijking
+DURATION_MEDIAN,Durée médiane d'un entretien (min),Median interview duration,Mediane duur
+PC_NIGHT,Part d'entretiens de nuit,Share of night interviews,Aandeel nachtinterviews
+```
+
+C'est un moyen très économique d'expliquer le tableau de synthèse à celles et ceux qui le découvrent, sans passer par une formation. Une vingtaine de lignes suffisent à couvrir tous les indicateurs de l'application.
+
+
+# Le dictionnaire : la documentation détaillée
+
+## Le format
+
+Un fichier `.rds` contenant un data.frame. Sa structure est **libre** : {vizsurvey} l'affiche tel quel dans un onglet dédié, avec recherche et filtres par colonne. Mettez-y ce que contient votre documentation : formulation de la question, modalités et leurs codes, routage, période de validité, commentaires méthodologiques.
+
+```{r, eval = FALSE}
+dico <- readr::read_csv("meta/dictionnaire.csv")
+saveRDS(dico, "meta/dictionnaire.rds")
+```
+
+Deux noms de colonnes ont toutefois un rôle particulier :
+
+-   **`VARIABLE`** active l'affichage contextuel décrit ci-dessous. Sans cette colonne, le dictionnaire reste consultable dans son onglet, mais n'apparaît pas dans les onglets d'analyse ;
+-   **`TX_LANG`** (valeurs `FR`, `EN`, `NL`) filtre les entrées sur la langue courante de l'interface. Elle permet de stocker les trois langues dans le même fichier, en lignes plutôt qu'en colonnes — l'inverse de la nomenclature.
+
+Les noms de colonnes sont reconnus sans tenir compte de la casse : `variable` et `VARIABLE` fonctionnent aussi bien. Voici la forme typique d'un dictionnaire multilingue avec des entrées au niveau des modalités :
+
+```{r}
+dico <- tibble::tribble(
+  ~VARIABLE,  ~TX_LANG, ~QUESTION,                          ~MODALITE,
+  "PL030",    "FR",     "Situation d'activité principale",   "1 : Travail à temps plein",
+  "PL030",    "FR",     "Situation d'activité principale",   "2 : Travail à temps partiel",
+  "PL030",    "FR",     "Situation d'activité principale",   "5 : Retraité·e",
+  "PL030",    "EN",     "Main activity status",              "1: Working full-time",
+  "HSIZE",    "FR",     "Nombre de personnes du ménage",     NA
+)
+
+dico
+```
+
+## Où le dictionnaire apparaît
+
+Il sert à deux endroits :
+
+-   dans un **onglet Dictionnaire**, inséré automatiquement à côté de l'onglet Données. Cet onglet n'existe que si un dictionnaire a été fourni et qu'il contient au moins une ligne : l'interface s'adapte, il n'y a pas d'onglet vide ;
+-   dans une **carte contextuelle** des onglets Vague, Enquêteur et Croisé : dès que vous sélectionnez une variable, les entrées du dictionnaire qui la concernent s'affichent sous les graphiques.
+
+<!-- CAPTURE : onglet Croisé, carte "Dictionnaire des données" sous les distributions, pour une variable sélectionnée -->
+
+![](images/dictionnaire-carte.png)
+
+C'est ce second usage qui change le travail au quotidien. Devant un écart entre deux vagues, la première question est presque toujours « la question a-t-elle changé ? ». Avoir la formulation exacte sous les yeux, sans quitter l'interface, évite l'aller-retour vers le questionnaire — et évite surtout de conclure trop vite à une anomalie de collecte là où il n'y a qu'une reformulation.
+
+
+## Créer le fichier depuis les données
+
+Le plus simple est de générer un squelette contenant toutes les variables, puis de le remplir progressivement — en commençant par celles qui remontent effectivement dans les analyses.
+
+```{r, eval = FALSE}
+df <- create_eusilc_sim()
+
+nomen <- tibble::tibble(
+  VARIABLE = toupper(names(df)),
+  FR = NA_character_,
+  EN = NA_character_,
+  NL = NA_character_
+)
+
+readr::write_csv(nomen, "meta/nomenclature.csv")
+```
+
+
+# Les deux fichiers sont complémentaires
+
+La nomenclature et le dictionnaire répondent à deux besoins différents, et gagnent à coexister :
+
+| | Nomenclature | Dictionnaire |
+|---|---|---|
+| Question posée | « c'est quoi, cette colonne ? » | « que dit exactement cette question ? » |
+| Volume | une ligne par variable | autant de lignes que nécessaire |
+| Lecture | d'un coup d'œil, dans l'en-tête | à la demande, dans un onglet |
+| Coût de mise en place | quelques dizaines de lignes | export d'un référentiel existant |
+
+Le parcours typique d'une investigation les mobilise l'un après l'autre : la nomenclature permet de **repérer** rapidement la variable qui pose problème dans un tableau, le dictionnaire permet de **comprendre** ce qu'elle mesure avant de conclure.
+
+# Le troisième fichier : l'archive
+
+L'archive complète le tableau, mais dans l'autre sens : ce n'est pas une métadonnée que vous fournissez, c'est une métadonnée que l'outil **produit**.
+
+Le bouton « Ajouter à l'archive » enregistre une ligne dans le fichier CSV désigné par `path_archive` :
+
+```         
+timestamp,user,path,wave,intvwr,variable,intv,comment
+2026-08-28,thomas,SILC/HFILE,2020,Vienna-2,AGE,,Erreur d'unité confirmée avec le service collecte
+```
+
+L'intérêt tient entièrement au **partage du chemin**. Si toute l'équipe pointe vers le même fichier, l'archive devient la mémoire collective des vérifications : qui a regardé quoi, quand, et avec quelle conclusion. Notez-y aussi les fausses alertes — ce sont elles qui font gagner le plus de temps à la personne suivante.
+
+Si le fichier n'existe pas encore, il est créé au premier enregistrement. En l'absence de l'argument, l'interface écrit dans `archive.csv`, dans le répertoire de travail de la session R : suffisant pour un essai, à proscrire pour un usage partagé.
+
+# Une mise en place progressive
+
+Rien n'oblige à tout utiliser d'un coup. L'ordre suivant donne un résultat utile dès la première étape :
+
+1.  **Sans rien.** Lancez l'interface, identifiez les variables qui ressortent réellement dans vos analyses. Elles sont en général bien moins nombreuses que la base.
+
+2.  **Une nomenclature partielle.** Vingt à trente lignes couvrant ces variables, plus les indicateurs de l'application. C'est une demi-journée de travail, et c'est ce qui transforme l'outil pour vos collègues.
+
+3.  **Le dictionnaire.** Un export de votre référentiel de métadonnées, avec au minimum les colonnes `VARIABLE` et la formulation des questions. Si vous n'avez pas de référentiel, commencez par les seules variables sensibles — celles dont le libellé a changé entre deux vagues.
+
+4.  **Le multilingue.** Ajoutez les colonnes `EN` et `NL` de la nomenclature, ou les lignes `TX_LANG` du dictionnaire, quand le besoin apparaît.
+
+Comme ces fichiers sont transverses, l'effort n'est consenti qu'une fois pour l'ensemble de vos enquêtes, et il est réutilisable au-delà de {vizsurvey} : un fichier `VARIABLE / libellé` propre sert aussi bien vos publications, vos exports que vos contrôles.
+
+# Conclusion
+
+Les métadonnées ne changent aucun calcul de {vizsurvey} : les écarts détectés sont exactement les mêmes avec ou sans elles. Elles changent qui peut lire ces écarts.
+
+C'est un usage discret mais essentiel pour le travail en équipe. Sans métadonnées, l'interface reste l'outil de la personne qui connaît la base ; avec elles, elle devient l'outil d'une équipe — gestionnaire d'enquête, méthodologue, responsable de collecte — chacun pouvant explorer, comprendre et documenter ses vérifications sans intermédiaire. Pour un investissement de quelques dizaines de lignes de fichier, c'est probablement le meilleur rapport entre effort et bénéfice de tout le dispositif.

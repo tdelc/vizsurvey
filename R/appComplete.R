@@ -61,7 +61,7 @@ runVizsurvey_from_folder <- function(
 #'
 #' @param df data.frame
 #' @param vars_discretes (optional) preset of discretes variables
-#' @param vars_continous (optional) preset of continous variables
+#' @param vars_continuous (optional) preset of continuous variables
 #' @param var_wave (optional) name of wave variable. Two variables can be given
 #'   (c("YEAR","QUARTER")) : the second one is then a second level of wave
 #' @param var_filter (optional) name of filter variable. Two variables can be
@@ -116,7 +116,7 @@ runVizsurvey_from_r <- function(
   
   prepa_survey(link_folder)
 
-  shiny::shinyOptions(link_data_folder = link_folder)
+  shiny::shinyOptions(path_data_folder = link_folder)
   shiny::shinyOptions(data_rds_pattern = "global")
   shiny::shinyOptions(depth_folder = 1)
   shiny::runApp(appDir, display.mode = "normal",launch.browser = TRUE)

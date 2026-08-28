@@ -135,7 +135,7 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
         select(!!sym(cfg()$var_intvwr),INDEX_H) %>% 
         mutate(!!sym(cfg()$var_intvwr) := as.character(!!sym(cfg()$var_intvwr)))
       
-      if (isTRUE(tmr$ready) & nrow(filt$df_timer_intv()) > 0){
+      if (isTRUE(tmr$ready) && nrow(filt$df_timer_intv()) > 0){
         df_audit <- filt$df_timer_intv() %>% 
           build_df_timer_intvwr(data$timer()$cfg) %>% 
           select(-any_of(cfg()$var_wave)) %>%
@@ -203,15 +203,17 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
       var_outliers <- df %>%
         select(-any_of(c(var_itwvr,var_rank,var_quanti))) %>%
         select(where(is.numeric)) %>% names()
-
+      
+      new_names <- names(df)
       if (!is.null(data$df_nomen())){
         df_nomen <- data$df_nomen()
+        
+        lbl <- df_nomen$LABEL[match(names(df), df_nomen$VARIABLE)]
+        lbl[is.na(lbl)] <- ""
 
         new_names <- paste0(
           names(df),
-          "<br><small style='color:gray;'>",
-          df_nomen$LABEL[ match(names(df), df_nomen$VARIABLE) ],
-          "</small>"
+          "<br><small style='color:gray;'>", lbl, "</small>"
         )
       }
       
@@ -294,14 +296,16 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
       
       df <- prepa_intv_table()
       
+      new_names <- names(df)
       if (!is.null(data$df_nomen())){
         df_nomen <- data$df_nomen()
         
+        lbl <- df_nomen$LABEL[match(names(df), df_nomen$VARIABLE)]
+        lbl[is.na(lbl)] <- ""
+        
         new_names <- paste0(
           names(df),
-          "<br><small style='color:gray;'>",
-          df_nomen$LABEL[ match(names(df), df_nomen$VARIABLE) ],
-          "</small>"
+          "<br><small style='color:gray;'>", lbl, "</small>"
         )
       }
       
@@ -335,14 +339,16 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
                across(ends_with('_TM_SSN'), ~stringr::str_replace(.x,"Z",""))) %>%  
         mutate(across(starts_with("FL_"),~ifelse(.x,"\U0001f534","")))
       
+      new_names <- names(df)
       if (!is.null(data$df_nomen())){
         df_nomen <- data$df_nomen()
         
+        lbl <- df_nomen$LABEL[match(names(df), df_nomen$VARIABLE)]
+        lbl[is.na(lbl)] <- ""
+        
         new_names <- paste0(
           names(df),
-          "<br><small style='color:gray;'>",
-          df_nomen$LABEL[ match(names(df), df_nomen$VARIABLE) ],
-          "</small>"
+          "<br><small style='color:gray;'>", lbl, "</small>"
         )
       }
       
@@ -440,19 +446,43 @@ mod_intvwr_server <- function(id, filt, data, r_focus, opts, lang, i18n_s) {
       )
     })
     
+    # output$var_distrib <- renderPlot({
+    #   
+    #   req(prepa_var(),selected_variable())
+    #   
+    #   validate(
+    #     need(selected_intvwr(), tr('Choose a interviewer.')),
+    #     need(selected_variable(), tr('Choose a variable.'))
+    #   )
+    #   
+    #   plot_compa_distributions(filt$df(), 
+    #                            selected_intvwr(), selected_variable(), 
+    #                            cfg()$var_intvwr, type = "auto")
+    #   
+    # })
+    
     output$var_distrib <- renderPlot({
-      
-      req(prepa_var(),selected_variable())
-      
       validate(
         need(selected_intvwr(), tr('Choose a interviewer.')),
         need(selected_variable(), tr('Choose a variable.'))
       )
       
-      plot_compa_distributions(filt$df(), 
-                               selected_intvwr(), selected_variable(), 
-                               cfg()$var_intvwr, type = "auto")
+      df <- filt$df()
       
+      levels <- df %>% pull(!!sym(selected_variable())) %>% unique()
+      
+      if(length(levels) > 15){
+        if (is.factor(pull(df[,selected_variable()]))){
+          validate(tr("Too much modalities for this categorical variable"))
+        }else{
+          df <- df %>% mutate(!!sym(selected_variable()) := 
+                                cut_safe(!!sym(selected_variable())))
+        }
+      }
+      
+      plot_compa_distributions(df, 
+                               selected_intvwr(), selected_variable(), 
+                               cfg()$var_intvwr, type = "categorical")
     })
     
     output$var_summary <- DT::renderDT({
