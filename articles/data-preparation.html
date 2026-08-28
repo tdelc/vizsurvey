@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Preparing the data • vizsurvey</title>
+<title>Préparer les données • vizsurvey</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Preparing the data">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Préparer les données">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -34,8 +34,9 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/data-preparation.html">Preparing the data</a></li>
-    <li><a class="dropdown-item" href="../articles/methods.html">Methodology and use of the functions</a></li>
+<li><a class="dropdown-item" href="../articles/data-preparation.html">Préparer les données</a></li>
+    <li><a class="dropdown-item" href="../articles/metadata.html">Enrichir l'interface avec des métadonnées</a></li>
+    <li><a class="dropdown-item" href="../articles/methods.html">Méthodes de calcul</a></li>
   </ul>
 </li>
       </ul>
@@ -57,7 +58,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Preparing the data</h1>
+      <h1>Préparer les données</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/tdelc/vizsurvey/blob/master/vignettes/data-preparation.Rmd" class="external-link"><code>vignettes/data-preparation.Rmd</code></a></small>
@@ -71,132 +72,182 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>This vignette presents the data preparation required to use
-{vizsurvey} through the <code>runVizsurvey_from_folder</code> call. The
-goal is to enable regular, structured use of the tool within a team
-managing several surveys.</p>
-<p>In this context, launching the interface manually for each database
-quickly becomes tedious. Moreover, computing the gaps, especially when
-they are broken down by survey wave or by filter, can be
-resource-intensive.</p>
-<p>To make this process easier, {vizsurvey} offers several automated
-preparation functions. This vignette describes how they work, step by
-step, from structuring the files to generating the objects needed to
-launch the application.</p>
+<p>Cette vignette présente la préparation des données nécessaire pour
+utiliser {vizsurvey} via <code>runVizsurvey_from_folder</code>.
+L’objectif est un usage régulier et structuré de l’outil au sein d’une
+équipe gérant plusieurs enquêtes.</p>
+<p>Dans ce contexte, lancer l’interface manuellement pour chaque base
+devient vite fastidieux. Surtout, le calcul des écarts — en particulier
+lorsqu’ils sont déclinés par vague et par filtre — peut être coûteux.
+{vizsurvey} sépare donc les deux temps : une
+<strong>préparation</strong> (<code><a href="../reference/prepa_survey.html">prepa_survey()</a></code>), qui calcule
+tout et enregistre le résultat dans un fichier <code>global.rds</code>,
+et l’<strong>ouverture de l’interface</strong>, qui ne fait que lire ce
+fichier et est donc immédiate.</p>
+<p>La préparation peut être relancée à chaque mise à jour des données,
+par exemple par une tâche planifiée quotidienne : toutes les personnes
+qui ouvrent l’interface analysent alors les mêmes fichiers à jour.</p>
 </div>
 <div class="section level2">
-<h2 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a>
+<h2 id="les-données-dexemple">Les données d’exemple<a class="anchor" aria-label="anchor" href="#les-donn%C3%A9es-dexemple"></a>
 </h2>
-<p>EU-SILC is an annual survey coordinated by Eurostat. It is used to
-measure income, poverty, inequality and living conditions in European
-countries. Eurostat provides <a href="https://ec.europa.eu/eurostat/web/microdata/public-microdata" class="external-link">Public
-Use Files</a> that can be used freely for testing. The files are
-anonymised and do not necessarily reproduce the official results. We
-provide two years of the EU-SILC survey for Belgium, for the household
-file. There is no interviewer number in these files initially, so a
-fictitious number <code>NR_ITW</code> was created for the examples
-here.</p>
-<p>The files can be found in the package source files at
-<code>inst/extdata/SILC</code>, or downloaded <a href="https://github.com/tdelc/vizsurvey/tree/master/inst/extdata/SILC/" class="external-link">here</a>.</p>
+<p>Pour tester la chaîne complète sans données réelles, la fonction
+<code><a href="../reference/create_eusilc_sim.html">create_eusilc_sim()</a></code> génère un jeu d’exemple à partir de
+l’extrait SILC du package {laeken} : un numéro d’enquêteur·rice fictif
+(<code>nr_itw</code>), une vague fictive (<code>db010</code>), et des
+erreurs volontaires à retrouver dans l’interface (voir la vignette de
+prise en main).</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_eusilc_sim.html">create_eusilc_sim</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="st">"data/EUSILC"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">readr</span><span class="fu">::</span><span class="fu">write_csv</span><span class="op">(</span><span class="va">df</span>, <span class="st">"data/EUSILC/eusilc_sim.csv"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="configuring-a-survey">Configuring a survey<a class="anchor" aria-label="anchor" href="#configuring-a-survey"></a>
+<h2 id="configurer-une-enquête">Configurer une enquête<a class="anchor" aria-label="anchor" href="#configurer-une-enqu%C3%AAte"></a>
 </h2>
-<p>Your database file must be readable by the
-<code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread</a></code> function. This function automatically
-recognises standard formats (CSV, TSV, etc.). Place your file in a
-dedicated directory, where it will be the <strong>only file of that
-format</strong>.</p>
-<p>If your survey is made up of several files (for example one file per
-year or per country, as for the EU-SILC survey), you can place them in
-the same directory. All files must, however, contain the same variables
-as those listed in the configuration file, and be in the same format. In
-addition, no other file of that type must be present in the
-directory.</p>
+<p>Votre fichier de données doit être lisible par
+<code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread</a></code>, qui reconnaît automatiquement les
+formats standards (CSV, TSV, etc.). Placez-le dans un dossier dédié, où
+il sera le <strong>seul fichier de ce format</strong>.</p>
+<p>Si votre enquête est constituée de plusieurs fichiers (par exemple un
+fichier par année ou par pays), vous pouvez les placer dans le même
+dossier : ils sont alors empilés à la lecture. Tous doivent cependant
+contenir les mêmes variables et être au même format, et aucun autre
+fichier de ce type ne doit être présent dans le dossier.</p>
 <div class="section level3">
-<h3 id="survey-configuration-file">Survey configuration file<a class="anchor" aria-label="anchor" href="#survey-configuration-file"></a>
+<h3 id="le-fichier-de-configuration">Le fichier de configuration<a class="anchor" aria-label="anchor" href="#le-fichier-de-configuration"></a>
 </h3>
-<p>Each data directory must contain a configuration file named
-<code>config.txt</code>. This file tells {vizsurvey} how to interpret
-and structure your data. It must include the following elements:</p>
-<pre><code>name_survey = 
+<p>Chaque dossier de données doit contenir un fichier de configuration
+nommé <code>config.txt</code>. Ce fichier indique à {vizsurvey} comment
+interpréter et structurer vos données. En voici la forme générale :</p>
+<pre><code>name_survey = EUSILC-SIM
 
 vars_discretes =
-vars_continous =
+vars_continuous =
+vars_ignore =
 
-var_wave = 
-var_filter = 
+prefix_discretes =
+prefix_continuous =
+prefix_ignore =
 
-var_intvwr = </code></pre>
-<ul>
-<li><p><code>name_survey</code>: name of the survey (useful for
-identifying the files);</p></li>
-<li><p><code>vars_discretes</code>: variables to be treated as
-categorical;</p></li>
-<li><p><code>vars_continous</code>: variables to be treated as
-continuous;</p></li>
-<li><p><code>var_wave</code>: survey wave variable used to break down
-the calculations (example: year);</p></li>
-<li><p><code>var_filter</code>: filter variable allowing an additional
-breakdown (example: province). The calculations are also produced
-without any filter distinction;</p></li>
-<li><p><code>var_intvwr</code>: interviewer identifier
-variable.</p></li>
-</ul>
-<p>The file can be created manually, or generated automatically with the
-<code>create_config</code> function. Here is the example for the
-household files of the SILC survey, with the year (<code>HB010</code>)
-as the survey wave and the province (<code>HB020</code>) as the
-filter:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+var_wave = DB010
+var_filter = DB040
+var_intvwr = NR_ITW
+var_intv =
+
+var_date =
+var_info_geo =</code></pre>
+<p>Les clés se répartissent en trois groupes. D’abord les <strong>rôles
+des variables</strong> :</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>Clé</th>
+<th>Rôle</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>var_wave</code></td>
+<td>variable de vague, servant à décliner les calculs (exemple :
+l’année). Peut contenir <strong>deux variables</strong> séparées par une
+virgule : la seconde est alors un second niveau, emboîté dans le premier
+(exemple : <code>var_wave = YEAR, QUARTER</code>)</td>
+</tr>
+<tr class="even">
+<td><code>var_filter</code></td>
+<td>variable de filtre, permettant une déclinaison supplémentaire
+(exemple : la région). Les calculs sont aussi produits sans distinction
+de filtre. Accepte également deux variables</td>
+</tr>
+<tr class="odd">
+<td><code>var_intvwr</code></td>
+<td>identifiant de l’enquêteur·rice</td>
+</tr>
+<tr class="even">
+<td><code>var_intv</code></td>
+<td>identifiant de l’entretien (utilisé par l’audit trail et par
+l’archive)</td>
+</tr>
+<tr class="odd">
+<td><code>var_date</code></td>
+<td>date de l’entretien</td>
+</tr>
+<tr class="even">
+<td><code>var_info_geo</code></td>
+<td>variable géographique, utilisée dans l’onglet Enquêteur pour situer
+les entretiens</td>
+</tr>
+</tbody>
+</table>
+<p>Ensuite le <strong>typage des variables</strong>, entièrement
+facultatif :</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>Clé</th>
+<th>Rôle</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>vars_discretes</code></td>
+<td>variables à traiter comme catégorielles
+(<code>VAR1,VAR2,...</code>)</td>
+</tr>
+<tr class="even">
+<td><code>vars_continuous</code></td>
+<td>variables à traiter comme continues</td>
+</tr>
+<tr class="odd">
+<td><code>vars_ignore</code></td>
+<td>variables à exclure de l’analyse</td>
+</tr>
+<tr class="even">
+<td><code>prefix_discretes</code></td>
+<td>préfixes de noms : toute variable commençant ainsi est catégorielle
+(exemple : <code>CD_,FL_</code>)</td>
+</tr>
+<tr class="odd">
+<td><code>prefix_continuous</code></td>
+<td>préfixes pour les variables continues (exemple :
+<code>MT_,NB_</code>)</td>
+</tr>
+<tr class="even">
+<td><code>prefix_ignore</code></td>
+<td>préfixes des variables à exclure</td>
+</tr>
+</tbody>
+</table>
+<p>Enfin les clés de l’<strong>audit trail</strong> (timers), décrites
+plus bas.</p>
+<p>Toutes les valeurs sont traitées sans tenir compte de la casse. Le
+fichier peut être créé à la main, ou généré avec
+<code>create_config</code> :</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/create_config.html">create_config</a></span><span class="op">(</span></span>
-<span>  folder_path <span class="op">=</span> <span class="st">"inst/extdata/SILC/HFILE"</span>,</span>
-<span>  name_survey <span class="op">=</span> <span class="st">"SILC-H"</span>,</span>
-<span>  var_wave    <span class="op">=</span> <span class="st">"HB010"</span>,</span>
-<span>  var_filter    <span class="op">=</span> <span class="st">"HB020"</span>,</span>
-<span>  var_intvwr   <span class="op">=</span> <span class="st">"NR_ITW"</span></span>
+<span>  folder_path <span class="op">=</span> <span class="st">"data/EUSILC"</span>,</span>
+<span>  name_survey <span class="op">=</span> <span class="st">"EUSILC-SIM"</span>,</span>
+<span>  var_wave    <span class="op">=</span> <span class="st">"db010"</span>,</span>
+<span>  var_filter  <span class="op">=</span> <span class="st">"db040"</span>,</span>
+<span>  var_intvwr  <span class="op">=</span> <span class="st">"nr_itw"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="section level4">
-<h4 id="two-levels-for-the-wave-or-the-filter">Two levels for the wave or the filter<a class="anchor" aria-label="anchor" href="#two-levels-for-the-wave-or-the-filter"></a>
-</h4>
-<p><code>var_wave</code> and <code>var_filter</code> can contain
-<strong>two variables</strong>, separated by a comma. The second one is
-then a second level, nested in the first one: for example the year and
-the quarter of the survey.</p>
-<pre><code>var_wave = YEAR, QUARTER
-var_filter = REGION, DEGURBA</code></pre>
+</div>
+<div class="section level3">
+<h3 id="le-typage-automatique-des-variables">Le typage automatique des variables<a class="anchor" aria-label="anchor" href="#le-typage-automatique-des-variables"></a>
+</h3>
+<p>Vous n’avez à renseigner <code>vars_discretes</code> et
+<code>vars_continuous</code> que si le classement automatique se trompe.
+La fonction <code>classify_df</code> détermine le type de chaque
+variable à partir de son format et de son nombre de modalités ; le seuil
+pour classer une variable comme catégorielle est de 15 modalités par
+défaut.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_config.html">create_config</a></span><span class="op">(</span></span>
-<span>  folder_path <span class="op">=</span> <span class="st">"inst/extdata/SILC/HFILE"</span>,</span>
-<span>  name_survey <span class="op">=</span> <span class="st">"SILC-H"</span>,</span>
-<span>  var_wave    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"YEAR"</span>, <span class="st">"QUARTER"</span><span class="op">)</span>,</span>
-<span>  var_filter  <span class="op">=</span> <span class="st">"HB020"</span>,</span>
-<span>  var_intvwr  <span class="op">=</span> <span class="st">"NR_ITW"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>In this case, {vizsurvey} builds a complete key by concatenating the
-levels (<code>2024 / T1</code>), and computes the statistics
-<strong>twice</strong>: once for the first level alone (the year), once
-for the complete key (the year and the quarter). The preparation is
-therefore longer, roughly in proportion to the number of modalities
-added.</p>
-<p>In the interface, the first level is a mandatory choice and the
-second one is optional (<code>All</code> by default), displayed in
-cascade below the first. Choosing only the year gives the analysis at
-the year level; adding the quarter restricts the analysis, and the
-comparisons (the other waves) are then also made at the year-and-quarter
-level.</p>
-<p>The same applies to <code>runVizsurvey_from_r</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">df</span>,</span>
-<span>                    var_intvwr <span class="op">=</span> <span class="st">"NR_ITW"</span>,</span>
-<span>                    var_wave   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"YEAR"</span>, <span class="st">"QUARTER"</span><span class="op">)</span>,</span>
-<span>                    var_filter <span class="op">=</span> <span class="st">"REGIO"</span><span class="op">)</span></span></code></pre></div>
-<p>The discrete and continuous variables only need to be specified if
-the <code>classify_df</code> function misidentifies their type. This
-function automatically determines the type of each variable, based on
-its format and number of categories. The threshold for classifying a
-variable as categorical is set to 15 by default.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/classify_df.html">classify_df</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 2</span></span></span>
 <span><span class="co">#&gt;   variable     type      </span></span>
@@ -206,79 +257,76 @@ variable as categorical is set to 15 by default.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sepal.Length Continuous</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sepal.Width  Continuous</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Species      Modal</span></span></code></pre></div>
-</div>
+<p>En pratique, le typage se résout dans cet ordre : les préfixes
+(<code>prefix_*</code>), puis les listes explicites
+(<code>vars_*</code>), puis le classement automatique pour tout le
+reste. Les variables listées dans <code>vars_ignore</code> ou
+correspondant à <code>prefix_ignore</code> sont écartées. En cas
+d’incohérence (variable en double, variable inclassable), un
+avertissement est émis et un fichier <code>log.txt</code> est écrit dans
+le dossier de l’enquête.</p>
 </div>
 <div class="section level3">
-<h3 id="optional-interviewer-summary-file">Optional: interviewer summary file<a class="anchor" aria-label="anchor" href="#optional-interviewer-summary-file"></a>
+<h3 id="une-vague-ou-un-filtre-à-deux-niveaux">Une vague ou un filtre à deux niveaux<a class="anchor" aria-label="anchor" href="#une-vague-ou-un-filtre-%C3%A0-deux-niveaux"></a>
 </h3>
-<p>In addition to the microdata, you can place an <strong>optional
-summary file containing one row per interviewer</strong> in the survey
-directory. This file gathers interviewer-level indicators that are not
-derived from the response distributions themselves, for example the
-number of completed interviews, the average interview duration, or the
-response rate. It must include the interviewer identifier (the same one
-used in <code>var_intvwr</code>) so that it can be matched to the
-microdata.</p>
-<p>To use it, declare its filename in <code>config.txt</code> with the
-<code>file_synthesis</code> key, or pass it to
-<code>create_config</code>:</p>
-<pre><code><span><span class="va">file_synthesis</span> <span class="op">=</span> <span class="va">synthesis.csv</span></span></code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/create_config.html">create_config</a></span><span class="op">(</span></span>
-<span>  folder_path    <span class="op">=</span> <span class="st">"inst/extdata/SILC/HFILE"</span>,</span>
-<span>  name_survey    <span class="op">=</span> <span class="st">"SILC-H"</span>,</span>
-<span>  var_wave       <span class="op">=</span> <span class="st">"HB010"</span>,</span>
-<span>  var_filter     <span class="op">=</span> <span class="st">"HB020"</span>,</span>
-<span>  var_intvwr     <span class="op">=</span> <span class="st">"NR_ITW"</span>,</span>
-<span>  file_synthesis <span class="op">=</span> <span class="st">"synthesis.csv"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>When such a file is present, it is automatically integrated and
-analysed during preparation, so that any atypical interviewer-level
-indicator is flagged as a potential anomaly, in the same way as the
-distributional gaps.</p>
+<p>Quand <code>var_wave</code> (ou <code>var_filter</code>) contient
+deux variables, {vizsurvey} construit une clé complète en concaténant
+les niveaux (<code>2024 / T1</code>) et calcule les statistiques
+<strong>deux fois</strong> : une fois pour le premier niveau seul
+(l’année), une fois pour la clé complète (l’année et le trimestre). La
+préparation est donc plus longue, à peu près proportionnellement au
+nombre de modalités ajoutées.</p>
+<p>Dans l’interface, le premier niveau est un choix obligatoire et le
+second est facultatif (<code>All</code> par défaut), affiché en cascade
+sous le premier. Choisir seulement l’année donne l’analyse au niveau de
+l’année ; ajouter le trimestre restreint l’analyse, et les comparaisons
+entre vagues se font alors aussi au niveau année-trimestre.</p>
+</div>
+<div class="section level3">
+<h3 id="les-valeurs-manquantes">Les valeurs manquantes<a class="anchor" aria-label="anchor" href="#les-valeurs-manquantes"></a>
+</h3>
+<p>Par défaut, les valeurs manquantes sont comptées comme une modalité à
+part entière dans le calcul des distances de chi² : une hausse de
+non-réponse est ainsi détectée au même titre qu’un déplacement de
+distribution. L’argument <code>na.rm = TRUE</code> de
+<code>prepa_survey</code> les écarte au contraire du calcul.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="preparing-the-survey">Preparing the survey<a class="anchor" aria-label="anchor" href="#preparing-the-survey"></a>
+<h2 id="préparer-lenquête">Préparer l’enquête<a class="anchor" aria-label="anchor" href="#pr%C3%A9parer-lenqu%C3%AAte"></a>
 </h2>
 <div class="section level3">
-<h3 id="simple-structure-a-single-directory">Simple structure: a single directory<a class="anchor" aria-label="anchor" href="#simple-structure-a-single-directory"></a>
+<h3 id="structure-simple-un-seul-dossier">Structure simple : un seul dossier<a class="anchor" aria-label="anchor" href="#structure-simple-un-seul-dossier"></a>
 </h3>
-<p>Once the configuration is in place, {vizsurvey} can compute
-<strong>in advance</strong> all the statistics needed to monitor the
-survey. When you have only a single survey directory, the
-<code>prepa_survey</code> function uses this directory, containing the
-data and the <code>config.txt</code> file, to produce:</p>
+<p>Une fois la configuration en place, <code>prepa_survey</code> utilise
+le dossier — données plus <code>config.txt</code> — pour produire :</p>
 <ul>
-<li><p>per wave, the descriptive statistics of each variable;</p></li>
-<li><p>per wave, for each variable, the gaps of each interviewer
-relative to the population (within the wave);</p></li>
-<li><p>per wave and per filter, for each variable, the gaps of each
-interviewer relative to the population (within the filter and the
-wave).</p></li>
+<li>par vague, les statistiques descriptives de chaque variable ;</li>
+<li>par vague, pour chaque variable, les écarts de chaque enquêteur·rice
+à la population (au sein de la vague) ;</li>
+<li>par vague et par filtre, les mêmes écarts au sein du filtre.</li>
 </ul>
-<p>By default, <code>prepa_survey</code> looks for the CSV files in the
-directory, but the <code>file_pattern</code> argument lets you adapt
-this behaviour. A <code>global.rds</code> file is then generated in the
-same folder: it is the only file that will be used by the interactive
-interface.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>Pour l’analyse par enquêteur·rice, les variables continues sont
+préalablement découpées en cinq classes (par quantiles), de sorte que
+toutes les variables se comparent avec la même distance de chi² (voir la
+vignette de méthodes).</p>
+<p>Par défaut, <code>prepa_survey</code> cherche les fichiers CSV du
+dossier ; l’argument <code>file_pattern</code> permet d’adapter ce
+comportement. Un fichier <code>global.rds</code> est alors généré dans
+le même dossier : c’est le seul fichier que lira l’interface.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/prepa_survey.html">prepa_survey</a></span><span class="op">(</span></span>
-<span>  folder_path  <span class="op">=</span> <span class="st">"inst/extdata/SILC/HFILE"</span>,</span>
+<span>  folder_path  <span class="op">=</span> <span class="st">"data/EUSILC"</span>,</span>
 <span>  file_pattern <span class="op">=</span> <span class="st">"*.csv"</span><span class="op">)</span></span></code></pre></div>
-<p>The application can then be launched simply with the
-<code>runVizsurvey_from_folder</code> function.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"inst/extdata/SILC/HFILE"</span>, depth_folder <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p>The <code>prepa_survey</code> function can be called each time your
-survey data are updated. Its execution can be scheduled so that all the
-statistics on your surveys are computed daily.</p>
+<p>L’application se lance ensuite simplement :</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data/EUSILC"</span>, depth_folder <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="double-structure-several-directories">Double structure: several directories<a class="anchor" aria-label="anchor" href="#double-structure-several-directories"></a>
+<h3 id="structure-double-plusieurs-dossiers">Structure double : plusieurs dossiers<a class="anchor" aria-label="anchor" href="#structure-double-plusieurs-dossiers"></a>
 </h3>
-<p>If you manage several surveys, you can create the directories side by
-side following this structure:</p>
+<p>Si vous gérez plusieurs enquêtes, créez les dossiers côte à côte
+:</p>
 <pre><code>data/
   ├── ENQ1/
   │   ├── *.csv
@@ -286,29 +334,21 @@ side following this structure:</p>
   └── ENQ2/
       ├── *.csv
       └── config.txt</code></pre>
-<p>You can then prepare all your surveys with the
-<code>prepa_surveys</code> function. This function acts as a wrapper
-around <code>prepa_survey</code> and automatically applies the
-preparation to all the child directories of the specified path. In this
-case, you need to set <code>depth_folder = 2</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/prepa_surveys.html">prepa_surveys</a></span><span class="op">(</span>folder_path  <span class="op">=</span> <span class="st">"inst/extdata/SILC"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p>You can then launch the interface by specifying the same depth
-level:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"inst/extdata/SILC"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><code>prepa_surveys</code> (au pluriel) applique alors la préparation
+à tous les sous-dossiers. Indiquez <code>depth_folder = 2</code>, à la
+préparation comme au lancement :</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/prepa_surveys.html">prepa_surveys</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="triple-structure-several-directory-levels">Triple structure: several directory levels<a class="anchor" aria-label="anchor" href="#triple-structure-several-directory-levels"></a>
+<h3 id="structure-triple-plusieurs-niveaux-de-dossiers">Structure triple : plusieurs niveaux de dossiers<a class="anchor" aria-label="anchor" href="#structure-triple-plusieurs-niveaux-de-dossiers"></a>
 </h3>
-<p>It is also possible to manage a full survey tree, with several
-hierarchical levels. The first level may correspond to the different
-surveys conducted and, as a second level, one directory per type of file
-produced by that survey. For example, the SILC survey contains four
-types of files, two at the household level and two at the individual
-level. The HBS survey contains a survey file and a file for expenditure
-diaries, and so on. Here is an example of the expected directory
-structure:</p>
+<p>Il est enfin possible de gérer une arborescence complète : un premier
+niveau par enquête, un second par type de fichier produit par l’enquête.
+Par exemple, l’enquête SILC comporte des fichiers ménages et des
+fichiers individus ; l’enquête HBS un fichier d’enquête et un fichier de
+carnets de dépenses.</p>
 <pre><code>data/
   ├── ENQ1/
   │   ├── ENQ1-A/
@@ -320,34 +360,137 @@ structure:</p>
       │   └── ...
       └── ENQ2-B/
           └── ...</code></pre>
-<p>Each sub-directory must contain its own <code>config.txt</code> and
-its own data files. Within each sub-directory, all files must have the
-same data structure. You can then run the global preparation:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/prepa_surveys.html">prepa_surveys</a></span><span class="op">(</span>folder_path  <span class="op">=</span> <span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p>Finally, the interface is launched with the same depth:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p>If the data are updated, for example during fieldwork, you simply
-need to run the <code>prepa_surveys</code> function again to obtain an
-updated version of the <code>global.rds</code> objects, and thus a full
-update of the interactive interface.</p>
+<p>Chaque sous-dossier doit contenir son propre <code>config.txt</code>
+et ses propres données. La préparation et le lancement se font avec
+<code>depth_folder = 3</code> :</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/prepa_surveys.html">prepa_surveys</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p>Si les données sont mises à jour, par exemple en cours de collecte,
+il suffit de relancer <code>prepa_surveys</code> pour obtenir une
+version à jour des <code>global.rds</code>, donc de l’interface.</p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="les-fichiers-transverses">Les fichiers transverses<a class="anchor" aria-label="anchor" href="#les-fichiers-transverses"></a>
+</h2>
+<p>Trois fichiers facultatifs, communs à toutes les enquêtes, se
+déclarent au lancement de l’interface — pas dans
+<code>config.txt</code>.</p>
+<div class="section level3">
+<h3 id="le-dictionnaire-path_dict">Le dictionnaire (<code>path_dict</code>)<a class="anchor" aria-label="anchor" href="#le-dictionnaire-path_dict"></a>
+</h3>
+<p>Un fichier <code>.rds</code> contenant un data.frame de documentation
+des variables : libellés, descriptions, modalités… Sa structure est
+libre ; il est affiché tel quel dans un onglet Dictionnaire, avec
+recherche et filtres.</p>
+<p>Deux colonnes ont toutefois un rôle particulier : si une colonne
+<code>VARIABLE</code> est présente, l’onglet Croisé affiche les entrées
+du dictionnaire correspondant à la variable sélectionnée ; si une
+colonne <code>TX_LANG</code> est présente (valeurs <code>FR</code>,
+<code>EN</code>, <code>NL</code>), seules les entrées de la langue
+courante de l’interface sont montrées.</p>
+</div>
+<div class="section level3">
+<h3 id="la-nomenclature-path_nomen">La nomenclature (<code>path_nomen</code>)<a class="anchor" aria-label="anchor" href="#la-nomenclature-path_nomen"></a>
+</h3>
+<p>Un fichier plat (lisible par <code>fread</code>) donnant un libellé
+court par variable, dans chaque langue :</p>
+<pre><code>VARIABLE,FR,EN,NL
+AGE,Âge de la personne,Age of the person,Leeftijd van de persoon
+EQINCOME,Revenu équivalent,Equivalised income,Equivalent inkomen</code></pre>
+<p>Quand ce fichier est fourni, les libellés s’affichent sous les noms
+de variables dans les tableaux de l’onglet Enquêteur, dans la langue de
+l’interface.</p>
+</div>
+<div class="section level3">
+<h3 id="larchive-path_archive">L’archive (<code>path_archive</code>)<a class="anchor" aria-label="anchor" href="#larchive-path_archive"></a>
+</h3>
+<p>Un fichier CSV où l’interface enregistre les observations consignées
+par les utilisateur·rices (date, personne, enquête, vague,
+enquêteur·rice, entretien, variable, commentaire). Il est créé au
+premier enregistrement s’il n’existe pas. Pointez toutes les personnes
+de l’équipe vers le <strong>même</strong> chemin, sur un emplacement
+partagé et inscriptible : l’archive est justement faite pour mutualiser
+les vérifications.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>                         path_dict    <span class="op">=</span> <span class="st">"meta/dictionnaire.rds"</span>,</span>
+<span>                         path_nomen   <span class="op">=</span> <span class="st">"meta/nomenclature.csv"</span>,</span>
+<span>                         path_archive <span class="op">=</span> <span class="st">"meta/archive.csv"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="laudit-trail-timers">L’audit trail (timers)<a class="anchor" aria-label="anchor" href="#laudit-trail-timers"></a>
+</h2>
+<p>Si votre outil de collecte produit des traces horodatées (un
+enregistrement par item de questionnaire), {vizsurvey} peut en tirer une
+analyse des durées : durée des entretiens et des sessions, entretiens
+trop courts ou trop rapprochés, travail de nuit, entretiens qui se
+chevauchent.</p>
+<p>Les clés correspondantes de <code>config.txt</code> :</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>Clé</th>
+<th>Rôle</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>var_timer</code></td>
+<td>horodatage du début de l’item</td>
+</tr>
+<tr class="even">
+<td><code>var_itm_duration</code></td>
+<td>durée de l’item</td>
+</tr>
+<tr class="odd">
+<td><code>var_session</code></td>
+<td>identifiant de la session de collecte</td>
+</tr>
+<tr class="even">
+<td><code>duration_min_during</code></td>
+<td>durée (minutes) en dessous de laquelle un entretien est signalé
+(défaut : 15)</td>
+</tr>
+<tr class="odd">
+<td><code>duration_min_inter</code></td>
+<td>écart (minutes) entre deux entretiens en dessous duquel ils sont
+signalés (défaut : 15)</td>
+</tr>
+<tr class="even">
+<td>
+<code>night_start</code>, <code>night_end</code>
+</td>
+<td>heures de début et de fin de la nuit (défaut : 21 et 6)</td>
+</tr>
+</tbody>
+</table>
+<p>L’interface attend, dans le dossier de l’enquête, un fichier
+<code>timers.rds</code> contenant les synthèses par entretien et par
+session, ainsi qu’un fichier <code>timers_&lt;vague&gt;.parquet</code>
+par vague pour le détail item par item. Les fonctions de préparation de
+ces fichiers sont en cours de refonte : si vous souhaitez utiliser ce
+volet dès maintenant, ouvrez une issue sur le dépôt du package et nous
+vous accompagnerons.</p>
 </div>
 <div class="section level2">
 <h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
-<p>Data preparation is an essential step before fully using {vizsurvey}
-within an organisation that runs surveys on a daily basis. It optimises
-the responsiveness of the application and guarantees that all survey
-managers analyse the same up-to-date files.</p>
-<p>Once the files are structured, configured and prepared, each launch
-of the interface becomes immediate: all the necessary statistics are
-already computed and stored in the <code>global.rds</code> file. This
-approach ensures an efficient reuse of the data, whatever the number of
-surveys or the complexity of their tree structure. It also facilitates
-collaborative work within a team: each member can explore the results
-without having to know R.</p>
+<p>La préparation des données est une étape essentielle avant une
+utilisation en routine de {vizsurvey} dans une organisation qui conduit
+des enquêtes au quotidien. Elle optimise la réactivité de l’application
+et garantit que toutes les personnes analysent les mêmes fichiers à
+jour.</p>
+<p>Une fois les fichiers structurés, configurés et préparés, chaque
+ouverture de l’interface est immédiate : toutes les statistiques sont
+déjà calculées dans <code>global.rds</code>. Cette approche facilite
+aussi le travail collaboratif : chaque membre de l’équipe peut explorer
+les résultats sans connaître R, et l’archive partagée conserve la
+mémoire des vérifications déjà faites.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

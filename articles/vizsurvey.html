@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Step-by-step guide to explore and detect anomalies • vizsurvey</title>
+<title>Guide pas à pas : explorer et détecter les anomalies • vizsurvey</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Step-by-step guide to explore and detect anomalies">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Guide pas à pas : explorer et détecter les anomalies">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -34,8 +34,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/data-preparation.html">Preparing the data</a></li>
-    <li><a class="dropdown-item" href="../articles/methods.html">Methodology and use of the functions</a></li>
+<li><a class="dropdown-item" href="../articles/data-preparation.html">Préparer les données</a></li>
+    <li><a class="dropdown-item" href="../articles/metadata.html">Enrichir l'interface avec des métadonnées</a></li>
+    <li><a class="dropdown-item" href="../articles/methods.html">Méthodes de calcul</a></li>
   </ul>
 </li>
       </ul>
@@ -57,7 +58,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Step-by-step guide to explore and detect anomalies</h1>
+      <h1>Guide pas à pas : explorer et détecter les anomalies</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/tdelc/vizsurvey/blob/master/vignettes/vizsurvey.Rmd" class="external-link"><code>vignettes/vizsurvey.Rmd</code></a></small>
@@ -70,471 +71,543 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <div class="section level3">
-<h3 id="why-vizsurvey">Why vizsurvey?<a class="anchor" aria-label="anchor" href="#why-vizsurvey"></a>
+<h3 id="pourquoi-vizsurvey">Pourquoi vizsurvey ?<a class="anchor" aria-label="anchor" href="#pourquoi-vizsurvey"></a>
 </h3>
-<p>In a statistical process aligned with the GSBPM, quality is not
-decided only upstream (sampling, questionnaire, data collection) or
-downstream (analysis, dissemination). Between collection and analysis
-lies a key phase: checking and monitoring the material collected, in
-order to spot anomalies quickly, document discrepancies and, where
-necessary, trigger corrective action.</p>
-<p>{vizsurvey} addresses this need: it offers an interactive interface
-to browse your data, compare response profiles and prioritise
-investigations. The goal is not to draw statistical conclusions, but to
-guide the analyst’s eye with simple indicators (distances, ranks) and
-suitable visualisations.</p>
+<p>Dans un processus statistique aligné sur le GSBPM, la qualité ne se
+joue pas seulement en amont (échantillonnage, questionnaire, collecte)
+ou en aval (analyse, diffusion). Entre la collecte et l’analyse se situe
+une phase clé : le contrôle et le suivi du matériau collecté, pour
+repérer rapidement les anomalies, documenter les écarts et, si
+nécessaire, déclencher une action corrective.</p>
+<p>{vizsurvey} répond à ce besoin : une interface interactive pour
+parcourir vos données, comparer des profils de réponse et prioriser les
+investigations. L’objectif n’est pas de tirer des conclusions
+statistiques, mais de guider l’œil de l’analyste avec des indicateurs
+simples (distances, rangs) et des visualisations adaptées.</p>
 </div>
 <div class="section level3">
-<h3 id="interviewer-consistency">Interviewer consistency<a class="anchor" aria-label="anchor" href="#interviewer-consistency"></a>
+<h3 id="la-cohérence-entre-enquêteurrices">La cohérence entre enquêteur·rices<a class="anchor" aria-label="anchor" href="#la-coh%C3%A9rence-entre-enqu%C3%AAteurrices"></a>
 </h3>
-<p>The interviewer’s role is central: a fine-grained understanding of
-the questionnaire, adherence to the routing, and management of the
-interview. Interviewer effects may nonetheless appear (systematic
-differences in the response distribution depending on who conducts the
-interview), stemming from different working methods, unintentional
-biases, recurring errors or, more rarely, fraud.</p>
-<p>On this topic, {vizsurvey} lets you:</p>
+<p>Le rôle de l’enquêteur·rice est central : compréhension fine du
+questionnaire, respect du routage, conduite de l’entretien. Des effets
+enquêteur·rice peuvent néanmoins apparaître (des différences
+systématiques de distribution des réponses selon la personne qui conduit
+l’entretien), issus de méthodes de travail différentes, de biais
+involontaires, d’erreurs récurrentes ou, plus rarement, de fraude.</p>
+<p>Sur ce volet, {vizsurvey} permet de :</p>
 <ul>
-<li>Compare one interviewer’s response distributions against all the
-others;</li>
-<li>Rank interviewers according to several distance indicators;</li>
-<li>Focus the review on the most atypical interviewer × variable
-combinations.</li>
+<li>comparer les distributions de réponse d’un·e enquêteur·rice à celles
+de tous les autres ;</li>
+<li>classer les enquêteur·rices selon un score d’anomalie ;</li>
+<li>concentrer la relecture sur les croisements enquêteur·rice ×
+variable les plus atypiques ;</li>
+<li>si un audit trail (timers) est disponible, examiner les durées
+d’entretien, le travail de nuit ou les entretiens trop rapprochés. Le
+travail sur l’audit trail est en refonte pour être le plus facilement
+accessible pour tous les instituts.</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="survey-wave-consistency">Survey wave consistency<a class="anchor" aria-label="anchor" href="#survey-wave-consistency"></a>
+<h3 id="la-cohérence-entre-vagues">La cohérence entre vagues<a class="anchor" aria-label="anchor" href="#la-coh%C3%A9rence-entre-vagues"></a>
 </h3>
-<p>From one year to the next, questionnaires evolve (labels, routing,
-filters), but the target variables should remain comparable. {vizsurvey}
-lets you define a wave variable (here, for example, the survey year),
-which highlights:</p>
+<p>D’une vague à l’autre, les questionnaires évoluent (libellés,
+routages, filtres), mais les variables cibles doivent rester
+comparables. {vizsurvey} permet de définir une variable de vague (par
+exemple l’année de l’enquête) et met en évidence :</p>
 <ul>
-<li>gaps in distributions or levels (proportions, means);</li>
-<li>variables showing breaks that warrant a second look (routing
-implementation, recoding, questionnaire version, change in data
-collection, etc.).</li>
+<li>les écarts de distribution ou de niveau (proportions, médianes)
+;</li>
+<li>les variables présentant des ruptures qui méritent un second regard
+(mise en œuvre du routage, recodage, version du questionnaire,
+changement de mode de collecte, etc.).</li>
 </ul>
+<p>Depuis la version 0.4, la vague peut être définie sur <strong>deux
+niveaux</strong> (par exemple l’année et le trimestre) : le premier
+niveau est obligatoire, le second facultatif, en cascade dans
+l’interface.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="launching-vizsurvey">Launching vizsurvey<a class="anchor" aria-label="anchor" href="#launching-vizsurvey"></a>
+<h2 id="lancer-vizsurvey">Lancer vizsurvey<a class="anchor" aria-label="anchor" href="#lancer-vizsurvey"></a>
 </h2>
-<p>There are two main ways to launch {vizsurvey}: from a database held
-in R (<code>runVizsurvey_from_r</code>), or by preparing a file
-structure to analyse several surveys at once
-(<code>runVizsurvey_from_folder</code>).</p>
+<p>Il existe deux manières principales de lancer {vizsurvey} : depuis
+une base présente en R (<code>runVizsurvey_from_r</code>), ou en
+préparant une arborescence de fichiers pour analyser plusieurs enquêtes
+à la fois (<code>runVizsurvey_from_folder</code>).</p>
 <div class="section level3">
-<h3 id="from-an-r-object">From an R object<a class="anchor" aria-label="anchor" href="#from-an-r-object"></a>
+<h3 id="depuis-un-objet-r">Depuis un objet R<a class="anchor" aria-label="anchor" href="#depuis-un-objet-r"></a>
 </h3>
-<p>To launch the interface from an R object, simply call
-<code>runVizsurvey_from_r</code> with the name of the object.</p>
+<p>Pour lancer l’interface depuis un objet R, il suffit d’appeler
+<code>runVizsurvey_from_r</code> avec le nom de l’objet.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/knitr/man/opts_chunk.html" class="external-link">opts_chunk</a></span><span class="op">$</span><span class="fu">set</span><span class="op">(</span>warning <span class="op">=</span> <span class="cn">FALSE</span>, message <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tdelc/vizsurvey" class="external-link">vizsurvey</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tdelc/vizsurvey" class="external-link">vizsurvey</a></span><span class="op">)</span></span>
 <span><span class="co"># Not Run</span></span>
 <span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
-<p>Once the required packages are loaded, a {shiny} interface opens in
-your browser. At this stage the interface is almost empty, because you
-have not supplied any arguments yet, such as a variable identifying the
-interviewers, a variable identifying the survey waves, or a variable
-used as a filter. Here is the command for passing those parameters.</p>
+<p>À ce stade, l’interface est presque vide : vous n’avez fourni aucun
+paramètre, comme une variable identifiant les enquêteur·rices, une
+variable de vague, ou une variable de filtre. Voici la commande complète
+:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Not Run</span></span>
 <span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">df</span>,</span>
 <span>                    var_intvwr <span class="op">=</span> <span class="st">"NR_ITW"</span>,</span>
 <span>                    var_wave   <span class="op">=</span> <span class="st">"YEAR"</span>,</span>
 <span>                    var_filter <span class="op">=</span> <span class="st">"REGIO"</span><span class="op">)</span></span></code></pre></div>
-<p>Here, <code>var_intvwr</code> identifies the interviewers,
-<code>var_wave</code> identifies the survey waves, and
-<code>var_filter</code> is an optional variable used to
-<strong>filter</strong> the analysis (for example, restricting it to a
-particular region). When a filter variable is supplied, the analyses are
-produced both at the global level and within each value of the
-filter.</p>
-<div class="section level4">
-<h4 id="optional-an-interviewer-summary-file">Optional: an interviewer summary file<a class="anchor" aria-label="anchor" href="#optional-an-interviewer-summary-file"></a>
-</h4>
-<p>In addition to the microdata, you can supply an <strong>optional
-summary file containing one row per interviewer</strong>. This file
-gathers interviewer-level indicators that are not derived from the
-response distributions themselves, for example the number of completed
-interviews, the average interview duration, the response or contact
-rate, the share of refusals, and so on. It must include the interviewer
-identifier (the same one used in <code>var_intvwr</code>) so that it can
-be matched to the microdata.</p>
-<p>When such a file is provided, {vizsurvey} automatically integrates
-and analyses it alongside the response distributions. Any atypical
-interviewer-level indicator (for example an unusually short average
-interview duration, an extreme response rate, or an unusual number of
-completed interviews) is then flagged as a potential anomaly, in the
-same way as the distributional discrepancies.</p>
+<p>Ici, <code>var_intvwr</code> identifie les enquêteur·rices,
+<code>var_wave</code> identifie les vagues, et <code>var_filter</code>
+est une variable facultative servant à <strong>filtrer</strong>
+l’analyse (par exemple la région). Quand un filtre est fourni, les
+analyses sont produites à la fois au niveau global et au sein de chaque
+valeur du filtre.</p>
+<p><code>var_wave</code> et <code>var_filter</code> acceptent chacun
+<strong>deux variables</strong> : la seconde est alors un second niveau,
+emboîté dans le premier.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Not Run</span></span>
 <span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">df</span>,</span>
-<span>                    var_intvwr     <span class="op">=</span> <span class="st">"NR_ITW"</span>,</span>
-<span>                    var_wave       <span class="op">=</span> <span class="st">"YEAR"</span>,</span>
-<span>                    var_filter     <span class="op">=</span> <span class="st">"REGIO"</span>,</span>
-<span>                    data_synthesis <span class="op">=</span> <span class="va">interviewer_summary</span><span class="op">)</span></span></code></pre></div>
-</div>
+<span>                    var_intvwr <span class="op">=</span> <span class="st">"NR_ITW"</span>,</span>
+<span>                    var_wave   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"YEAR"</span>, <span class="st">"QUARTER"</span><span class="op">)</span>,</span>
+<span>                    var_filter <span class="op">=</span> <span class="st">"REGIO"</span><span class="op">)</span></span></code></pre></div>
+<p>À noter : les noms de variables sont traités sans tenir compte de la
+casse (tout est converti en majuscules en interne).</p>
 </div>
 <div class="section level3">
-<h3 id="from-a-directory-of-databases">From a directory of databases<a class="anchor" aria-label="anchor" href="#from-a-directory-of-databases"></a>
+<h3 id="depuis-une-arborescence-de-dossiers">Depuis une arborescence de dossiers<a class="anchor" aria-label="anchor" href="#depuis-une-arborescence-de-dossiers"></a>
 </h3>
-<p>The {vizsurvey} package can handle several directories containing
-different surveys. In this kind of setup, the assumption is that several
-users run {vizsurvey} at different times. Because generating the
-statistics every time the application starts can be too slow, it is
-preferable to prepare the files in advance, so that opening the
-interface is more responsive.</p>
-<p>Each survey (and therefore each database folder) must contain a
-global configuration file in <code>.rds</code> format. The optional
-interviewer summary file described above can also be included in this
-prepared structure, and will be integrated automatically in the same
-way. To launch the interface, you then only need to point to the source
-directory of the data and indicate the number of nested sub-directories
-(1 if the directory contains a single survey, 2 if several folders are
-present, 3 if several folders themselves contain several survey
-folders). The <a href="https://tdelc.github.io/vizsurvey/articles/data-preparation.html">data
-preparation vignette</a> explains all of this in detail. Here, for
-example, is the command for a structure with 2 directory levels and 1
-file level.</p>
+<p>{vizsurvey} peut gérer plusieurs dossiers contenant différentes
+enquêtes. Dans ce type d’organisation, l’hypothèse est que plusieurs
+personnes utilisent {vizsurvey} à des moments différents. Comme le
+calcul des statistiques à chaque ouverture serait trop lent, on prépare
+les fichiers à l’avance avec <code><a href="../reference/prepa_survey.html">prepa_survey()</a></code> : l’ouverture
+de l’interface est alors immédiate.</p>
+<p>Chaque enquête (donc chaque dossier de données) doit contenir un
+fichier de configuration <code>config.txt</code> et un fichier
+<code>global.rds</code> généré par la préparation. La <a href="https://tdelc.github.io/vizsurvey/articles/data-preparation.html">vignette
+de préparation des données</a> détaille tout cela. Voici par exemple la
+commande pour une structure à deux niveaux de dossiers :</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="interviewer-consistency-analysis">Interviewer consistency analysis<a class="anchor" aria-label="anchor" href="#interviewer-consistency-analysis"></a>
-</h2>
-<p>The interviewer consistency analysis helps identify possible
-collection anomalies by systematically comparing one interviewer with
-the full population across a set of key indicators (missing or atypical
-values, response distributions).</p>
-<p>This makes it possible to assess the quality and regularity of the
-data collected by the person who conducted the interviews. In a survey,
-each interviewer is a potential source of variability that is not due to
-sampling but to survey effects: differences in how the questionnaire is
-interpreted, response strategies, or data-entry bias. It also makes it
-possible to spot homogeneous collection profiles that suggest the
-protocol was applied correctly.</p>
-<p>These comparisons can be examined through a filter, often to restrict
-the analysis to a subpopulation in which respondent profiles are similar
-(for example a given geographic area). When a filter variable is
-supplied, the interviewer consistency analysis is carried out both at
-the global level and within each value of the filter.</p>
-<div class="section level3">
-<h3 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a>
-</h3>
-<p>The {laeken} package provides an example file from the SILC survey.
-We can use this file as an example and create a fake interviewer number
-from the province variable <code>DB040</code>. We run
-<code>runVizsurvey_from_r</code> with the additional argument
-<code>var_filter = "DB040"</code> so as to enable the per-province
-(filtered) analysis.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p>Cette fonction accepte aussi trois fichiers transverses facultatifs,
+décrits dans la vignette de préparation : un
+<strong>dictionnaire</strong> des variables (<code>path_dict</code>),
+une <strong>nomenclature</strong> de libellés (<code>path_nomen</code>),
+et un fichier d’<strong>archive</strong> partagé
+(<code>path_archive</code>).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/knitr/man/opts_chunk.html" class="external-link">opts_chunk</a></span><span class="op">$</span><span class="fu">set</span><span class="op">(</span>warning <span class="op">=</span> <span class="cn">FALSE</span>, message <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="va">eusilc</span><span class="op">$</span><span class="va">NR_ITW</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">$</span><span class="va">db040</span>, <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">eusilc</span>, var_intvwr <span class="op">=</span> <span class="st">"NR_ITW"</span>, var_filter <span class="op">=</span> <span class="st">"db040"</span><span class="op">)</span></span></code></pre></div>
-<p>The first tab of {vizsurvey} lets you navigate interactively through
-the situations detected as atypical for the interviewers.</p>
-<p><img src="images/clipboard-1230028052.png"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>                         path_dict    <span class="op">=</span> <span class="st">"meta/dictionnaire.rds"</span>,</span>
+<span>                         path_nomen   <span class="op">=</span> <span class="st">"meta/nomenclature.csv"</span>,</span>
+<span>                         path_archive <span class="op">=</span> <span class="st">"meta/archive.csv"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="reading-the-heatmap">Reading the heatmap<a class="anchor" aria-label="anchor" href="#reading-the-heatmap"></a>
+<h3 id="les-données-dexemple">Les données d’exemple<a class="anchor" aria-label="anchor" href="#les-donn%C3%A9es-dexemple"></a>
 </h3>
-<p>Each row is an interviewer. Here we recognise the Austrian provinces
-with an index, coming from the interviewer number we created. Each
-column is a variable, categorical or continuous. Each cell is coloured
-if an interviewer’s responses for that variable are sufficiently
-different from the responses in the rest of the database.</p>
-<p>For categorical variables, this may be too large a gap in the share
-of missing values, or a
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
-that is too high (i.e. a distribution very far from the rest of the
-database). For numeric variables, it may be too large a gap in the share
-of missing values or in the median. In both cases, these gaps are
-normalised per variable before display, and the cell is shown if the gap
-exceeds five standard deviations for that variable. The methodological
-detail of the calculations is given in a dedicated vignette.</p>
-<p>Hovering over a cell displays all the underlying information, so you
-can understand the source of the colouring. Here is a first way to read
-the heatmap:</p>
+<p>Le package {laeken} fournit un extrait de l’enquête SILC. La fonction
+<code><a href="../reference/create_eusilc_sim.html">create_eusilc_sim()</a></code> en dérive un jeu d’exemple prêt à
+l’emploi : elle crée un numéro d’enquêteur·rice fictif
+(<code>nr_itw</code>, à partir de la province), une vague fictive
+(<code>db010</code>, entre 2018 et 2020), et y <strong>injecte des
+erreurs volontaires</strong> que l’interface doit permettre de retrouver
+:</p>
 <ul>
-<li><p>An isolated red cell is not in itself a problem: with many
-crossings, it is normal to observe a few extreme values.</p></li>
-<li><p>A row that is regularly red (across several variables) suggests
-recurring behaviour (procedural error, misunderstanding, poorly applied
-routing, or even fraud).</p></li>
-<li><p>A red column (across several interviewers) points to a fragile
-variable (ambiguous label, routing, or the effect of a filter /
-subpopulation).</p></li>
+<li>pour l’enquêteur·rice <strong>Vienna-2</strong> : l’âge est divisé
+par 10, le revenu équivalent par 100, et la modalité 5 de
+<code>pl030</code> est remplacée par des valeurs manquantes ;</li>
+<li>pour la vague <strong>2020</strong> : la variable
+<code>pb220a</code> est entièrement manquante, la modalité 4 de
+<code>hsize</code> disparaît, et le revenu équivalent est divisé par
+100.</li>
 </ul>
-<p>By default, the heatmap colours a cell red when one of the gaps
-exceeds 5 standard deviations for the variable. In our case, this
-displays 7 cells, all for Vienna. Lowering the sensitivity threshold in
-the settings displays many more cells. There is no predetermined or
-statistically valid threshold for this kind of analysis. It has to be
-set by trial and error by the team in charge of survey coordination. You
-can also change the minimum number of rows (i.e. interviews) required to
-display a row, or the number of non-missing values required to display a
-cell.</p>
-<p><img src="images/clipboard-1081520372.png">Finally, you can zoom
-into the heatmap, on rows, columns, or the at-risk cells. When the
-heatmap is too large, this helps target the situations worth analysing
-more efficiently. Here, for example, is the same heatmap at a
-sensitivity of two standard deviations, zoomed in on the at-risk cells.
-We see that other cells appear as sensitivity increases, but that some
-interviewers have disappeared, because they no longer display any red
-cell.</p>
-<p><img src="images/clipboard-25179100.png"></p>
-</div>
-<div class="section level3">
-<h3 id="analysing-a-categorical-variable">Analysing a categorical variable<a class="anchor" aria-label="anchor" href="#analysing-a-categorical-variable"></a>
-</h3>
-<p>In our example, at a sensitivity of 5 standard deviations, seven
-cells light up red for the Vienna region. By clicking on the Vienna-1 /
-HHSIZE crossing, you can display the distribution of HHSIZE for
-interviewer Vienna-1 and compare it with the distribution of that
-variable for the others. A statistical summary of the variable is
-available below, using the <code>summarytools</code> package.</p>
-<p>We thus discover that categories 3 and 4 of HHSIZE are much less
-frequent for interviewer Vienna-1 than for the others.</p>
-<p><img src="images/clipboard-4063476803.png"> To help understand
-these differences, we have included an algorithm that computes the ten
-highest correlations in the database, and then projects the actual
-correlations for the interviewer against those of the rest of the
-database. These are simply Pearson correlations, after first converting
-the categorical variables to factors.</p>
-<blockquote>
-<p><strong>Guiding principle</strong>: no statistical test is performed.
-{vizsurvey} computes distances, scores, ranks and correlations meant to
-<strong>prioritise</strong> the review. Analytical conclusions remain
-the responsibility of the methodology team.</p>
-</blockquote>
-<p>For interviewer Vienna-1 and the surprising result for HHSIZE, we
-observe that the correlations of that variable are identical for this
-interviewer and for the rest of the database. This seems to rule out the
-hypothesis of an anomaly specific to that variable.</p>
-<p><img src="images/clipboard-3734839128.png"></p>
-<p>Returning to the heatmap, we notice that the five Vienna cells are
-red for HHSIZE, evidence of a filter (subpopulation) effect rather than
-an interviewer effect. To confirm this, you can select DB040 = Vienna at
-the top of the interface. The heatmap is then restricted to the Vienna
-data and only displays the interviewers’ gaps relative to that province.
-As a result, no cell appears red any more.</p>
-<p><img src="images/clipboard-3251825829.png"></p>
-</div>
-<div class="section level3">
-<h3 id="analysing-a-continuous-variable">Analysing a continuous variable<a class="anchor" aria-label="anchor" href="#analysing-a-continuous-variable"></a>
-</h3>
-<p>When you click on a continuous variable, the density function is
-displayed, again with the comparison between the interviewer and the
-rest of the database. In our case, here is an example for the age
-variable for interviewer Carinthia-5:</p>
-<p><img src="images/clipboard-3649549679.png"></p>
-</div>
-<div class="section level3">
-<h3 id="anomaly-summary">Anomaly summary<a class="anchor" aria-label="anchor" href="#anomaly-summary"></a>
-</h3>
-<p>When the number of crossings is large, it is hard to know where to
-start on the heatmap. {vizsurvey} offers a ranking of interviewers using
-an Isolation Forest model applied to the vectors of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
-values for categorical variables and of medians for continuous
-variables. When an interviewer summary file is supplied, its indicators
-are added to these vectors, so that interviewer-level anomalies are
-taken into account in the same ranking.</p>
-<p>The <a href="https://cran.r-project.org/web/packages/isotree/vignettes/An_Introduction_to_Isolation_Forests.html" class="external-link">Isolation
-Forest</a> method is an unsupervised machine-learning technique used to
-rank observations by rarity. It rests on a simple idea: unusual
-observations are easier to isolate than “normal” ones. Concretely, the
-algorithm builds many random decision trees: at each node, a variable
-and a split value are chosen at random to split the sample. An
-observation is isolated when it ends up alone in a branch. Abnormal
-observations therefore require fewer splits to be isolated. The
-resulting isolation score can then be used to produce a rank.</p>
-<blockquote>
-<p><em>Important</em>: this ranking is not proof. It
-<strong>prioritises</strong> the audit (targeted reading of the
-variables responsible, checking the field context).</p>
-</blockquote>
-<p>Here is the ranking of interviewers derived from the heatmap. We find
-interviewers from the province of Vienna, but also others from Lower and
-Upper Austria. For these last two, no gap exceeds the sensitivity
-threshold, but isolation happens quickly.</p>
-<p><img src="images/clipboard-362235895.png"></p>
-<p>Clicking on an interviewer produces a second table on the right, with
-the list of variables. Here is the illustration for interviewer
-Vienna-4. This helps direct the analysis by starting with the most
-striking variables. Clicking on a variable then displays, below, the
-analysis charts, just as with the heatmap.</p>
-<p><img src="images/clipboard-2304792987.png"></p>
-</div>
-<div class="section level3">
-<h3 id="summary-step-by-step-analysis">Summary: step-by-step analysis<a class="anchor" aria-label="anchor" href="#summary-step-by-step-analysis"></a>
-</h3>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Select</strong> the survey.</li>
-<li>
-<strong>Choose</strong> the <em>Interviewers</em> tab.</li>
-<li>
-<strong>Filter</strong> the database on a particular wave and filter
-value, and adjust the display settings.</li>
-<li>
-<strong>Scan the heatmap</strong> to spot the reddest areas.</li>
-<li>
-<strong>Click</strong> on a cell to open the details (distribution,
-correlation).</li>
-<li>
-<strong>Compare</strong> with the reference and look at
-within-variable consistency (categories) and between-variable
-consistency (correlations).</li>
-<li>
-<strong>Record</strong> recurring cases (the same gaps across
-several variables or over time).</li>
-</ol>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tdelc/vizsurvey" class="external-link">vizsurvey</a></span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_eusilc_sim.html">create_eusilc_sim</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">df</span>,</span>
+<span>                    var_intvwr <span class="op">=</span> <span class="st">"nr_itw"</span>,</span>
+<span>                    var_wave   <span class="op">=</span> <span class="st">"db010"</span>,</span>
+<span>                    var_filter <span class="op">=</span> <span class="st">"db040"</span><span class="op">)</span></span></code></pre></div>
+<p>C’est ce jeu de données qui illustre toute la suite de cette
+vignette.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="survey-wave-consistency-analysis">Survey wave consistency analysis<a class="anchor" aria-label="anchor" href="#survey-wave-consistency-analysis"></a>
+<h2 id="tour-de-linterface">Tour de l’interface<a class="anchor" aria-label="anchor" href="#tour-de-linterface"></a>
 </h2>
-<p>The survey wave consistency analysis aims to check the stability of
-the key indicators over time and to detect possible breaks linked to
-changes in data collection, weighting or respondent behaviour. All
-variables are examined from one wave to the next (often year on year) in
-order to identify abnormally large variations that would not be
-explained by the real evolution of the observed phenomenon. This
-approach distinguishes the expected statistical fluctuations (sampling,
-economic conditions, etc.) from inconsistent jumps suggesting a coding
-or definition error. The goal is to guarantee the temporal continuity of
-the series.</p>
-<p>These wave-to-wave variations can be examined through a filter, often
-to focus on a subpopulation, or, for example, on survey quarters. When a
-filter variable is supplied, the wave consistency analysis is carried
-out both at the global level and within each value of the filter.</p>
+<!-- CAPTURE : vue générale de l'application, onglet Synthèse ouvert, barre latérale visible -->
+<p><img src="images/onglet-synthese.png"></p>
 <div class="section level3">
-<h3 id="example-data-1">Example data<a class="anchor" aria-label="anchor" href="#example-data-1"></a>
+<h3 id="la-barre-latérale">La barre latérale<a class="anchor" aria-label="anchor" href="#la-barre-lat%C3%A9rale"></a>
 </h3>
-<p>We start again from the <code>eusilc</code> file of the {laeken}
-package and create a fake survey wave. We will create a random year
-variable between 2010 and 2020, and introduce a few errors to detect for
-2020: the variable <code>pb220a</code> will be missing, category 4 of
-the variable <code>hsize</code> will not exist, and the mean equivalised
-income variable <code>eqIncome</code> will be on the wrong scale.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Generate the year variable</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="va">eusilc</span><span class="op">$</span><span class="va">YEAR</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">2010</span><span class="op">:</span><span class="fl">2020</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">eusilc</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Generate the errors</span></span>
-<span><span class="va">eusilc</span><span class="op">[</span><span class="va">eusilc</span><span class="op">$</span><span class="va">YEAR</span> <span class="op">==</span> <span class="fl">2020</span>, <span class="st">"pb220a"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
-<span><span class="va">eusilc</span><span class="op">[</span><span class="va">eusilc</span><span class="op">$</span><span class="va">YEAR</span> <span class="op">==</span> <span class="fl">2020</span> <span class="op">&amp;</span> <span class="va">eusilc</span><span class="op">$</span><span class="va">hsize</span> <span class="op">==</span> <span class="fl">4</span>, <span class="st">"hsize"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
-<span><span class="va">eusilc</span><span class="op">[</span><span class="va">eusilc</span><span class="op">$</span><span class="va">YEAR</span> <span class="op">==</span> <span class="fl">2020</span>, <span class="st">"eqIncome"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">eusilc</span><span class="op">[</span><span class="va">eusilc</span><span class="op">$</span><span class="va">YEAR</span> <span class="op">==</span> <span class="fl">2020</span>, <span class="st">"eqIncome"</span><span class="op">]</span> <span class="op">/</span> <span class="fl">100</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/runVizsurvey_from_r.html">runVizsurvey_from_r</a></span><span class="op">(</span><span class="va">eusilc</span>, var_wave <span class="op">=</span> <span class="st">"YEAR"</span>, var_intvwr <span class="op">=</span> <span class="st">"db040"</span><span class="op">)</span></span></code></pre></div>
-<p>The second tab of {vizsurvey} lets you navigate interactively through
-the situations detected as atypical for the waves.</p>
+<p>La barre latérale, à gauche, commande <strong>tout le reste de
+l’application</strong>. On y trouve :</p>
+<ul>
+<li>le <strong>chargement de la base</strong> : le choix du dossier et
+de l’enquête (en mode <code>from_folder</code>) ;</li>
+<li>le <strong>filtrage</strong> : la vague et le filtre courants. La
+vague est obligatoire ; quand elle a deux niveaux, un second sélecteur
+apparaît en cascade sous le premier, facultatif (<code>All</code> par
+défaut). Le filtre fonctionne de la même façon, avec <code>All</code>
+pour ne pas filtrer ;</li>
+<li>le bouton <strong>Seuils de détection</strong>, qui ouvre les
+paramètres de sensibilité.</li>
+</ul>
 </div>
 <div class="section level3">
-<h3 id="analysing-changes-in-variables">Analysing changes in variables<a class="anchor" aria-label="anchor" href="#analysing-changes-in-variables"></a>
+<h3 id="les-seuils-de-détection">Les seuils de détection<a class="anchor" aria-label="anchor" href="#les-seuils-de-d%C3%A9tection"></a>
 </h3>
-<p>The table on the right lists the variables that appeared or
-disappeared between waves. Here we find the variable
-<code>pb220a</code>, which we removed for 2020.</p>
-<p><img src="images/clipboard-1381589877.png"></p>
-<p>The table on the left lists the variables that showed a notable
-variation. Each row is a variable that changed between two values of the
-wave. By default, the reference wave is the last value of the variable
-(here 2020 for the year), and the comparison is made with the
-second-to-last value (here 2019). You can change the reference value, or
-add comparison values. Note that the table becomes hard to read beyond
-two comparison values. Cells are coloured when the gap is large
-enough.</p>
-<p><img src="images/clipboard-1694810607.png"></p>
-<p>For categorical variables, this may be too large a gap in the share
-of missing values or in the number of categories. Here we find the
-variable <code>HSIZE</code>, which shows an increase in missing values.
-For continuous variables, it may be too large a gap in the share of
-missing values, the mean or the median. Here we find the variable
-<code>EQINCOME</code>, with the thousands-scale error.</p>
-<p>This sensitivity threshold can be adjusted, displaying more or fewer
-variables. You can also vary the number of non-missing values required
-to include a variable in the analysis.</p>
+<p>Rien n’est signalé en dessous de ces seuils. Quatre paramètres sont
+réglables :</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>Seuil</th>
+<th>Défaut</th>
+<th>Rôle</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Nombre minimum de lignes</td>
+<td>30</td>
+<td>en dessous, l’enquêteur·rice ou la variable est exclue de la
+détection</td>
+</tr>
+<tr class="even">
+<td>Nombre minimum de valeurs valides</td>
+<td>30</td>
+<td>en dessous, la variable est exclue de l’analyse</td>
+</tr>
+<tr class="odd">
+<td>Taux de variation minimum (vagues)</td>
+<td>0.5</td>
+<td>variation relative à partir de laquelle une case devient rouge dans
+l’onglet Vague</td>
+</tr>
+<tr class="even">
+<td>Distance de chi² / écart de médiane minimum</td>
+<td>5</td>
+<td>écart standardisé à partir duquel un croisement enquêteur·rice ×
+variable est signalé</td>
+</tr>
+</tbody>
+</table>
+<p>Il n’existe pas de seuil statistiquement fondé pour ce type d’analyse
+: c’est à l’équipe de coordination de le régler par tâtonnement.
+Baissez-le pour voir plus de cas, montez-le pour ne garder que les plus
+francs.</p>
 </div>
 <div class="section level3">
-<h3 id="graphical-analysis">Graphical analysis<a class="anchor" aria-label="anchor" href="#graphical-analysis"></a>
+<h3 id="laide-contextuelle-et-la-visite-guidée">L’aide contextuelle et la visite guidée<a class="anchor" aria-label="anchor" href="#laide-contextuelle-et-la-visite-guid%C3%A9e"></a>
 </h3>
-<p>For each variable detected in this tab, charts are available in the
-<em>Graphics</em> tab to better understand the gaps between waves. The
-chart on the left illustrates the distribution of the variable for the
-reference wave. The chart on the right illustrates the comparison
-between the selected waves.</p>
-<p>Here is the example for the categorical variable <code>HSIZE</code>.
-The large share of missing values in 2020 is detected automatically.</p>
-<p><img src="images/clipboard-687156213.png"></p>
-<p>Here is the example for the continuous variable
-<code>EQINCOME</code>. The difference in scale between the two
-distributions is detected automatically.</p>
-<p><img src="images/clipboard-1475833445.png"></p>
+<p>Deux dispositifs d’aide sont intégrés :</p>
+<ul>
+<li>chaque carte de l’application porte un bouton <strong>?</strong> qui
+ouvre une explication : ce que la carte affiche, ce que valent ses
+colonnes, comment la lire ;</li>
+<li>le bouton <strong>Visite guidée</strong>, dans la barre de
+navigation, déroule un tutoriel d’une dizaine d’étapes sur les données
+actuellement chargées : chaque étape ouvre un onglet, entoure un élément
+de l’écran et l’explique.</li>
+</ul>
+<p>L’interface est disponible en français, anglais et néerlandais
+(sélecteur en haut à droite). L’aide et la visite guidée suivent la
+langue choisie.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="longlet-synthèse">L’onglet Synthèse<a class="anchor" aria-label="anchor" href="#longlet-synth%C3%A8se"></a>
+</h2>
+<p>C’est l’onglet d’accueil. Il répond à deux questions : <em>qu’est-ce
+qui est chargé ?</em> et <em>par où commencer ?</em></p>
+<p>La partie haute présente l’enquête : quatre compteurs (entretiens,
+variables analysées, enquêteur·rices, vagues), une carte d’identité
+(nom, chemin, date de la dernière préparation, rôle des variables,
+présence des timers) et le nombre d’entretiens par vague — découpé par
+le second niveau de vague quand il existe.</p>
+<p>La partie basse, « Par où commencer », donne trois points d’entrée
+chiffrés pour la vague et le filtre courants : le nombre
+d’enquêteur·rices présentant au moins un écart, le nombre de variables
+ayant varié entre les vagues, et le nombre de croisements enquêteur·rice
+× variable au-dessus des seuils. Chaque carte liste les trois cas les
+plus marquants et un bouton ouvre l’onglet correspondant.</p>
+<!-- CAPTURE : onglet Synthèse, partie "Par où commencer" avec les trois cartes remplies -->
+<p><img src="images/synthese-par-ou-commencer.png"></p>
+<p>Sur les données d’exemple, la carte Enquêteur signale d’emblée
+Vienna-2.</p>
+</div>
+<div class="section level2">
+<h2 id="longlet-enquêteur">L’onglet Enquêteur<a class="anchor" aria-label="anchor" href="#longlet-enqu%C3%AAteur"></a>
+</h2>
+<div class="section level3">
+<h3 id="la-synthèse">La synthèse<a class="anchor" aria-label="anchor" href="#la-synth%C3%A8se"></a>
+</h3>
+<p>Le tableau principal affiche une ligne par enquêteur·rice, pour la
+vague et le filtre courants, classée par un <strong>rang
+d’anomalie</strong> :</p>
+<ul>
+<li>
+<code>RANK</code> provient d’un score d’Isolation Forest calculé sur
+l’ensemble des indicateurs : plus la combinaison d’indicateurs est rare,
+plus le rang est élevé ;</li>
+<li>
+<code>NB_INTV</code> est le nombre d’entretiens,
+<code>INDEX_H</code> un indice d’homogénéité des réponses,
+<code>MAX_CHI2</code> le plus grand écart observé sur une variable
+;</li>
+<li>si un audit trail est disponible, s’ajoutent les indicateurs de
+durée (<code>DURATION_*</code>) et les parts d’entretiens signalés
+(<code>PC_*</code> : nuit, trop courts, trop rapprochés).</li>
+</ul>
+<p>Une case rouge dépasse de plus de deux écarts-types la moyenne de sa
+colonne. La carte <strong>Indicateurs</strong>, au-dessus, permet
+d’écarter un indicateur du tableau <em>et</em> du score — utile quand un
+indicateur n’a pas de sens pour l’enquête (le travail de nuit pour des
+entretiens sur rendez-vous, par exemple).</p>
+<!-- CAPTURE : onglet Enquêteur, tableau de synthèse avec Vienna-2 en tête -->
+<p><img src="images/enqueteur-synthese.png"></p>
+<p>Si une nomenclature a été fournie (<code>path_nomen</code>), les
+libellés des variables s’affichent sous les noms de colonnes.</p>
+<blockquote>
+<p><strong>Principe directeur</strong> : aucun test statistique n’est
+réalisé. {vizsurvey} calcule des distances, des scores et des rangs
+destinés à <strong>prioriser</strong> la relecture. Les conclusions
+restent de la responsabilité de l’équipe méthodologique.</p>
+</blockquote>
 </div>
 <div class="section level3">
-<h3 id="summary-step-by-step-analysis-1">Summary: step-by-step analysis<a class="anchor" aria-label="anchor" href="#summary-step-by-step-analysis-1"></a>
+<h3 id="le-détail-par-variable">Le détail par variable<a class="anchor" aria-label="anchor" href="#le-d%C3%A9tail-par-variable"></a>
 </h3>
+<p>En cliquant sur un·e enquêteur·rice, les onglets du dessous se
+remplissent. « Détail par variable » liste ses variables classées par
+écart aux autres enquêteur·rices : <code>chi2</code> mesure la distance
+entre sa distribution et la distribution de référence,
+<code>standard</code> est cette distance normalisée par variable — c’est
+elle qui est comparée au seuil.</p>
+<p>Point important : <strong>les variables continues sont découpées en
+cinq classes</strong> (par quantiles) avant la comparaison. Toutes les
+variables se lisent donc de la même façon, avec une seule distance de
+chi², au lieu d’un mélange de chi² et d’écarts de médiane.</p>
+<p>Un clic sur une variable affiche :</p>
+<ul>
+<li>la <strong>comparaison des distributions</strong> : la distribution
+de l’enquêteur·rice (en foncé) face à celle de tous les autres (en
+gris), accompagnée d’un tableau de statistiques descriptives comparées
+;</li>
+<li>la <strong>distribution des modalités</strong> : pour chaque
+modalité, la distribution de sa part parmi tous les enquêteur·rices,
+avec une ligne rouge sur la valeur de l’enquêteur·rice. Elle répond à
+une question que le graphique précédent ne traite pas : cet·te
+enquêteur·rice est-il·elle réellement isolé·e, ou beaucoup d’autres
+sont-ils au même niveau ?</li>
+</ul>
+<!-- CAPTURE : détail par variable pour Vienna-2, variable age (comparaison des distributions) --><p><img src="images/enqueteur-detail-variable.png"></p>
+<p>Sur les données d’exemple, le revenu de Vienna-2 (multiplié par 100)
+saute aux yeux : sa densité est décalée d’un ordre de grandeur.</p>
+</div>
+<div class="section level3">
+<h3 id="le-détail-par-entretien-audit-trail">Le détail par entretien (audit trail)<a class="anchor" aria-label="anchor" href="#le-d%C3%A9tail-par-entretien-audit-trail"></a>
+</h3>
+<p>Quand des timers sont disponibles, cet onglet reconstitue les
+entretiens de l’enquêteur·rice : durée totale, écart avec l’entretien
+précédent, drapeaux 🔴 (entretien trop court, travail de nuit, plusieurs
+sessions, entretiens qui se chevauchent). Un clic sur un entretien ouvre
+ses sessions, puis le détail item par item. Les seuils de ces drapeaux
+sont fixés à la préparation, dans <code>config.txt</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="les-détails-sur-lenquêteurrice">Les détails sur l’enquêteur·rice<a class="anchor" aria-label="anchor" href="#les-d%C3%A9tails-sur-lenqu%C3%AAteurrice"></a>
+</h3>
+<p>Le dernier onglet situe l’enquêteur·rice : la répartition
+géographique de ses entretiens (selon la variable
+<code>var_info_geo</code> du <code>config.txt</code>) et son nombre
+d’entretiens par vague et par filtre, sur tout l’historique. Un·e
+enquêteur·rice couvrant une zone inhabituelle peut expliquer des écarts
+observés ailleurs : les répondants ne sont tout simplement pas les
+mêmes.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="longlet-vague">L’onglet Vague<a class="anchor" aria-label="anchor" href="#longlet-vague"></a>
+</h2>
+<div class="section level3">
+<h3 id="les-tableaux-décarts">Les tableaux d’écarts<a class="anchor" aria-label="anchor" href="#les-tableaux-d%C3%A9carts"></a>
+</h3>
+<p>L’onglet compare la vague sélectionnée dans la barre latérale aux
+vagues cochées dans « Comparer avec ». Les vagues de comparaison sont
+proposées au même niveau que la sélection : des années si vous avez
+choisi une année, des trimestres si vous avez choisi un trimestre.</p>
+<p>Trois cartes structurent la lecture :</p>
+<ul>
+<li>les <strong>variables absentes d’une vague</strong> : cette carte
+n’apparaît que si une variable est présente dans une vague et absente
+d’une autre. C’est la première chose à vérifier : une variable absente
+ne peut pas être comparée ;</li>
+<li>les <strong>variables catégorielles</strong> qui ont bougé : une
+ligne par variable, un bloc de colonnes par vague avec la part de
+valeurs manquantes et le nombre de modalités observées. Une case devient
+rouge quand la variation dépasse le taux de variation minimum ;</li>
+<li>les <strong>variables numériques</strong> qui ont bougé : même
+principe, avec la part de manquants et la médiane — préférée à la
+moyenne car moins sensible aux valeurs extrêmes.</li>
+</ul>
+<!-- CAPTURE : onglet Vague, tableau des variables catégorielles avec pb220a et hsize signalées pour 2020 --><p><img src="images/vague-tableaux.png"></p>
+<p>Sur les données d’exemple, en sélectionnant la vague 2020 :
+<code>pb220a</code> apparaît dans les absences, <code>hsize</code> dans
+les catégorielles (hausse de valeurs manquantes), et
+<code>eqIncome</code> dans les numériques (médiane divisée par 100 — un
+changement d’échelle typique).</p>
+</div>
+<div class="section level3">
+<h3 id="lanalyse-graphique">L’analyse graphique<a class="anchor" aria-label="anchor" href="#lanalyse-graphique"></a>
+</h3>
+<p>Un clic sur une ligne remplit la carte de détail à droite :</p>
+<ul>
+<li>pour une variable catégorielle : la part de chaque modalité, vague
+par vague, les valeurs manquantes apparaissant comme une modalité
+<code>.NA</code>. Une rupture dans les bandes de couleur confirme ce que
+le tableau a signalé ;</li>
+<li>pour une variable numérique : la densité, une courbe par vague,
+tronquée aux 1er et 99e centiles pour que quelques valeurs extrêmes
+n’écrasent pas les courbes.</li>
+</ul>
+<p><img src="images/vague-densite.png"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="longlet-croisé">L’onglet Croisé<a class="anchor" aria-label="anchor" href="#longlet-crois%C3%A9"></a>
+</h2>
+<p>C’est l’onglet le plus dense : il croise les enquêteur·rices et les
+variables. Quatre sous-onglets :</p>
+<ul>
+<li>la <strong>table de chi²</strong> : une ligne par couple
+enquêteur·rice × variable dont l’écart dépasse le seuil, triée par écart
+décroissant. C’est le point d’entrée quand on ne sait pas par où
+commencer ;</li>
+<li>la <strong>heatmap</strong> : une ligne par enquêteur·rice, une
+colonne par variable, une case colorée quand l’écart dépasse le seuil.
+On peut zoomer sur les lignes à risque, les colonnes à risque ou les
+seules cases au-dessus du seuil, et réordonner lignes et colonnes par
+sériation pour regrouper les profils proches. Le survol d’une case
+affiche les valeurs sous-jacentes, le clic ouvre les distributions en
+bas de page ;</li>
+<li>la <strong>synthèse par enquêteur·rice</strong> : le classement par
+score d’anomalie, et pour l’enquêteur·rice sélectionné·e, la liste de
+ses variables les plus contributives ;</li>
+<li>la <strong>synthèse par variable</strong> : le même classement, vu
+du côté des variables. Une variable en tête de ce tableau relève souvent
+d’un problème de questionnaire (formulation ambiguë, routage) plutôt que
+d’un·e enquêteur·rice.</li>
+</ul>
+<!-- CAPTURE : onglet Croisé, heatmap zoomée sur les cases à risque --><p><img src="images/croise-heatmap.png"></p>
+<p>La lecture de la heatmap tient en trois règles :</p>
+<ul>
+<li>une case isolée n’est pas en soi un problème : avec beaucoup de
+croisements, quelques valeurs extrêmes sont normales ;</li>
+<li>une <strong>ligne</strong> régulièrement rouge suggère un
+comportement récurrent (erreur de procédure, incompréhension, routage
+mal appliqué, voire fraude) ;</li>
+<li>une <strong>colonne</strong> rouge désigne une variable fragile
+(libellé ambigu, routage, effet de sous-population) plutôt que les
+enquêteur·rices.</li>
+</ul>
+<p>Pour départager un effet enquêteur·rice d’un effet de
+sous-population, utilisez le filtre de la barre latérale : si les cases
+rouges disparaissent une fois l’analyse restreinte à la zone de
+l’enquêteur·rice, l’explication est structurelle, pas individuelle.</p>
+<p>En bas de page, les cartes de <strong>comparaison des
+distributions</strong> et de <strong>distribution des modalités</strong>
+fonctionnent comme dans l’onglet Enquêteur. Si un dictionnaire a été
+fourni, une carte affiche en plus les entrées du dictionnaire pour la
+variable sélectionnée — pratique pour vérifier la formulation exacte
+d’une question avant de conclure.</p>
+</div>
+<div class="section level2">
+<h2 id="les-onglets-données-dictionnaire-et-archive">Les onglets Données, Dictionnaire et Archive<a class="anchor" aria-label="anchor" href="#les-onglets-donn%C3%A9es-dictionnaire-et-archive"></a>
+</h2>
+<ul>
+<li>
+<strong>Données</strong> : les données telles qu’elles ont été
+préparées, avec une sélection de variables et des filtres par colonne.
+Utile pour vérifier une valeur vue dans une analyse ou comprendre
+comment une variable est codée ;</li>
+<li>
+<strong>Dictionnaire</strong> : cet onglet n’apparaît que si un
+dictionnaire a été fourni au lancement (<code>path_dict</code>). Il
+affiche le fichier tel quel, avec recherche et filtres ;</li>
+<li>
+<strong>Archive</strong> : l’historique des observations. Le bouton
+<strong>Ajouter à l’historique</strong> enregistre la date,
+l’utilisateur·rice, l’enquête, la vague, l’enquêteur·rice, l’entretien
+et la variable concernés, plus un commentaire libre. Le fichier est
+partagé par toutes les personnes qui utilisent le même chemin d’archive
+: notez aussi les fausses alertes, c’est ce qui évite à la personne
+suivante de refaire la même investigation.</li>
+</ul>
+<p>La <a href="https://tdelc.github.io/vizsurvey/articles/metadata.html">vignette
+de métadonnées</a> détaille comment intégrer ces éléments dans votre
+outil.</p>
+</div>
+<div class="section level2">
+<h2 id="démarche-conseillée">Démarche conseillée<a class="anchor" aria-label="anchor" href="#d%C3%A9marche-conseill%C3%A9e"></a>
+</h2>
 <ol style="list-style-type: decimal">
 <li>
-<strong>Select</strong> the survey and the period.</li>
+<strong>Sélectionnez</strong> l’enquête, la vague et éventuellement
+le filtre.</li>
 <li>
-<strong>Choose</strong> the <em>Wave</em> tab.</li>
+<strong>Partez</strong> de l’onglet Synthèse : les trois points
+d’entrée donnent l’ampleur de ce qu’il y a à examiner.</li>
 <li>
-<strong>Filter</strong> the database on a particular filter value,
-and adjust the display settings.</li>
+<strong>Vérifiez</strong> d’abord l’onglet Vague : une variable
+absente ou un changement d’échelle expliquent souvent des écarts en
+cascade ailleurs.</li>
 <li>
-<strong>List</strong> the variables that appeared and disappeared,
-and check whether this is justifiable.</li>
+<strong>Parcourez</strong> la heatmap de l’onglet Croisé : lignes
+rouges (enquêteur·rices), colonnes rouges (variables).</li>
 <li>
-<strong>Scan</strong> the variables that changed, to check each gap
-shown in red.</li>
+<strong>Cliquez</strong> sur les cas marquants pour ouvrir les
+distributions, et comparez la forme, pas seulement l’écart.</li>
 <li>
-<strong>Analyse</strong> these variables using the charts.</li>
+<strong>Contrôlez</strong> avec le filtre qu’il ne s’agit pas d’un
+effet de sous-population.</li>
 <li>
-<strong>Record</strong> the problematic cases (new category, very
-different distribution, etc.).</li>
+<strong>Consignez</strong> chaque vérification dans l’Archive, y
+compris les fausses alertes.</li>
 </ol>
-</div>
 </div>
 <div class="section level2">
 <h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
-<p>The interviewer or wave consistency analysis is an essential step in
-the quality control of a survey, but it is not meant to produce
-automatic judgements. {vizsurvey} infers nothing: it organises the
-exploration and highlights the regularities, gaps or inconsistencies
-likely to draw the attention of the field coordination team. The
-interpretation of the results must always rely on the operational
-context: the instructions given to interviewers, the collection
-conditions, and so on. These elements alone make it possible to
-distinguish a genuine anomaly from a mere structural effect.</p>
-<p>Moreover, the information used sometimes concerns sensitive data,
-about interviewers as well as about the households surveyed; it must
-therefore be handled in strict compliance with the applicable rules on
-confidentiality and personal data protection. In our view, anyone using
-{vizsurvey} must be subject to the same confidentiality rules as those
-applying to the source data files. Indeed, anonymisation is in no way
-guaranteed in the interface: the crossings, filters or visualisations
-offered may indirectly reveal individual information or interviewer
-identifiers. Access to {vizsurvey} must therefore be restricted to
-people authorised to consult the detailed data, in a secure setting
-compliant with internal data-management policies.</p>
-<p>In short, {vizsurvey} is an analysis-support tool that complements
-those currently used by survey teams, not an automatic diagnostic tool.
-It makes collection behaviour visible and equips survey teams, but the
-final conclusions always rest on the informed judgement of those
-teams.</p>
+<p>L’analyse de cohérence par enquêteur·rice ou par vague est une étape
+essentielle du contrôle qualité d’une enquête, mais elle n’a pas
+vocation à produire des jugements automatiques. {vizsurvey} n’infère
+rien : il organise l’exploration et met en évidence les régularités,
+écarts ou incohérences susceptibles d’attirer l’attention de l’équipe de
+coordination. L’interprétation des résultats doit toujours s’appuyer sur
+le contexte opérationnel : consignes données aux enquêteur·rices,
+conditions de collecte, etc. Ces éléments seuls permettent de distinguer
+une véritable anomalie d’un simple effet de structure.</p>
+<p>Par ailleurs, les informations mobilisées concernent parfois des
+données sensibles, sur les enquêteur·rices comme sur les ménages
+enquêtés ; elles doivent donc être traitées dans le strict respect des
+règles applicables en matière de confidentialité et de protection des
+données personnelles. De notre point de vue, toute personne utilisant
+{vizsurvey} doit être soumise aux mêmes règles de confidentialité que
+celles qui s’appliquent aux fichiers sources. L’anonymisation n’est en
+effet nullement garantie dans l’interface : les croisements, filtres ou
+visualisations proposés peuvent indirectement révéler des informations
+individuelles ou des identifiants d’enquêteur·rices. L’accès à
+{vizsurvey} doit donc être restreint aux personnes habilitées à
+consulter les données détaillées, dans un cadre sécurisé conforme aux
+politiques internes de gestion des données.</p>
+<p>En résumé, {vizsurvey} est un outil d’appui à l’analyse qui complète
+ceux utilisés par les équipes d’enquête, pas un outil de diagnostic
+automatique. Il rend visibles les comportements de collecte et outille
+les équipes, mais les conclusions finales reposent toujours sur leur
+jugement éclairé.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
