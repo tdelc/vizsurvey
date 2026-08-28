@@ -9,3 +9,5 @@
 docs
 vizsurvey.Rproj
 inst/doc
+.Rprofile
+.r_history_logs
