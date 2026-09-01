@@ -1,3 +1,11 @@
+# Vers la 0.4.4
+
+* Rewritting vignettes (in FR from now)
+
+* Add metadata vignettes
+
+* Some corrections when metadata is not present.
+
 # vizsurvey 0.4.3
 
 ## Bug fixes

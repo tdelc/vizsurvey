@@ -104,7 +104,7 @@ mod_source_server <- function(id, opts, lang, i18n_s) {
     # ===================== Chargement du dictionnaire ========================
     df_dict <- reactive({
       req(opts$path_dict)
-      readRDS(opts$path_dict)
+      tibble(data.table::fread(opts$path_dict))
     })
     
     

@@ -25,13 +25,15 @@ library(vizsurvey)
 
 Cette vignette présente la préparation des données nécessaire pour utiliser {vizsurvey} via `runVizsurvey_from_folder`. L'objectif est un usage régulier et structuré de l'outil au sein d'une équipe gérant plusieurs enquêtes.
 
-Dans ce contexte, lancer l'interface manuellement pour chaque base devient vite fastidieux. Surtout, le calcul des écarts — en particulier lorsqu'ils sont déclinés par vague et par filtre — peut être coûteux. {vizsurvey} sépare donc les deux temps : une **préparation** (`prepa_survey()`), qui calcule tout et enregistre le résultat dans un fichier `global.rds`, et l'**ouverture de l'interface**, qui ne fait que lire ce fichier et est donc immédiate.
+Dans ce contexte, lancer l'interface manuellement pour chaque base devient vite fastidieux. Surtout, le calcul des écarts — en particulier lorsqu'ils sont déclinés par vague et par filtre — est très long. {vizsurvey} sépare donc les deux temps : une **préparation** (`prepa_survey()`), qui calcule toutes les statistiques et enregistre le résultat dans un fichier `global.rds`, et l'**ouverture de l'interface**, qui ne fait que lire ce fichier et est donc immédiate.
 
 La préparation peut être relancée à chaque mise à jour des données, par exemple par une tâche planifiée quotidienne : toutes les personnes qui ouvrent l'interface analysent alors les mêmes fichiers à jour.
 
 # Les données d'exemple
 
-Pour tester la chaîne complète sans données réelles, la fonction `create_eusilc_sim()` génère un jeu d'exemple à partir de l'extrait SILC du package {laeken} : un numéro d'enquêteur·rice fictif (`nr_itw`), une vague fictive (`db010`), et des erreurs volontaires à retrouver dans l'interface (voir la vignette de prise en main).
+Pour tester la chaîne complète sans données réelles, la fonction `create_eusilc_sim()` génère un jeu d'exemple à partir de l'extrait SILC du package {laeken} : un numéro d'enquêteur·rice fictif (`nr_itw`), une vague fictive (`db010`), et des erreurs volontaires à retrouver dans l'interface (voir la [vignette de prise en main](https://tdelc.github.io/vizsurvey/articles/vizsurvey.html)).
+
+On va créer cette jeu de données, et le placer dans un répertoire fictif "data/EUSILC".
 
 ```{r, eval=F, warning = F, message = F}
 df <- create_eusilc_sim()
@@ -70,7 +72,7 @@ var_date =
 var_info_geo =
 ```
 
-Les clés se répartissent en trois groupes. D'abord les **rôles des variables** :
+Les clés se répartissent en trois groupes. D'abord les **rôles des variables**. Toutes ces variables sont facultatives, et activent les différents onglets de {vizsurvey} :
 
 | Clé | Rôle |
 |---|---|
@@ -81,7 +83,7 @@ Les clés se répartissent en trois groupes. D'abord les **rôles des variables*
 | `var_date` | date de l'entretien |
 | `var_info_geo` | variable géographique, utilisée dans l'onglet Enquêteur pour situer les entretiens |
 
-Ensuite le **typage des variables**, entièrement facultatif :
+Ensuite la **configuration des variables**, entièrement facultatif :
 
 | Clé | Rôle |
 |---|---|
@@ -108,7 +110,7 @@ create_config(
 
 ## Le typage automatique des variables
 
-Vous n'avez à renseigner `vars_discretes` et `vars_continuous` que si le classement automatique se trompe. La fonction `classify_df` détermine le type de chaque variable à partir de son format et de son nombre de modalités ; le seuil pour classer une variable comme catégorielle est de 15 modalités par défaut.
+Vous n'avez à renseigner `vars_discretes` et `vars_continuous` (et `prefix_discretes` et `prefix_continuous`) que si le classement automatique se trompe. La fonction `classify_df` détermine le type de chaque variable à partir de son format et de son nombre de modalités ; le seuil pour classer une variable comme catégorielle est de 15 modalités par défaut.
 
 ```{r}
 classify_df(iris)
@@ -136,7 +138,7 @@ Une fois la configuration en place, `prepa_survey` utilise le dossier — donné
 -   par vague, pour chaque variable, les écarts de chaque enquêteur·rice à la population (au sein de la vague) ;
 -   par vague et par filtre, les mêmes écarts au sein du filtre.
 
-Pour l'analyse par enquêteur·rice, les variables continues sont préalablement découpées en cinq classes (par quantiles), de sorte que toutes les variables se comparent avec la même distance de chi² (voir la vignette de méthodes).
+Pour l'analyse par enquêteur·rice, les variables continues sont préalablement découpées en cinq classes (par quantiles), de sorte que toutes les variables se comparent avec la même distance de chi² (voir la [vignette de méthodes](https://tdelc.github.io/vizsurvey/articles/methods.html)).
 
 Par défaut, `prepa_survey` cherche les fichiers CSV du dossier ; l'argument `file_pattern` permet d'adapter ce comportement. Un fichier `global.rds` est alors généré dans le même dossier : c'est le seul fichier que lira l'interface.
 
@@ -202,7 +204,7 @@ Si les données sont mises à jour, par exemple en cours de collecte, il suffit 
 
 # Les fichiers transverses
 
-Trois fichiers facultatifs, communs à toutes les enquêtes, se déclarent au lancement de l'interface — pas dans `config.txt`.
+Trois fichiers facultatifs, communs à toutes les enquêtes, se déclarent au lancement de l'interface — pas dans `config.txt`. La [vignette de métadonnées](https://tdelc.github.io/vizsurvey/articles/metadata.html) détaille leur utilité et leur création. Voici un bref aperçu.
 
 ## Le dictionnaire (`path_dict`)
 

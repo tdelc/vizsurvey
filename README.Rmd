@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 `vizsurvey` est un package R conçu pour faciliter le contrôle qualité des données d'enquête, grâce à des diagnostics visuels réunis dans un tableau de bord interactif. Il s'adresse particulièrement aux instituts et aux équipes de recherche conduisant des enquêtes de grande ampleur avec de nombreux enquêteur·rices : il offre une vue rapide et systématique de la qualité des données, entre vagues et entre enquêteur·rices.
 
-`vizsurvey` ne tire aucune conclusion à votre place : il calcule des écarts (distances de chi², scores d'anomalie, indices d'homogénéité) et les met en évidence pour **prioriser la relecture**. L'interprétation reste celle de l'équipe d'enquête.
+`vizsurvey` ne tire aucune conclusion à votre place : il calcule des écarts (distances de chi², scores d'anomalie, indices d'homogénéité) et les met en évidence pour **prioriser la lecture**. L'interprétation reste celle de l'équipe d'enquête.
 
 ## Fonctionnalités clés
 
