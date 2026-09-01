@@ -78,12 +78,12 @@ L’objectif est un usage régulier et structuré de l’outil au sein d’une
 équipe gérant plusieurs enquêtes.</p>
 <p>Dans ce contexte, lancer l’interface manuellement pour chaque base
 devient vite fastidieux. Surtout, le calcul des écarts — en particulier
-lorsqu’ils sont déclinés par vague et par filtre — peut être coûteux.
+lorsqu’ils sont déclinés par vague et par filtre — est très long.
 {vizsurvey} sépare donc les deux temps : une
 <strong>préparation</strong> (<code><a href="../reference/prepa_survey.html">prepa_survey()</a></code>), qui calcule
-tout et enregistre le résultat dans un fichier <code>global.rds</code>,
-et l’<strong>ouverture de l’interface</strong>, qui ne fait que lire ce
-fichier et est donc immédiate.</p>
+toutes les statistiques et enregistre le résultat dans un fichier
+<code>global.rds</code>, et l’<strong>ouverture de l’interface</strong>,
+qui ne fait que lire ce fichier et est donc immédiate.</p>
 <p>La préparation peut être relancée à chaque mise à jour des données,
 par exemple par une tâche planifiée quotidienne : toutes les personnes
 qui ouvrent l’interface analysent alors les mêmes fichiers à jour.</p>
@@ -95,8 +95,10 @@ qui ouvrent l’interface analysent alors les mêmes fichiers à jour.</p>
 <code><a href="../reference/create_eusilc_sim.html">create_eusilc_sim()</a></code> génère un jeu d’exemple à partir de
 l’extrait SILC du package {laeken} : un numéro d’enquêteur·rice fictif
 (<code>nr_itw</code>), une vague fictive (<code>db010</code>), et des
-erreurs volontaires à retrouver dans l’interface (voir la vignette de
-prise en main).</p>
+erreurs volontaires à retrouver dans l’interface (voir la <a href="https://tdelc.github.io/vizsurvey/articles/vizsurvey.html">vignette
+de prise en main</a>).</p>
+<p>On va créer cette jeu de données, et le placer dans un répertoire
+fictif “data/EUSILC”.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_eusilc_sim.html">create_eusilc_sim</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -139,7 +141,8 @@ var_intv =
 var_date =
 var_info_geo =</code></pre>
 <p>Les clés se répartissent en trois groupes. D’abord les <strong>rôles
-des variables</strong> :</p>
+des variables</strong>. Toutes ces variables sont facultatives, et
+activent les différents onglets de {vizsurvey} :</p>
 <table class="table">
 <colgroup>
 <col width="50%">
@@ -183,7 +186,7 @@ les entretiens</td>
 </tr>
 </tbody>
 </table>
-<p>Ensuite le <strong>typage des variables</strong>, entièrement
+<p>Ensuite la <strong>configuration des variables</strong>, entièrement
 facultatif :</p>
 <table class="table">
 <colgroup>
@@ -242,8 +245,9 @@ fichier peut être créé à la main, ou généré avec
 <h3 id="le-typage-automatique-des-variables">Le typage automatique des variables<a class="anchor" aria-label="anchor" href="#le-typage-automatique-des-variables"></a>
 </h3>
 <p>Vous n’avez à renseigner <code>vars_discretes</code> et
-<code>vars_continuous</code> que si le classement automatique se trompe.
-La fonction <code>classify_df</code> détermine le type de chaque
+<code>vars_continuous</code> (et <code>prefix_discretes</code> et
+<code>prefix_continuous</code>) que si le classement automatique se
+trompe. La fonction <code>classify_df</code> détermine le type de chaque
 variable à partir de son format et de son nombre de modalités ; le seuil
 pour classer une variable comme catégorielle est de 15 modalités par
 défaut.</p>
@@ -309,7 +313,8 @@ le dossier — données plus <code>config.txt</code> — pour produire :</p>
 <p>Pour l’analyse par enquêteur·rice, les variables continues sont
 préalablement découpées en cinq classes (par quantiles), de sorte que
 toutes les variables se comparent avec la même distance de chi² (voir la
-vignette de méthodes).</p>
+<a href="https://tdelc.github.io/vizsurvey/articles/methods.html">vignette
+de méthodes</a>).</p>
 <p>Par défaut, <code>prepa_survey</code> cherche les fichiers CSV du
 dossier ; l’argument <code>file_pattern</code> permet d’adapter ce
 comportement. Un fichier <code>global.rds</code> est alors généré dans
@@ -376,7 +381,9 @@ version à jour des <code>global.rds</code>, donc de l’interface.</p>
 </h2>
 <p>Trois fichiers facultatifs, communs à toutes les enquêtes, se
 déclarent au lancement de l’interface — pas dans
-<code>config.txt</code>.</p>
+<code>config.txt</code>. La <a href="https://tdelc.github.io/vizsurvey/articles/metadata.html">vignette
+de métadonnées</a> détaille leur utilité et leur création. Voici un bref
+aperçu.</p>
 <div class="section level3">
 <h3 id="le-dictionnaire-path_dict">Le dictionnaire (<code>path_dict</code>)<a class="anchor" aria-label="anchor" href="#le-dictionnaire-path_dict"></a>
 </h3>

@@ -73,12 +73,12 @@
 <div class="section level3">
 <h3 id="pourquoi-vizsurvey">Pourquoi vizsurvey ?<a class="anchor" aria-label="anchor" href="#pourquoi-vizsurvey"></a>
 </h3>
-<p>Dans un processus statistique aligné sur le GSBPM, la qualité ne se
-joue pas seulement en amont (échantillonnage, questionnaire, collecte)
-ou en aval (analyse, diffusion). Entre la collecte et l’analyse se situe
-une phase clé : le contrôle et le suivi du matériau collecté, pour
-repérer rapidement les anomalies, documenter les écarts et, si
-nécessaire, déclencher une action corrective.</p>
+<p>Dans un processus statistique, la qualité ne se joue pas seulement en
+amont (échantillonnage, questionnaire, collecte) ou en aval (analyse,
+diffusion). Entre la collecte et l’analyse se situe une phase clé : le
+contrôle et le suivi du matériau collecté, pour repérer rapidement les
+anomalies, documenter les écarts et, si nécessaire, déclencher une
+action corrective durant le travail de terrain.</p>
 <p>{vizsurvey} répond à ce besoin : une interface interactive pour
 parcourir vos données, comparer des profils de réponse et prioriser les
 investigations. L’objectif n’est pas de tirer des conclusions
@@ -111,20 +111,19 @@ accessible pour tous les instituts.</li>
 <h3 id="la-cohérence-entre-vagues">La cohérence entre vagues<a class="anchor" aria-label="anchor" href="#la-coh%C3%A9rence-entre-vagues"></a>
 </h3>
 <p>D’une vague à l’autre, les questionnaires évoluent (libellés,
-routages, filtres), mais les variables cibles doivent rester
-comparables. {vizsurvey} permet de définir une variable de vague (par
-exemple l’année de l’enquête) et met en évidence :</p>
+routing, filtres), mais les variables cibles doivent rester comparables.
+{vizsurvey} permet de définir une variable de vague (par exemple l’année
+de l’enquête) et met en évidence :</p>
 <ul>
 <li>les écarts de distribution ou de niveau (proportions, médianes)
 ;</li>
 <li>les variables présentant des ruptures qui méritent un second regard
-(mise en œuvre du routage, recodage, version du questionnaire,
-changement de mode de collecte, etc.).</li>
+(recodage, version du questionnaire, changement de mode de collecte,
+etc.).</li>
 </ul>
 <p>Depuis la version 0.4, la vague peut être définie sur <strong>deux
 niveaux</strong> (par exemple l’année et le trimestre) : le premier
-niveau est obligatoire, le second facultatif, en cascade dans
-l’interface.</p>
+niveau est obligatoire pour obtenir l’analyse, le second facultatif.</p>
 </div>
 </div>
 <div class="section level2">
@@ -158,7 +157,7 @@ variable de vague, ou une variable de filtre. Voici la commande complète
 est une variable facultative servant à <strong>filtrer</strong>
 l’analyse (par exemple la région). Quand un filtre est fourni, les
 analyses sont produites à la fois au niveau global et au sein de chaque
-valeur du filtre.</p>
+modalité du filtre.</p>
 <p><code>var_wave</code> et <code>var_filter</code> acceptent chacun
 <strong>deux variables</strong> : la seconde est alors un second niveau,
 emboîté dans le premier.</p>
@@ -187,11 +186,11 @@ de préparation des données</a> détaille tout cela. Voici par exemple la
 commande pour une structure à deux niveaux de dossiers :</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p>Cette fonction accepte aussi trois fichiers transverses facultatifs,
-décrits dans la vignette de préparation : un
-<strong>dictionnaire</strong> des variables (<code>path_dict</code>),
-une <strong>nomenclature</strong> de libellés (<code>path_nomen</code>),
-et un fichier d’<strong>archive</strong> partagé
+<p>Cette fonction accepte aussi trois fichiers, décrits dans la <a href="https://tdelc.github.io/vizsurvey/articles/metadata.html">vignette
+de présentation des meta-données</a> : un <strong>dictionnaire</strong>
+des variables (<code>path_dict</code>), une
+<strong>nomenclature</strong> de libellés (<code>path_nomen</code>), et
+un fichier d’<strong>archive</strong> partagé
 (<code>path_archive</code>).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -210,13 +209,12 @@ l’emploi : elle crée un numéro d’enquêteur·rice fictif
 erreurs volontaires</strong> que l’interface doit permettre de retrouver
 :</p>
 <ul>
-<li>pour l’enquêteur·rice <strong>Vienna-2</strong> : l’âge est divisé
-par 10, le revenu équivalent par 100, et la modalité 5 de
-<code>pl030</code> est remplacée par des valeurs manquantes ;</li>
+<li>pour l’enquêteur <strong>Vienna-2</strong> : l’âge est divisé par
+10, le revenu équivalent par 100, et la modalité 5 de <code>pl030</code>
+est remplacée par des valeurs manquantes ;</li>
 <li>pour la vague <strong>2020</strong> : la variable
-<code>pb220a</code> est entièrement manquante, la modalité 4 de
-<code>hsize</code> disparaît, et le revenu équivalent est divisé par
-100.</li>
+<code>pb220a</code> est manquante, la modalité 4 de <code>hsize</code>
+disparaît, et le revenu équivalent est divisé par 100.</li>
 </ul>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tdelc/vizsurvey" class="external-link">vizsurvey</a></span><span class="op">)</span></span>
@@ -233,7 +231,6 @@ vignette.</p>
 <div class="section level2">
 <h2 id="tour-de-linterface">Tour de l’interface<a class="anchor" aria-label="anchor" href="#tour-de-linterface"></a>
 </h2>
-<!-- CAPTURE : vue générale de l'application, onglet Synthèse ouvert, barre latérale visible -->
 <p><img src="images/onglet-synthese.png"></p>
 <div class="section level3">
 <h3 id="la-barre-latérale">La barre latérale<a class="anchor" aria-label="anchor" href="#la-barre-lat%C3%A9rale"></a>
@@ -243,11 +240,11 @@ l’application</strong>. On y trouve :</p>
 <ul>
 <li>le <strong>chargement de la base</strong> : le choix du dossier et
 de l’enquête (en mode <code>from_folder</code>) ;</li>
-<li>le <strong>filtrage</strong> : la vague et le filtre courants. La
-vague est obligatoire ; quand elle a deux niveaux, un second sélecteur
-apparaît en cascade sous le premier, facultatif (<code>All</code> par
-défaut). Le filtre fonctionne de la même façon, avec <code>All</code>
-pour ne pas filtrer ;</li>
+<li>le <strong>filtrage</strong> : la vague et le filtre courants.
+Lorsque la vague a deux niveaux, un second sélecteur apparaît en cascade
+sous le premier, facultatif (<code>All</code> par défaut). Le filtre
+fonctionne de la même façon, avec <code>All</code> pour ne pas filtrer
+;</li>
 <li>le bouton <strong>Seuils de détection</strong>, qui ouvre les
 paramètres de sensibilité.</li>
 </ul>
@@ -287,7 +284,7 @@ détection</td>
 l’onglet Vague</td>
 </tr>
 <tr class="even">
-<td>Distance de chi² / écart de médiane minimum</td>
+<td>Distance de chi²</td>
 <td>5</td>
 <td>écart standardisé à partir duquel un croisement enquêteur·rice ×
 variable est signalé</td>
@@ -295,9 +292,8 @@ variable est signalé</td>
 </tbody>
 </table>
 <p>Il n’existe pas de seuil statistiquement fondé pour ce type d’analyse
-: c’est à l’équipe de coordination de le régler par tâtonnement.
-Baissez-le pour voir plus de cas, montez-le pour ne garder que les plus
-francs.</p>
+: c’est à l’équipe de le régler par tâtonnement. Baissez-le pour voir
+plus de cas, montez-le pour ne garder que les plus francs.</p>
 </div>
 <div class="section level3">
 <h3 id="laide-contextuelle-et-la-visite-guidée">L’aide contextuelle et la visite guidée<a class="anchor" aria-label="anchor" href="#laide-contextuelle-et-la-visite-guid%C3%A9e"></a>
@@ -323,17 +319,16 @@ langue choisie.</p>
 <p>C’est l’onglet d’accueil. Il répond à deux questions : <em>qu’est-ce
 qui est chargé ?</em> et <em>par où commencer ?</em></p>
 <p>La partie haute présente l’enquête : quatre compteurs (entretiens,
-variables analysées, enquêteur·rices, vagues), une carte d’identité
-(nom, chemin, date de la dernière préparation, rôle des variables,
-présence des timers) et le nombre d’entretiens par vague — découpé par
-le second niveau de vague quand il existe.</p>
+variables analysées, enquêteur·rices, vagues), une présentation simple
+des données (nom, chemin, date de la dernière préparation, rôle des
+variables, présence des timers) et le nombre d’entretiens par vague —
+découpé par le second niveau de vague quand il existe.</p>
 <p>La partie basse, « Par où commencer », donne trois points d’entrée
 chiffrés pour la vague et le filtre courants : le nombre
 d’enquêteur·rices présentant au moins un écart, le nombre de variables
 ayant varié entre les vagues, et le nombre de croisements enquêteur·rice
-× variable au-dessus des seuils. Chaque carte liste les trois cas les
+× variable au-dessus des seuils. Chaque carte liste les cinq cas les
 plus marquants et un bouton ouvre l’onglet correspondant.</p>
-<!-- CAPTURE : onglet Synthèse, partie "Par où commencer" avec les trois cartes remplies -->
 <p><img src="images/synthese-par-ou-commencer.png"></p>
 <p>Sur les données d’exemple, la carte Enquêteur signale d’emblée
 Vienna-2.</p>
@@ -351,7 +346,9 @@ d’anomalie</strong> :</p>
 <li>
 <code>RANK</code> provient d’un score d’Isolation Forest calculé sur
 l’ensemble des indicateurs : plus la combinaison d’indicateurs est rare,
-plus le rang est élevé ;</li>
+plus le rang est élevé (consultez la <a href="https://tdelc.github.io/vizsurvey/articles/methods.html">vignette
+de présentation des méthodes de calcul</a> pour plus d’informations sur
+l’Isolation Forest);</li>
 <li>
 <code>NB_INTV</code> est le nombre d’entretiens,
 <code>INDEX_H</code> un indice d’homogénéité des réponses,
@@ -363,10 +360,8 @@ durée (<code>DURATION_*</code>) et les parts d’entretiens signalés
 </ul>
 <p>Une case rouge dépasse de plus de deux écarts-types la moyenne de sa
 colonne. La carte <strong>Indicateurs</strong>, au-dessus, permet
-d’écarter un indicateur du tableau <em>et</em> du score — utile quand un
-indicateur n’a pas de sens pour l’enquête (le travail de nuit pour des
-entretiens sur rendez-vous, par exemple).</p>
-<!-- CAPTURE : onglet Enquêteur, tableau de synthèse avec Vienna-2 en tête -->
+d’écarter un indicateur du tableau <em>et</em> du score. Ceci est utile
+quand un indicateur n’a pas de sens pour votre enquête.</p>
 <p><img src="images/enqueteur-synthese.png"></p>
 <p>Si une nomenclature a été fournie (<code>path_nomen</code>), les
 libellés des variables s’affichent sous les noms de colonnes.</p>
@@ -374,7 +369,7 @@ libellés des variables s’affichent sous les noms de colonnes.</p>
 <p><strong>Principe directeur</strong> : aucun test statistique n’est
 réalisé. {vizsurvey} calcule des distances, des scores et des rangs
 destinés à <strong>prioriser</strong> la relecture. Les conclusions
-restent de la responsabilité de l’équipe méthodologique.</p>
+restent de la responsabilité de l’équipe.</p>
 </blockquote>
 </div>
 <div class="section level3">
@@ -389,7 +384,7 @@ elle qui est comparée au seuil.</p>
 <p>Point important : <strong>les variables continues sont découpées en
 cinq classes</strong> (par quantiles) avant la comparaison. Toutes les
 variables se lisent donc de la même façon, avec une seule distance de
-chi², au lieu d’un mélange de chi² et d’écarts de médiane.</p>
+chi².</p>
 <p>Un clic sur une variable affiche :</p>
 <ul>
 <li>la <strong>comparaison des distributions</strong> : la distribution
@@ -398,14 +393,14 @@ gris), accompagnée d’un tableau de statistiques descriptives comparées
 ;</li>
 <li>la <strong>distribution des modalités</strong> : pour chaque
 modalité, la distribution de sa part parmi tous les enquêteur·rices,
-avec une ligne rouge sur la valeur de l’enquêteur·rice. Elle répond à
-une question que le graphique précédent ne traite pas : cet·te
-enquêteur·rice est-il·elle réellement isolé·e, ou beaucoup d’autres
-sont-ils au même niveau ?</li>
+avec une ligne rouge sur la valeur de l’enquêteur·rice. Elle permet
+d’évaluer la dispersion de chaque modalité, et donc si l’enquêteur·rice
+est réellement isolé·e.</li>
 </ul>
-<!-- CAPTURE : détail par variable pour Vienna-2, variable age (comparaison des distributions) --><p><img src="images/enqueteur-detail-variable.png"></p>
+<p><img src="images/enqueteur-detail-variable.png"></p>
 <p>Sur les données d’exemple, le revenu de Vienna-2 (multiplié par 100)
-saute aux yeux : sa densité est décalée d’un ordre de grandeur.</p>
+se remarque rapidement : sa densité est décalée d’un ordre de
+grandeur.</p>
 </div>
 <div class="section level3">
 <h3 id="le-détail-par-entretien-audit-trail">Le détail par entretien (audit trail)<a class="anchor" aria-label="anchor" href="#le-d%C3%A9tail-par-entretien-audit-trail"></a>
@@ -450,10 +445,9 @@ ligne par variable, un bloc de colonnes par vague avec la part de
 valeurs manquantes et le nombre de modalités observées. Une case devient
 rouge quand la variation dépasse le taux de variation minimum ;</li>
 <li>les <strong>variables numériques</strong> qui ont bougé : même
-principe, avec la part de manquants et la médiane — préférée à la
-moyenne car moins sensible aux valeurs extrêmes.</li>
+principe, avec la part de manquants et la médiane.</li>
 </ul>
-<!-- CAPTURE : onglet Vague, tableau des variables catégorielles avec pb220a et hsize signalées pour 2020 --><p><img src="images/vague-tableaux.png"></p>
+<p><img src="images/vague-tableaux.png"></p>
 <p>Sur les données d’exemple, en sélectionnant la vague 2020 :
 <code>pb220a</code> apparaît dans les absences, <code>hsize</code> dans
 les catégorielles (hausse de valeurs manquantes), et
@@ -484,45 +478,46 @@ variables. Quatre sous-onglets :</p>
 <ul>
 <li>la <strong>table de chi²</strong> : une ligne par couple
 enquêteur·rice × variable dont l’écart dépasse le seuil, triée par écart
-décroissant. C’est le point d’entrée quand on ne sait pas par où
-commencer ;</li>
+décroissant. C’est le point d’entrée pour repérer les écarts les plus
+importants ;</li>
 <li>la <strong>heatmap</strong> : une ligne par enquêteur·rice, une
 colonne par variable, une case colorée quand l’écart dépasse le seuil.
 On peut zoomer sur les lignes à risque, les colonnes à risque ou les
 seules cases au-dessus du seuil, et réordonner lignes et colonnes par
 sériation pour regrouper les profils proches. Le survol d’une case
-affiche les valeurs sous-jacentes, le clic ouvre les distributions en
-bas de page ;</li>
+affiche les valeurs sous-jacentes ;</li>
 <li>la <strong>synthèse par enquêteur·rice</strong> : le classement par
 score d’anomalie, et pour l’enquêteur·rice sélectionné·e, la liste de
 ses variables les plus contributives ;</li>
 <li>la <strong>synthèse par variable</strong> : le même classement, vu
 du côté des variables. Une variable en tête de ce tableau relève souvent
-d’un problème de questionnaire (formulation ambiguë, routage) plutôt que
+d’un problème de questionnaire (formulation ambiguë, routing) plutôt que
 d’un·e enquêteur·rice.</li>
 </ul>
-<!-- CAPTURE : onglet Croisé, heatmap zoomée sur les cases à risque --><p><img src="images/croise-heatmap.png"></p>
-<p>La lecture de la heatmap tient en trois règles :</p>
+<p>En bas de page, les cartes de <strong>comparaison des
+distributions</strong> et de <strong>distribution des modalités</strong>
+fonctionnent comme dans l’onglet Enquêteur, dès qu’un clic sur une
+association enquêteur·rice × variable a été effectué. Si un dictionnaire
+a été fourni, une carte affiche en plus les entrées du dictionnaire pour
+la variable sélectionnée — pratique pour vérifier la formulation exacte
+d’une question avant de conclure.</p>
+<p><img src="images/croise-heatmap.png"></p>
+<p>La lecture de la heatmap est la plus complexe. Voici quelques
+conseils de lecture :</p>
 <ul>
 <li>une case isolée n’est pas en soi un problème : avec beaucoup de
 croisements, quelques valeurs extrêmes sont normales ;</li>
 <li>une <strong>ligne</strong> régulièrement rouge suggère un
-comportement récurrent (erreur de procédure, incompréhension, routage
+comportement récurrent (erreur de procédure, incompréhension, routing
 mal appliqué, voire fraude) ;</li>
-<li>une <strong>colonne</strong> rouge désigne une variable fragile
-(libellé ambigu, routage, effet de sous-population) plutôt que les
+<li>une <strong>colonne</strong> rouge désigne une variable à vérifier
+(libellé ambigu, routing, effet de sous-population) plutôt que les
 enquêteur·rices.</li>
 </ul>
 <p>Pour départager un effet enquêteur·rice d’un effet de
 sous-population, utilisez le filtre de la barre latérale : si les cases
 rouges disparaissent une fois l’analyse restreinte à la zone de
 l’enquêteur·rice, l’explication est structurelle, pas individuelle.</p>
-<p>En bas de page, les cartes de <strong>comparaison des
-distributions</strong> et de <strong>distribution des modalités</strong>
-fonctionnent comme dans l’onglet Enquêteur. Si un dictionnaire a été
-fourni, une carte affiche en plus les entrées du dictionnaire pour la
-variable sélectionnée — pratique pour vérifier la formulation exacte
-d’une question avant de conclure.</p>
 </div>
 <div class="section level2">
 <h2 id="les-onglets-données-dictionnaire-et-archive">Les onglets Données, Dictionnaire et Archive<a class="anchor" aria-label="anchor" href="#les-onglets-donn%C3%A9es-dictionnaire-et-archive"></a>
@@ -539,7 +534,7 @@ dictionnaire a été fourni au lancement (<code>path_dict</code>). Il
 affiche le fichier tel quel, avec recherche et filtres ;</li>
 <li>
 <strong>Archive</strong> : l’historique des observations. Le bouton
-<strong>Ajouter à l’historique</strong> enregistre la date,
+<strong>Ajouter à l’archive</strong> enregistre la date,
 l’utilisateur·rice, l’enquête, la vague, l’enquêteur·rice, l’entretien
 et la variable concernés, plus un commentaire libre. Le fichier est
 partagé par toutes les personnes qui utilisent le même chemin d’archive
@@ -558,12 +553,16 @@ outil.</p>
 <strong>Sélectionnez</strong> l’enquête, la vague et éventuellement
 le filtre.</li>
 <li>
-<strong>Partez</strong> de l’onglet Synthèse : les trois points
-d’entrée donnent l’ampleur de ce qu’il y a à examiner.</li>
+<strong>Partez</strong> de l’onglet Synthèse et vérifiez que
+l’importation des données est correct.</li>
 <li>
 <strong>Vérifiez</strong> d’abord l’onglet Vague : une variable
 absente ou un changement d’échelle expliquent souvent des écarts en
 cascade ailleurs.</li>
+<li>
+<strong>Observez</strong> le tableau des chi² de l’onglet Croisé :
+les dix premières lignes doivent trouver une explication ou être
+corrigée.</li>
 <li>
 <strong>Parcourez</strong> la heatmap de l’onglet Croisé : lignes
 rouges (enquêteur·rices), colonnes rouges (variables).</li>

@@ -74,27 +74,25 @@
 </h2>
 <p>{vizsurvey} fonctionne sans aucune métadonnée. Chargez une base,
 désignez l’enquêteur·rice et la vague, et tous les calculs se font : les
-écarts, les classements, la heatmap. C’est d’ailleurs ainsi que la
-plupart des utilisateur·rices démarrent.</p>
+écarts, les classements, la heatmap.</p>
 <p>Mais l’interface utilise alors alors les termes de vos fichiers, pas
 celle de vos collègues. Les tableaux affichent
 <code>CD_HM_RSP_CST_ELECTRICITY</code>, <code>PC_NIGHT</code> ou
 <code>PB220A</code>, et chaque personne qui découvre l’outil doit ouvrir
 le questionnaire à côté pour savoir de quoi il s’agit. C’est le point de
-friction le plus fréquent que nous ayons observé : ce n’est pas le
-calcul qui bloque, c’est la lecture.</p>
+friction le plus fréquent que nous ayons observé : le lecture des
+anomalies est ralentie par la compréhension de chaque variable.</p>
 <p>Deux fichiers facultatifs répondent à ce besoin :</p>
 <ul>
 <li>la <strong>nomenclature</strong> ajoute un libellé court sous chaque
 nom de variable, directement dans les tableaux ;</li>
 <li>le <strong>dictionnaire</strong> met à disposition la documentation
 détaillée d’une variable — formulation exacte de la question, modalités,
-routage — à l’endroit et au moment où l’on en a besoin.</li>
+routing — à l’endroit et au moment où l’on en a besoin.</li>
 </ul>
-<p>Ni l’un ni l’autre n’est nécessaire au fonctionnement de {vizsurvey}.
-Tous deux changent radicalement le confort d’usage, et surtout la
-capacité à partager l’outil avec des personnes qui ne connaissent pas la
-base par cœur.</p>
+<p>Ni l’un ni l’autre n’est nécessaire au fonctionnement de {vizsurvey},
+mais ils changent le confort d’usage, et surtout la capacité à partager
+l’outil avec des personnes qui ne connaissent pas la base par cœur.</p>
 <p>Cette vignette décrit leur format, ce qu’ils débloquent dans
 l’interface, et comment les construire progressivement.</p>
 </div>
@@ -136,30 +134,27 @@ l’interface, et comment les construire progressivement.</p>
 <td>Dictionnaire</td>
 <td>
 <code>path_dict</code> au lancement</td>
-<td><code>.rds</code></td>
+<td>plat (CSV, TSV…)</td>
 <td>documentation détaillée, structure libre</td>
 </tr>
 </tbody>
 </table>
 <p>Le premier est traité dans la <a href="https://tdelc.github.io/vizsurvey/articles/data-preparation.html">vignette
 de préparation des données</a> : il décrit la <strong>structure</strong>
-des données, ce sans quoi aucun calcul n’est possible. Les deux autres
-décrivent leur <strong>sens</strong>, ce sans quoi les résultats sont
-justes mais opaques.</p>
-<p>Différence importante : la nomenclature et le dictionnaire ne se
-déclarent pas dans <code>config.txt</code>, mais au lancement de
-l’interface. Ils sont donc <strong>transverses</strong> : un seul
-fichier peut servir toutes vos enquêtes.</p>
+des données, ce sans quoi aucun calcul n’est possible.</p>
+<p>La nomenclature et le dictionnaire ne se déclarent pas dans
+<code>config.txt</code>, mais au lancement de l’interface. Ils sont donc
+<strong>transverses</strong> : un seul fichier peut servir toutes vos
+enquêtes.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/runVizsurvey_from_folder.html">runVizsurvey_from_folder</a></span><span class="op">(</span><span class="st">"data"</span>, depth_folder <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                         path_nomen   <span class="op">=</span> <span class="st">"meta/nomenclature.csv"</span>,</span>
-<span>                         path_dict    <span class="op">=</span> <span class="st">"meta/dictionnaire.rds"</span>,</span>
+<span>                         path_dict    <span class="op">=</span> <span class="st">"meta/dictionnaire.csv"</span>,</span>
 <span>                         path_archive <span class="op">=</span> <span class="st">"meta/archive.csv"</span><span class="op">)</span></span></code></pre></div>
 <p>Ces trois arguments sont propres à
 <code>runVizsurvey_from_folder</code>. En lancement direct depuis R
 (<code>runVizsurvey_from_r</code>), l’interface fonctionne, mais sans
-métadonnées : c’est un mode d’exploration rapide, pas un mode de travail
-en équipe.</p>
+métadonnées : c’est un mode d’exploration rapide.</p>
 </div>
 <div class="section level2">
 <h2 id="la-nomenclature-des-libellés-dans-les-tableaux">La nomenclature : des libellés dans les tableaux<a class="anchor" aria-label="anchor" href="#la-nomenclature-des-libell%C3%A9s-dans-les-tableaux"></a>
@@ -168,33 +163,6 @@ en équipe.</p>
 point-virgule…), avec une colonne <code>VARIABLE</code> et <strong>une
 colonne par langue de l’interface</strong>, nommée <code>FR</code>,
 <code>EN</code> et <code>NL</code> :</p>
-<pre><code>VARIABLE,FR,EN,NL
-AGE,Âge de la personne,Age of the person,Leeftijd van de persoon
-EQINCOME,Revenu équivalent,Equivalised income,Equivalent inkomen
-PB220A,Pays de naissance,Country of birth,Geboorteland
-HSIZE,Taille du ménage,Household size,Grootte van het huishouden</code></pre>
-<p>Trois règles à respecter :</p>
-<ol style="list-style-type: decimal">
-<li>la colonne <code>VARIABLE</code> s’écrit en
-<strong>majuscules</strong>. {vizsurvey} met les noms de colonnes de vos
-données en majuscules à la lecture, et la correspondance est faite à
-l’identique, sans tolérance de casse ;</li>
-<li>la correspondance est <strong>exacte</strong> : <code>AGE</code> ne
-correspond pas à <code>AGE_1</code> ;</li>
-<li>prévoyez la colonne de chaque langue que vous comptez utiliser. La
-colonne lue est celle de la langue courante de l’interface : changer de
-langue en cours de session recharge les libellés.</li>
-</ol>
-<p>Une variable absente de la nomenclature s’affiche simplement sans
-libellé.</p>
-<p>Les libellés s’affichent sous les noms de colonnes des quatre
-tableaux de l’onglet <strong>Enquêteur</strong> : la synthèse, la table
-des entretiens, celle des sessions et le détail item par item d’un
-entretien.</p>
-<p>La correspondance se fait sur les noms de colonnes affichés, quels
-qu’ils soient. Rien ne vous empêche donc de documenter les
-<strong>indicateurs calculés par {vizsurvey}</strong> eux-mêmes, au même
-titre que vos variables :</p>
 <pre><code>VARIABLE,FR,EN,NL
 RANK,Rang d'anomalie,Anomaly rank,Anomalierang
 NB_INTV,Nombre d'entretiens,Number of interviews,Aantal interviews
@@ -206,6 +174,23 @@ PC_NIGHT,Part d'entretiens de nuit,Share of night interviews,Aandeel nachtinterv
 celles et ceux qui le découvrent, sans passer par une formation. Une
 vingtaine de lignes suffisent à couvrir tous les indicateurs de
 l’application.</p>
+<p>Trois règles à respecter :</p>
+<ol style="list-style-type: decimal">
+<li>la colonne <code>VARIABLE</code> s’écrit en
+<strong>majuscules</strong> ;</li>
+<li>la correspondance est <strong>exacte</strong> :
+<code>DT_SVY_YR</code> ne correspond pas à <code>DT_SVY_YR_1</code>
+;</li>
+<li>prévoyez la colonne de chaque langue que vous comptez utiliser. La
+colonne lue est celle de la langue courante de l’interface : changer de
+langue en cours de session recharge les libellés.</li>
+</ol>
+<p>Une variable absente de la nomenclature s’affiche simplement sans
+libellé.</p>
+<p>Les libellés s’affichent sous les noms de colonnes des quatre
+tableaux de l’onglet <strong>Enquêteur</strong> : la synthèse, la table
+des entretiens, celle des sessions et le détail item par item d’un
+entretien.</p>
 </div>
 <div class="section level2">
 <h2 id="le-dictionnaire-la-documentation-détaillée">Le dictionnaire : la documentation détaillée<a class="anchor" aria-label="anchor" href="#le-dictionnaire-la-documentation-d%C3%A9taill%C3%A9e"></a>
@@ -213,15 +198,12 @@ l’application.</p>
 <div class="section level3">
 <h3 id="le-format">Le format<a class="anchor" aria-label="anchor" href="#le-format"></a>
 </h3>
-<p>Un fichier <code>.rds</code> contenant un data.frame. Sa structure
-est <strong>libre</strong> : {vizsurvey} l’affiche tel quel dans un
-onglet dédié, avec recherche et filtres par colonne. Mettez-y ce que
-contient votre documentation : formulation de la question, modalités et
-leurs codes, routage, période de validité, commentaires
-méthodologiques.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dico</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu">read_csv</span><span class="op">(</span><span class="st">"meta/dictionnaire.csv"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">dico</span>, <span class="st">"meta/dictionnaire.rds"</span><span class="op">)</span></span></code></pre></div>
+<p>Un fichier lisible <code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread</a></code> (CSV, TSV,
+point-virgule…). Sa structure est <strong>libre</strong> : {vizsurvey}
+l’affiche tel quel dans un onglet dédié, avec recherche et filtres par
+colonne. Mettez-y ce que contient votre documentation : formulation de
+la question, modalités et leurs codes, routing, période de validité,
+commentaires méthodologiques.</p>
 <p>Deux noms de colonnes ont toutefois un rôle particulier :</p>
 <ul>
 <li>
@@ -239,7 +221,7 @@ nomenclature.</li>
 <code>variable</code> et <code>VARIABLE</code> fonctionnent aussi bien.
 Voici la forme typique d’un dictionnaire multilingue avec des entrées au
 niveau des modalités :</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dico</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">VARIABLE</span>,  <span class="op">~</span><span class="va">TX_LANG</span>, <span class="op">~</span><span class="va">QUESTION</span>,                          <span class="op">~</span><span class="va">MODALITE</span>,</span>
 <span>  <span class="st">"PL030"</span>,    <span class="st">"FR"</span>,     <span class="st">"Situation d'activité principale"</span>,   <span class="st">"1 : Travail à temps plein"</span>,</span>
@@ -266,14 +248,12 @@ niveau des modalités :</p>
 <ul>
 <li>dans un <strong>onglet Dictionnaire</strong>, inséré automatiquement
 à côté de l’onglet Données. Cet onglet n’existe que si un dictionnaire a
-été fourni et qu’il contient au moins une ligne : l’interface s’adapte,
-il n’y a pas d’onglet vide ;</li>
+été fourni et qu’il contient au moins une ligne ;</li>
 <li>dans une <strong>carte contextuelle</strong> des onglets Vague,
 Enquêteur et Croisé : dès que vous sélectionnez une variable, les
 entrées du dictionnaire qui la concernent s’affichent sous les
 graphiques.</li>
 </ul>
-<!-- CAPTURE : onglet Croisé, carte "Dictionnaire des données" sous les distributions, pour une variable sélectionnée --><p><img src="images/dictionnaire-carte.png"></p>
 <p>C’est ce second usage qui change le travail au quotidien. Devant un
 écart entre deux vagues, la première question est presque toujours « la
 question a-t-elle changé ? ». Avoir la formulation exacte sous les yeux,
@@ -287,7 +267,7 @@ il n’y a qu’une reformulation.</p>
 <p>Le plus simple est de générer un squelette contenant toutes les
 variables, puis de le remplir progressivement — en commençant par celles
 qui remontent effectivement dans les analyses.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_eusilc_sim.html">create_eusilc_sim</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">nomen</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
@@ -297,52 +277,8 @@ qui remontent effectivement dans les analyses.</p>
 <span>  NL <span class="op">=</span> <span class="cn">NA_character_</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">readr</span><span class="fu">::</span><span class="fu">write_csv</span><span class="op">(</span><span class="va">nomen</span>, <span class="st">"meta/nomenclature.csv"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">readr</span><span class="fu">::</span><span class="fu">write_csv</span><span class="op">(</span><span class="va">nomen</span>, <span class="st">"meta/dictionnaire.csv"</span><span class="op">)</span></span></code></pre></div>
 </div>
-</div>
-<div class="section level2">
-<h2 id="les-deux-fichiers-sont-complémentaires">Les deux fichiers sont complémentaires<a class="anchor" aria-label="anchor" href="#les-deux-fichiers-sont-compl%C3%A9mentaires"></a>
-</h2>
-<p>La nomenclature et le dictionnaire répondent à deux besoins
-différents, et gagnent à coexister :</p>
-<table class="table">
-<colgroup>
-<col width="33%">
-<col width="33%">
-<col width="33%">
-</colgroup>
-<thead><tr class="header">
-<th></th>
-<th>Nomenclature</th>
-<th>Dictionnaire</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td>Question posée</td>
-<td>« c’est quoi, cette colonne ? »</td>
-<td>« que dit exactement cette question ? »</td>
-</tr>
-<tr class="even">
-<td>Volume</td>
-<td>une ligne par variable</td>
-<td>autant de lignes que nécessaire</td>
-</tr>
-<tr class="odd">
-<td>Lecture</td>
-<td>d’un coup d’œil, dans l’en-tête</td>
-<td>à la demande, dans un onglet</td>
-</tr>
-<tr class="even">
-<td>Coût de mise en place</td>
-<td>quelques dizaines de lignes</td>
-<td>export d’un référentiel existant</td>
-</tr>
-</tbody>
-</table>
-<p>Le parcours typique d’une investigation les mobilise l’un après
-l’autre : la nomenclature permet de <strong>repérer</strong> rapidement
-la variable qui pose problème dans un tableau, le dictionnaire permet de
-<strong>comprendre</strong> ce qu’elle mesure avant de conclure.</p>
 </div>
 <div class="section level2">
 <h2 id="le-troisième-fichier-larchive">Le troisième fichier : l’archive<a class="anchor" aria-label="anchor" href="#le-troisi%C3%A8me-fichier-larchive"></a>
@@ -363,33 +299,6 @@ gagner le plus de temps à la personne suivante.</p>
 enregistrement. En l’absence de l’argument, l’interface écrit dans
 <code>archive.csv</code>, dans le répertoire de travail de la session R
 : suffisant pour un essai, à proscrire pour un usage partagé.</p>
-</div>
-<div class="section level2">
-<h2 id="une-mise-en-place-progressive">Une mise en place progressive<a class="anchor" aria-label="anchor" href="#une-mise-en-place-progressive"></a>
-</h2>
-<p>Rien n’oblige à tout utiliser d’un coup. L’ordre suivant donne un
-résultat utile dès la première étape :</p>
-<ol style="list-style-type: decimal">
-<li><p><strong>Sans rien.</strong> Lancez l’interface, identifiez les
-variables qui ressortent réellement dans vos analyses. Elles sont en
-général bien moins nombreuses que la base.</p></li>
-<li><p><strong>Une nomenclature partielle.</strong> Vingt à trente
-lignes couvrant ces variables, plus les indicateurs de l’application.
-C’est une demi-journée de travail, et c’est ce qui transforme l’outil
-pour vos collègues.</p></li>
-<li><p><strong>Le dictionnaire.</strong> Un export de votre référentiel
-de métadonnées, avec au minimum les colonnes <code>VARIABLE</code> et la
-formulation des questions. Si vous n’avez pas de référentiel, commencez
-par les seules variables sensibles — celles dont le libellé a changé
-entre deux vagues.</p></li>
-<li><p><strong>Le multilingue.</strong> Ajoutez les colonnes
-<code>EN</code> et <code>NL</code> de la nomenclature, ou les lignes
-<code>TX_LANG</code> du dictionnaire, quand le besoin apparaît.</p></li>
-</ol>
-<p>Comme ces fichiers sont transverses, l’effort n’est consenti qu’une
-fois pour l’ensemble de vos enquêtes, et il est réutilisable au-delà de
-{vizsurvey} : un fichier <code>VARIABLE / libellé</code> propre sert
-aussi bien vos publications, vos exports que vos contrôles.</p>
 </div>
 <div class="section level2">
 <h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>

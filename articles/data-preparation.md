@@ -14,12 +14,12 @@ plusieurs enquêtes.
 
 Dans ce contexte, lancer l’interface manuellement pour chaque base
 devient vite fastidieux. Surtout, le calcul des écarts — en particulier
-lorsqu’ils sont déclinés par vague et par filtre — peut être coûteux.
+lorsqu’ils sont déclinés par vague et par filtre — est très long.
 {vizsurvey} sépare donc les deux temps : une **préparation**
 ([`prepa_survey()`](https://tdelc.github.io/vizsurvey/reference/prepa_survey.md)),
-qui calcule tout et enregistre le résultat dans un fichier `global.rds`,
-et l’**ouverture de l’interface**, qui ne fait que lire ce fichier et
-est donc immédiate.
+qui calcule toutes les statistiques et enregistre le résultat dans un
+fichier `global.rds`, et l’**ouverture de l’interface**, qui ne fait que
+lire ce fichier et est donc immédiate.
 
 La préparation peut être relancée à chaque mise à jour des données, par
 exemple par une tâche planifiée quotidienne : toutes les personnes qui
@@ -32,7 +32,11 @@ Pour tester la chaîne complète sans données réelles, la fonction
 génère un jeu d’exemple à partir de l’extrait SILC du package {laeken} :
 un numéro d’enquêteur·rice fictif (`nr_itw`), une vague fictive
 (`db010`), et des erreurs volontaires à retrouver dans l’interface (voir
-la vignette de prise en main).
+la [vignette de prise en
+main](https://tdelc.github.io/vizsurvey/articles/vizsurvey.html)).
+
+On va créer cette jeu de données, et le placer dans un répertoire fictif
+“data/EUSILC”.
 
 ``` r
 
@@ -81,7 +85,8 @@ et structurer vos données. En voici la forme générale :
     var_info_geo =
 
 Les clés se répartissent en trois groupes. D’abord les **rôles des
-variables** :
+variables**. Toutes ces variables sont facultatives, et activent les
+différents onglets de {vizsurvey} :
 
 | Clé | Rôle |
 |----|----|
@@ -92,7 +97,7 @@ variables** :
 | `var_date` | date de l’entretien |
 | `var_info_geo` | variable géographique, utilisée dans l’onglet Enquêteur pour situer les entretiens |
 
-Ensuite le **typage des variables**, entièrement facultatif :
+Ensuite la **configuration des variables**, entièrement facultatif :
 
 | Clé | Rôle |
 |----|----|
@@ -121,11 +126,12 @@ create_config(
 
 ### Le typage automatique des variables
 
-Vous n’avez à renseigner `vars_discretes` et `vars_continuous` que si le
-classement automatique se trompe. La fonction `classify_df` détermine le
-type de chaque variable à partir de son format et de son nombre de
-modalités ; le seuil pour classer une variable comme catégorielle est de
-15 modalités par défaut.
+Vous n’avez à renseigner `vars_discretes` et `vars_continuous` (et
+`prefix_discretes` et `prefix_continuous`) que si le classement
+automatique se trompe. La fonction `classify_df` détermine le type de
+chaque variable à partir de son format et de son nombre de modalités ;
+le seuil pour classer une variable comme catégorielle est de 15
+modalités par défaut.
 
 ``` r
 
@@ -185,7 +191,8 @@ données plus `config.txt` — pour produire :
 Pour l’analyse par enquêteur·rice, les variables continues sont
 préalablement découpées en cinq classes (par quantiles), de sorte que
 toutes les variables se comparent avec la même distance de chi² (voir la
-vignette de méthodes).
+[vignette de
+méthodes](https://tdelc.github.io/vizsurvey/articles/methods.html)).
 
 Par défaut, `prepa_survey` cherche les fichiers CSV du dossier ;
 l’argument `file_pattern` permet d’adapter ce comportement. Un fichier
@@ -265,7 +272,9 @@ suffit de relancer `prepa_surveys` pour obtenir une version à jour des
 ## Les fichiers transverses
 
 Trois fichiers facultatifs, communs à toutes les enquêtes, se déclarent
-au lancement de l’interface — pas dans `config.txt`.
+au lancement de l’interface — pas dans `config.txt`. La [vignette de
+métadonnées](https://tdelc.github.io/vizsurvey/articles/metadata.html)
+détaille leur utilité et leur création. Voici un bref aperçu.
 
 ### Le dictionnaire (`path_dict`)
 

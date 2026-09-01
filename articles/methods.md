@@ -33,7 +33,7 @@ est un cadre de calcul générique, reproductible et robuste, qui
 garantisse la comparabilité des résultats entre enquêtes et entre
 vagues. La priorité est donnée à la stabilité des indicateurs et à la
 simplicité des formules, pour qu’elles restent lisibles et appropriables
-par les équipes de terrain.
+par les équipes d’enquête.
 
 Ces choix méthodologiques ne sont pas figés : ils ont été
 progressivement affinés au sein de Statbel, à partir des premiers
@@ -49,7 +49,8 @@ Les exemples de cette vignette s’appuient sur le jeu simulé produit par
 [`create_eusilc_sim()`](https://tdelc.github.io/vizsurvey/reference/create_eusilc_sim.md),
 dérivé de l’extrait SILC du package {laeken} : un identifiant
 d’enquêteur·rice fictif (`nr_itw`), une vague fictive (`db010`) et des
-erreurs injectées volontairement (voir la vignette de prise en main).
+erreurs injectées volontairement (voir la [vignette de prise en
+main](https://tdelc.github.io/vizsurvey/articles/vizsurvey.html)).
 
 ``` r
 
@@ -73,8 +74,9 @@ de modalités servant à trancher se règle avec le paramètre `threshold`
 
 Cette fonction guide l’analyse dans le choix des indicateurs de chaque
 variable. Vous pouvez la laisser décider seule, ou forcer la catégorie
-de certaines variables via `config.txt` (voir la vignette de préparation
-des données).
+de certaines variables via `config.txt` (voir la [vignette de
+préparation des
+données](https://tdelc.github.io/vizsurvey/articles/data-preparation.html)).
 
 ``` r
 
@@ -93,7 +95,7 @@ classify_df(iris)
 
 [`prepa_stats()`](https://tdelc.github.io/vizsurvey/reference/prepa_stats.md)
 prend en entrée une base et une variable de groupe (typiquement
-l’enquêteur·rice, ou la vague), et renvoie un data.frame compilant les
+l’enquêteur·rice, ou la vague), et renvoie un `data.frame` compilant les
 statistiques calculées pour chaque variable, par groupe. Vous pouvez
 indiquer la catégorie de chaque variable avec les arguments `vars_vd`
 (variables discrètes) et `vars_vc` (variables continues) ; s’ils sont
@@ -180,9 +182,7 @@ Pour l’analyse par enquêteur·rice, les variables continues sont
 préalablement **découpées en cinq classes** par quantiles, via
 [`cut_safe()`](https://tdelc.github.io/vizsurvey/reference/cut_safe.md),
 puis traitées comme des variables catégorielles. Tout l’onglet Enquêteur
-se lit ainsi de la même façon, avec une seule distance de chi², au lieu
-d’un mélange de chi² pour les catégorielles et d’écarts de médiane pour
-les continues.
+se lit ainsi de la même façon, avec une seule distance de chi².
 
 ``` r
 
@@ -356,7 +356,7 @@ hist(score_isoforest(df_prepa))
 ![](methods_files/figure-html/unnamed-chunk-11-1.png)
 
 Vienna-2, porteuse des erreurs injectées, ressort en tête. Un seuil de
-0.5 est parfois proposé dans la littérature pour qualifier un score
+0.6 est parfois proposé dans la littérature pour qualifier un score
 d’anomalie ([voir cet
 article](https://scispace.com/pdf/an-in-depth-study-and-improvement-of-isolation-forest-204k9g39.pdf))
 ; là encore, {vizsurvey} ne propose pas de seuil unique, mais un
