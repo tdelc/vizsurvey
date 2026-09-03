@@ -79,7 +79,22 @@ mod_archive_server <- function(id, data, sel, r_focus, opts, lang, i18n_s) {
 
     output$archive <- DT::renderDT({
       DT::datatable(archive(), escape = FALSE, filter = "top",
+                    selection = "none",
+                    editable = list(target = "cell",
+                                    disable = list(columns = c(0:6))),
                     rownames = FALSE, options = list(pageLength = 20))
+    }, server = TRUE)
+    
+    # Comment edition
+    observeEvent(input$archive_cell_edit, {
+      info <- input$archive_cell_edit
+      if (!is.null(info$col) && info$col == 7) {
+        val <- suppressWarnings(info$value)
+        df <- utils::read.csv(opts$path_archive) %>% mutate_all(as.character)
+        df[info$row,info$col+1] <- val
+        write.csv(df, file = opts$path_archive, row.names = FALSE)
+        archive(df)
+      }
     })
   })
 }
