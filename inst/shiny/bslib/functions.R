@@ -102,8 +102,12 @@ df_to_formated_dt <- function(df,
   names(stats) <- var_outliers
   
   dt <- datatable(df, filter = "top", selection = "single",
+                  extensions = "Buttons",
                   rownames = FALSE, colnames = colnames, escape   = FALSE,
-                  options = list(pageLength = 10, dom = "tp"))
+                  options = list(
+                    pageLength = 10, dom = "tpB",
+                    buttons = c("copy", "csv", "excel")
+                    ))
   
   for(col in var_outliers) {
     cutoff <- stats[[col]]$cutoff

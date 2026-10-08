@@ -18,6 +18,8 @@ runVizsurvey_from_r(
 
 \item{vars_discretes}{(optional) preset of discretes variables}
 
+\item{vars_continuous}{(optional) preset of continuous variables}
+
 \item{var_wave}{(optional) name of wave variable. Two variables can be given
 (c("YEAR","QUARTER")) : the second one is then a second level of wave}
 
@@ -25,8 +27,6 @@ runVizsurvey_from_r(
 given : the second one is then a second level of filter}
 
 \item{var_intvwr}{(optional) name of interviewer variable}
-
-\item{vars_continous}{(optional) preset of continous variables}
 }
 \value{
 shinyapp

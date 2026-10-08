@@ -14,6 +14,7 @@ suppressPackageStartupMessages({
   library(ggplot2, quietly = T)
   library(tidyr, quietly = T)
   library(rlang, quietly = T)
+  library(isotree, quietly = T)
   library(magrittr, quietly = T)
   library(tibble, quietly = T)
   library(scales, quietly = T)

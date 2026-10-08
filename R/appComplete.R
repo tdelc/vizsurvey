@@ -45,14 +45,38 @@ runVizsurvey_from_folder <- function(
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `vizsurvey`.", call. = FALSE)
   }
-
+  
   shiny::shinyOptions(path_data_folder = normalizePath(path))
   shiny::shinyOptions(path_dict    = normalizePath(path_dict))
   shiny::shinyOptions(path_nomen   = normalizePath(path_nomen))
   shiny::shinyOptions(path_archive = normalizePath(path_archive))
   shiny::shinyOptions(data_rds_pattern = data_rds_pattern)
   shiny::shinyOptions(depth_folder = depth_folder)
-  shiny::runApp(appDir, display.mode = "normal",launch.browser = TRUE)
+  
+  port <- 8501
+  
+  open_app <- function(url) {
+    prefix <- Sys.getenv("JUPYTERHUB_SERVICE_PREFIX")
+    if (!nzchar(prefix)) return(utils::browseURL(url))   # en local : navigateur normal
+    
+    link <- paste0(prefix, "proxy/", port, "/")
+    
+    if (isTRUE(getOption("jupyter.in_kernel")) &&
+        requireNamespace("IRdisplay", quietly = TRUE)) {
+      # Dans un notebook : lien HTML cliquable, ouvert dans un nouvel onglet
+      IRdisplay::display_html(sprintf(
+        '<a href="%s" target="_blank">&#9654; Ouvrir vizsurvey</a>', link
+      ))
+    } else {
+      # Ailleurs (terminal, Rscript) : on affiche le chemin
+      message("Application disponible ici : ", link)
+    }
+  }
+  
+  shiny::runApp(appDir, port = port, display.mode = "normal",
+                launch.browser = open_app)
+  
+  # shiny::runApp(appDir, display.mode = "normal",launch.browser = TRUE)
 
   invisible(TRUE)
 }
