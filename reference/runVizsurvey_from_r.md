@@ -25,6 +25,10 @@ runVizsurvey_from_r(
 
   (optional) preset of discretes variables
 
+- vars_continuous:
+
+  (optional) preset of continuous variables
+
 - var_wave:
 
   (optional) name of wave variable. Two variables can be given
@@ -38,10 +42,6 @@ runVizsurvey_from_r(
 - var_intvwr:
 
   (optional) name of interviewer variable
-
-- vars_continous:
-
-  (optional) preset of continous variables
 
 ## Value
 
