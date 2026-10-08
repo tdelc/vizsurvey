@@ -55,29 +55,38 @@ runVizsurvey_from_folder <- function(
   
   port <- 8501
   
+  # Renvoie le premier port libre à partir de `port`
+  find_free_port <- function(port, max_tries = 20) {
+    for (p in port + 0:(max_tries - 1)) {
+      srv <- tryCatch(httpuv::startServer("127.0.0.1", p, list()),
+                      error = function(e) NULL)
+      if (!is.null(srv)) {
+        httpuv::stopServer(srv)
+        return(p)
+      }
+    }
+    stop("Aucun port libre entre ", port, " et ", port + max_tries - 1)
+  }
+  
   open_app <- function(url) {
     prefix <- Sys.getenv("JUPYTERHUB_SERVICE_PREFIX")
-    if (!nzchar(prefix)) return(utils::browseURL(url))   # en local : navigateur normal
+    if (!nzchar(prefix)) return(utils::browseURL(url))
     
-    link <- paste0(prefix, "proxy/", port, "/")
+    real_port <- sub(".*:(\\d+).*", "\\1", url)   # port réellement utilisé
+    link <- paste0(prefix, "proxy/", real_port, "/")
     
-    if (isTRUE(getOption("jupyter.in_kernel")) &&
-        requireNamespace("IRdisplay", quietly = TRUE)) {
-      # Dans un notebook : lien HTML cliquable, ouvert dans un nouvel onglet
+    if (requireNamespace("IRdisplay", quietly = TRUE)) {
       IRdisplay::display_html(sprintf(
         '<a href="%s" target="_blank">&#9654; Ouvrir vizsurvey</a>', link
       ))
     } else {
-      # Ailleurs (terminal, Rscript) : on affiche le chemin
       message("Application disponible ici : ", link)
     }
   }
   
-  shiny::runApp(appDir, port = port, display.mode = "normal",
+  shiny::runApp(appDir, port = find_free_port(port), display.mode = "normal",
                 launch.browser = open_app)
   
-  # shiny::runApp(appDir, display.mode = "normal",launch.browser = TRUE)
-
   invisible(TRUE)
 }
 
