@@ -54,6 +54,7 @@ mod_archive_server <- function(id, data, sel, r_focus, opts, lang, i18n_s) {
     observeEvent(input$add_submit, {
       if (!is.null(input$add_com)) {
         record <- tibble(timestamp = as.character(lubridate::today()),
+                         source = "vizsurvey",
                          user = input$add_user,
                          path = input$add_path,
                          wave = as.character(input$add_wave),
